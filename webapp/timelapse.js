@@ -99,43 +99,26 @@ jQuery(function($) {
 
         if (data) setBusy(true);
 
-        setTimeout(function () {
-            var response = null;
-
-            if (action === 'startCapture') {
-                response = {isCapturing: true};
-            } else if (action === 'stopCapture') {
-                response = {isCapturing: false};
-            } else if (action === 'loadStatus') {
-                response = {
-                    captureMode: {title: 'Capture Mode', value: isCapturing ? 'Cron active' : 'Not capturing', type: 'danger'},
-                    freeDiskSpace: {title: 'Free Disk Space', value: '11.3 GB', type: 'success'},
-                    cpuTemp: {title: 'CPU Temperature', value: '48.7°C', type: 'success'},
-                    cpuUsage: {title: 'CPU Usage', value: '1.1 %', type: 'success'},
-                    uptime: {title: 'Uptime', value: '37 min', type: 'default'}
-                };
-            } else if (action === 'loadConfig') {
-                response = {
-                    timelapseInterval: 10,
-                    captureMode: 'raspistill',
-                    warmupTime: 5,
-                    exposure: 'auto',
-                    awb: 'auto',
-                    iso: 400,
-                    width: 1920,
-                    height: 1080,
-                    thumbnailWidth: 480,
-                    thumbnailHeight: 270,
-                    jpegQuality: 100
-                };
-            } else if (action === 'saveConfig') {
-                response = data;
+        $.ajax('api.php?action=' + action, {
+            method: data ? 'POST' : 'GET',
+            data: data,
+            timeout: 10000,
+            success: function (response) {
+                if (response.error) {
+                    alertBox.html('<strong>Error:</strong> ' + response.error);
+                    alertBox.show();
+                } else {
+                    callback(response);
+                    alertBox.hide();
+                }
+                if (data) setBusy(false);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alertBox.html('<strong>' + textStatus + ':</strong> ' + errorThrown);
+                alertBox.show();
+                if (data) setBusy(false);
             }
-
-            callback(response);
-
-            if (data) setBusy(false);
-        }, 500);
+        });
     }
 
     function setBusy(isBusy) {
