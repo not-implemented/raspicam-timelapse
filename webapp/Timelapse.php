@@ -62,6 +62,8 @@ class Timelapse {
         $status = (object) [];
         $config = $this->loadConfig();
 
+        $status->isCapturing = $config->isCapturing;
+
         $captureMode = $config->isCapturing ? $config->captureMode : 'Not capturing';
         $status->captureMode = (object) [
             'title' => 'Capture Mode',

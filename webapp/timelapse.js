@@ -1,4 +1,5 @@
 jQuery(function($) {
+    var isBusy = false;
     var isCapturing = false;
 
     var busyIndicator = $('#busy-indicator');
@@ -47,9 +48,12 @@ jQuery(function($) {
 
     function updateStatus(callback) {
         api('loadStatus', function (status) {
+            isCapturing = status.isCapturing;
+
             for (var name in status) {
                 var statusId = 'status-' + name;
                 var statusItem = status[name];
+                if (typeof statusItem !== 'object') continue;
 
                 var statusNode = $('#' + statusId);
 
@@ -65,6 +69,8 @@ jQuery(function($) {
             }
 
             if (callback) callback();
+
+            setBusy(isBusy); // for updated isCapturing
         });
     }
 
@@ -121,7 +127,9 @@ jQuery(function($) {
         });
     }
 
-    function setBusy(isBusy) {
+    function setBusy(busy) {
+        isBusy = busy;
+
         if (isBusy) busyIndicator.show();
         else busyIndicator.hide();
 
