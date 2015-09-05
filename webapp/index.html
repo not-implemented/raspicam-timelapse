@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>RaspiCam-Timelapse</title>
+
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">-->
+    <link rel="stylesheet" href="spinner.css" type="text/css">
+    <!--<link rel="stylesheet" href="http://css-spinners.com/css/spinner/spinner.css" type="text/css">-->
+
+    <link rel="stylesheet" href="timelapse.css">
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1><span class="glyphicon glyphicon-camera"></span> RaspiCam-Timelapse</h1>
+        </div>
+
+        <div id="alert-box" class="alert alert-danger" role="alert" style="display: none"></div>
+
+        <div class="row vspace">
+            <div class="col-md-7">
+                <div class="vspace">
+                    <img id="preview-image" class="img-thumbnail" alt="Start Capture for Preview">
+                </div>
+
+                <div class="vspace">
+                    <button id="start-capture" class="btn btn-success" type="button">
+                        <span class="glyphicon glyphicon-play"></span>
+                        Start Capture
+                    </button>
+
+                    <button id="stop-capture" class="btn btn-danger" type="button">
+                        <span class="glyphicon glyphicon-stop"></span>
+                        Stop Capture
+                    </button>
+
+                    <div id="busy-indicator" class="spinner-loader">Busy…</div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <h3>Status</h3>
+                <table id="status-table" class="table">
+                    <tr class="status-init">
+                        <td>Application</td>
+                        <td><span class="label label-default">Initializing ...</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="vspace">
+            <h3>Options</h3>
+            <div class="panel-group" id="options-container" role="tablist">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab"><h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#options-container" href="#options-timelapse">Timelapse</a>
+                    </h4></div>
+                    <div id="options-timelapse" class="panel-collapse collapse in" role="tabpanel"><div class="panel-body">
+                        <table class="table">
+                            <tr><td>Timelapse Interval</td><td>
+                                <div class="form-inline">
+                                    <div class="input-group">
+                                        <input id="option-timelapseInterval" type="text" class="form-control" placeholder="Take picture every ...">
+                                        <span class="input-group-addon">seconds</span>
+                                    </div>
+                                </div>
+                            </td></tr>
+                            <tr><td>Capture Mode</td><td>
+                                <div class="form-inline">
+                                    <select id="option-captureMode" class="form-control">
+                                        <option value=""></option>
+                                        <option value="raspistill">Camera permanently on (via raspistill --timelapse; more power consumption)</option>
+                                        <option value="cron">Camera on/off every picture (via cron; max 1 picture per minute)</option>
+                                    </select>
+                                </div>
+                            </td></tr>
+                            <tr><td>Warmup Time</td><td>
+                                <div class="form-inline">
+                                    <div class="input-group" data-toggle="tooltip" title="Give the camera a chance to warmup before taking the picture (only in &quot;Camera on/off every picture&quot;-Mode)">
+                                        <input id="option-warmupTime" type="text" class="form-control" placeholder="Wait before picture ...">
+                                        <span class="input-group-addon">seconds</span>
+                                    </div>
+                                </div>
+                            </td></tr>
+                        </table>
+                    </div></div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab"><h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#options-container" href="#options-camera">Camera</a>
+                    </h4></div>
+                    <div id="options-camera" class="panel-collapse collapse" role="tabpanel"><div class="panel-body">
+                        <table class="table">
+                            <tr><td>Exposure</td><td>
+                                <div class="form-inline">
+                                    <select id="option-exposure" class="form-control">
+                                        <option value=""></option>
+                                        <option value="auto">auto</option>
+                                        <option value="night">night</option>
+                                        <option value="nightpreview">nightpreview</option>
+                                        <option value="backlight">backlight</option>
+                                        <option value="spotlight">spotlight</option>
+                                        <option value="sports">sports (fast shutter, etc.)</option>
+                                        <option value="snow">snow</option>
+                                        <option value="beach">beach</option>
+                                        <option value="verylong">verylong</option>
+                                        <option value="antishake">antishake</option>
+                                        <option value="fireworks">fireworks</option>
+                                    </select>
+                                </div>
+                            </td></tr>
+                            <tr><td>Automatic White Balance</td><td>
+                                <div class="form-inline">
+                                    <select id="option-awb" class="form-control">
+                                        <option value=""></option>
+                                        <option value="off">off</option>
+                                        <option value="auto">auto (default)</option>
+                                        <option value="sun">sun</option>
+                                        <option value="cloud">cloud</option>
+                                        <option value="shade">shade</option>
+                                        <option value="tungsten">tungsten</option>
+                                        <option value="fluorescent">fluorescent</option>
+                                        <option value="incandescent">incandescent</option>
+                                        <option value="flash">flash</option>
+                                        <option value="horizon">horizon</option>
+                                    </select>
+                                </div>
+                            </td></tr>
+                            <tr><td>ISO</td><td>
+                                <div class="form-inline">
+                                    <select id="option-iso" class="form-control">
+                                        <option value=""></option>
+                                        <option value="100">100</option>
+                                        <option value="200">200</option>
+                                        <option value="400">400</option>
+                                        <option value="800">800</option>
+                                    </select>
+                                </div>
+                            </td></tr>
+                        </table>
+                    </div></div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab"><h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#options-container" href="#options-image-format">Image Format</a>
+                    </h4></div>
+                    <div id="options-image-format" class="panel-collapse collapse" role="tabpanel"><div class="panel-body">
+                        <table class="table">
+                            <tr><td>Resolution</td><td>
+                                <div class="form-inline">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">width</span>
+                                        <input id="option-width" type="text" class="form-control" placeholder="x ...">
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-addon">height</span>
+                                        <input id="option-height" type="text" class="form-control" placeholder="y ...">
+                                    </div>
+                                </div>
+                            </td></tr>
+                            <tr><td>Thumbnail resolution</td><td>
+                                <div class="form-inline">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">width</span>
+                                        <input id="option-thumbnailWidth" type="text" class="form-control" placeholder="x ...">
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-addon">height</span>
+                                        <input id="option-thumbnailHeight" type="text" class="form-control" placeholder="y ...">
+                                    </div>
+                                </div>
+                            </td></tr>
+                            <!-- Currently, the "quality"-option does not work in raspistill (it's always 100)
+                            <tr><td>JPEG quality (0-100)</td><td>
+                                <div class="form-inline">
+                                    <input id="option-jpegQuality" type="text" class="form-control" placeholder="100 = best quality">
+                                </div>
+                            </td></tr>
+                            -->
+                        </table>
+                    </div></div>
+                </div>
+            </div>
+
+            <div class="vspace">
+                <button id="save-config" class="btn btn-primary" type="button">
+                    <span class="glyphicon glyphicon-save"></span>
+                    Save
+                </button>
+
+                <button id="reset-config" class="btn btn-default" type="button">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                    Reset
+                </button>
+            </div>
+        </div>
+
+        <hr>
+
+        <footer>
+            <p>&copy; 2015 &ndash; <a href="https://github.com/not-implemented/raspicam-timelapse" target="_blank">View on GitHub</a></p>
+        </footer>
+    </div>
+
+    <script src="jquery/jquery.min.js"></script>
+    <!--<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>-->
+    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>-->
+
+    <script src="timelapse.js"></script>
+</body>
+</html>

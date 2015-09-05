@@ -1,0 +1,26 @@
+.vspace {
+    margin-bottom: 20px;
+}
+
+#preview-image {
+    /* setting width/height means the image without borders: */
+    box-sizing: content-box;
+    width: 480px;
+    height: 270px;
+
+    /* default image: */
+    background: url('default.jpg') no-repeat center;
+
+    /* format alt-text: */
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 48px;
+    color: #999;
+}
+
+#busy-indicator {
+    font-size: 5px;
+    position: relative;
+    top: 6px;
+}
