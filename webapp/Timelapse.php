@@ -12,12 +12,11 @@ class Timelapse {
     }
 
     public function startCapture() {
-        $config = $this->saveConfig(['isCapturing' => true]);
+        $config = $this->saveConfig(['isCapturing' => true, 'captureFolder' => date('Y-m-d_H.i.s')]);
         $this->generateDaemonConfig($config);
 
         if ($config->captureMode === 'raspistill') {
-            // TODO:
-            //shell_exec($this->daemonFilename . ' start 2>&1');
+            shell_exec($this->daemonFilename . ' start 2>&1');
         }
 
         return $config;
@@ -28,24 +27,44 @@ class Timelapse {
         $this->generateDaemonConfig($config);
 
         if ($config->captureMode === 'raspistill') {
-            // TODO:
-            //shell_exec($this->daemonFilename . ' stop 2>&1');
+            shell_exec($this->daemonFilename . ' stop 2>&1');
         }
 
         return $config;
     }
 
     private function generateDaemonConfig($config) {
+        $raspistillOptions = [
+            'width' => $config->width,
+            'height' => $config->height,
+            'encoding' => 'jpg',
+            'quality' => $config->jpegQuality,
+            'thumb' => $config->thumbnailWidth . ':' . $config->thumbnailHeight . ':70',
+            'output' => $config->capturePath . '/' . $config->captureFolder . '/img_%04d.jpg',
+            'latest' => $config->capturePath . '/latest.jpg',
+
+            'exposure' => $config->exposure,
+            'ev' => 0,
+            'awb' => $config->awb,
+            'ISO' => $config->iso,
+
+            'timelapse' => round($config->timelapseInterval * 1000),
+            'timeout' => $config->captureMode === 'cron' ? $config->warmupTime : 10 * 365 * 24 * 3600,
+            'verbose' => null,
+        ];
+
+        $raspistillOptionsRaw = [];
+        foreach ($raspistillOptions as $name => $value) {
+            $raspistillOptionsRaw[] = '--' . $name . ' ' . $value;
+        }
+
         $options = [
-        // TODO:
-        /*
-            'RASPICAM_OUTPUTDIR' => $_REQUEST['outputDir'],
-            'RASPICAM_TIMELAPSE' => $config-> * 1000,
-            'RASPICAM_TIMEOUT' => $config-> 10 * 365 * 24 * 3600,
-            'RASPICAM_EXPOSURE' => $config-> 'auto',
-            'RASPICAM_ISO' => $config-> 400,
-            'RASPICAM_AWB' => $config-> 'auto',
-        */
+            'TIMELAPSE_IS_CAPTURING' => $config->isCapturing ? 1 : 0,
+            'TIMELAPSE_TIMELAPSE_INTERVAL' => $config->timelapseInterval,
+            'TIMELAPSE_CAPTURE_MODE' => $config->captureMode,
+            'TIMELAPSE_CAPTURE_PATH' => $config->capturePath,
+            'TIMELAPSE_CAPTURE_FOLDER' => $config->captureFolder,
+            'TIMELAPSE_RASPISTILL_OPTIONS' => escapeshellarg(implode(' ', $raspistillOptionsRaw)),
         ];
 
         $daemonConfig = '';
@@ -120,6 +139,7 @@ class Timelapse {
         $config = (object) [
             'isCapturing' => false,
             'capturePath' => '/home/pi/capture',
+            'captureFolder' => 'default',
             'timelapseInterval' => 1,
             'captureMode' => 'raspistill',
             'warmupTime' => 5,
