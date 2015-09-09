@@ -50,10 +50,16 @@ jQuery(function($) {
         api('loadStatus', function (status) {
             isCapturing = status.isCapturing;
 
+            if (status.latestPictureHash) {
+                previewImage.attr('src', 'preview.php?_=' + status.latestPictureHash);
+            } else {
+                previewImage.removeAttr('src');
+            }
+
             for (var name in status) {
                 var statusId = 'status-' + name;
                 var statusItem = status[name];
-                if (typeof statusItem !== 'object') continue;
+                if (statusItem === null || typeof statusItem !== 'object') continue;
 
                 var statusNode = $('#' + statusId);
 

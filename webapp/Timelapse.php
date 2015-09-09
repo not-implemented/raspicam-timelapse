@@ -83,11 +83,29 @@ class Timelapse {
 
         $status->isCapturing = $config->isCapturing;
 
+        $latestPictureTime = @filemtime($config->capturePath . '/latest.jpg');
+        $latestPictureSize = @filesize($config->capturePath . '/latest.jpg');
+
+        if ($latestPictureTime !== false && $latestPictureSize !== false) {
+            $status->latestPictureHash = md5($latestPictureTime . '#' . $latestPictureSize);
+        } else {
+            $status->latestPictureHash = null;
+        }
+
         $captureMode = $config->isCapturing ? $config->captureMode : 'Not capturing';
         $status->captureMode = (object) [
             'title' => 'Capture Mode',
             'value' => $captureMode,
             'type' => $config->isCapturing ? 'success' : 'danger',
+        ];
+
+        $status->latestPicture = (object) [
+            'title' => 'Latest Picture',
+            'value' => $status->latestPictureHash !== null ?
+                (date('Y-m-d H:i:s', $latestPictureTime) .
+                ' (' . round($latestPictureSize / 1024 / 1024, 2) . ' MB)') :
+                '(none)',
+            'type' => $status->latestPictureHash !== null ? 'success' : 'danger',
         ];
 
         $freeDiskSpace = round(disk_free_space($config->capturePath) / 1024 / 1024 / 1024, 2);
