@@ -20,50 +20,10 @@ HowTo
 - Attach the camera to the Raspberry Pi - [see instructions](https://www.raspberrypi.org/documentation/configuration/camera.md)
 - Put the SD-Card into your Raspberry Pi, Connect to your LAN (DHCP server needed), Power on
 - Login via SSH (maybe use local IP): `ssh raspberrypi` (Login: pi / Password: raspberry)
+- Install updates: `sudo apt-get update` and `sudo apt-get dist-upgrade`
+- For some helpful optional customizations of your Raspberry Pi - [see here](Raspberry-Customizing.md)
 - Make complete SD-Card usable: `sudo raspi-config` - 1 Expand Filesystem - Finish
 - `reboot` (partition will be resized on reboot)
-
-
-### Setup Raspberry Pi
-
-Customize your Raspberry Pi (use your favourite settings here):
-
-- `sudo raspi-config`
-- 8 Advanced Options - A2 Hostname - "timelapse"
-- 4 Internationalisation Options - I1 Change Locale - de_DE.UTF-8 - as default
-- 4 Internationalisation Options - I2 Change Timezone - Europe/Berlin
-- 4 Internationalisation Options - I3 Change Keyboard Layout
-- Finish
-
-Install updates:
-
-```bash
-sudo apt-get update
-sudo apt-get dist-upgrade
-```
-
-Install vim (optional):
-
-```bash
-sudo apt-get install vim
-sudo update-alternatives --config editor
-```
-
-Setting additional aliases (optional):
-
-```bash
-vi .bashrc
-
-alias l='ls -lA'
-```
-
-SSH autologin by key (optional):
-
-```bash
-mkdir .ssh
-echo "{your-public-key}" >> .ssh/authorized_keys
-chmod -R go-rwx .ssh
-```
 
 
 ### Setup Raspberry Pi Cam
