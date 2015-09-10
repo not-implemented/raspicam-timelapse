@@ -96,7 +96,53 @@ sudo service apache2 restart
 
 ### Reverse SSH-Tunnel (optional)
 
-*+++ TODO +++*
+Generate key on Raspberry Pi (press ENTER everywhere):
+
+```bash
+ssh-keygen -t rsa
+cat .ssh/id_rsa.pub
+```
+
+Allow SSH connections from Raspberry Pi on your remote server:
+
+```bash
+# Add a user - i.e. "timelapse" on your remote server:
+adduser --gecos Timelapse timelapse
+chmod go-rwx /home/timelapse
+cd /home/timelapse
+
+# Add the key on your remote server to the new user:
+mkdir .ssh
+echo "{raspberry-public-key-from-above}" >> .ssh/authorized_keys
+chmod -R go-rwx .ssh
+chown -R timelapse:timelapse .ssh
+
+# Enable listening on all interfaces for port-forwarding on your remote server:
+vi /etc/ssh/sshd_config
+GatewayPorts yes
+service sshd restart
+```
+
+Configure tunnels to be established - create a script with `vi tunnels.sh` like this to
+forward port 10022 from your remote server to port 22 on Raspberry Pi - same with port 80:
+
+```bash
+#!/bin/bash
+
+~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh timelapse@www.example.com 10022 22 &
+~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh timelapse@www.example.com 10080 80 &
+```
+
+```bash
+# Make it executable:
+chmod +x tunnels.sh
+
+# Add script to crontab:
+crontab -e
+
+@reboot ~/tunnels.sh
+* * * * * ~/tunnels.sh
+```
 
 
 ### Dynamic-DNS-Client (optional)
