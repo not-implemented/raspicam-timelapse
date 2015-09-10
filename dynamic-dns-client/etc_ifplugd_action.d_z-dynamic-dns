@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# Register current local IP address to your Dynamic DNS service with local hostname
+DYN_USERNAME=you
+DYN_PASSWORD=secret
+DYN_DOMAIN=dyn.example.com
+DYN_UPDATEURL=https://admin.example.com/dynamic-dns/update.php
+
+# ignore "lo" interface:
+if [ "${1}" = "lo" ]; then
+    exit 0
+fi
+
+# ignore when interface goes down:
+if [ "${2}" != "up" ]; then
+    exit 0
+fi
+
+# is /usr mounted?
+if [ ! -e /usr/bin/wget ]; then
+    exit 0
+fi
+
+while true; do
+    DYN_HOSTNAME=`hostname -s`.$DYN_DOMAIN
+    DYN_IPADDR=`hostname -I | cut -d " " -f 1`
+
+    if [ "$DYN_IPADDR" = "" ]; then
+        sleep 1
+        continue
+    fi
+
+    /usr/bin/wget -q -O /dev/null --no-check-certificate "$DYN_UPDATEURL?hostname=$DYN_HOSTNAME&ipaddr=$DYN_IPADDR&username=$DYN_USERNAME&password=$DYN_PASSWORD"
+    if [ $? -eq 0 ]; then
+        break
+    fi
+
+    sleep 10
+done
+
+exit 0

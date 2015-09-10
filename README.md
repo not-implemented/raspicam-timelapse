@@ -147,7 +147,14 @@ crontab -e
 
 ### Dynamic-DNS-Client (optional)
 
-*+++ TODO +++*
+```bash
+# Copy script:
+sudo cp raspicam-timelapse/dynamic-dns-client/etc_ifplugd_action.d_z-dynamic-dns /etc/ifplugd/action.d/z-dynamic-dns
+sudo chmod 700 /etc/ifplugd/action.d/z-dynamic-dns
+
+# Change config vars directly in z-dynamic-dns:
+sudo vi /etc/ifplugd/action.d/z-dynamic-dns
+```
 
 
 ### Wi-Fi autoconnect (optional)
