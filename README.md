@@ -1,13 +1,15 @@
 RaspiCam-Timelapse
 ==================
 
-Simple Web-App and complete HowTo for setting up a Raspberry Pi Camera for Time-lapse Photography.
+Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for Time-lapse Photography.
 
-- Web-App for controlling and monitoring the camera
-- Reverse-SSH-Tunnel if you have your own server - to reach your Raspberry Pi behind a firewall (optional)
-- Dynamic-DNS-Client - maybe find out the IP of your Raspberry Pi in your local network easier (optional)
-- Wi-Fi autoconnect (optional)
+- Web-App for controlling and monitoring the camera and the Raspberry Pi
+- Reverse-SSH-Tunnel to another server - reach your Raspberry Pi behind firewalls (optional)
+- Dynamic-DNS-Client - find your Raspberry Pi easier in your local network (optional)
+- Wi-Fi autoconnect - if you have a USB Wi-Fi Adapter (optional)
 - Prerequisites: Raspberry Pi + Power + SD-Card, RaspiCam, USB Wi-Fi Adapter (optional)
+
+![Screenshot](screenshot.jpg)
 
 
 HowTo
@@ -23,29 +25,27 @@ HowTo
 - Install updates: `sudo apt-get update` and `sudo apt-get dist-upgrade`
 - For some helpful optional customizations of your Raspberry Pi - [see here](Raspberry-Customizing.md)
 - Make complete SD-Card usable: `sudo raspi-config` - 1 Expand Filesystem - Finish
-- `reboot` (partition will be resized on reboot)
+- `sudo reboot` (partition gets resized on reboot - but you can do the Camera Setup first)
 
 
-### Setup Raspberry Pi Cam
+### Setup Raspberry Pi Camera
 
-Enable camera:
+Enable camera (this also sets Memory Split to 128 MB):
 
 - `sudo raspi-config`
-- 5 Enable Camera - Enable (this also sets gpu_mem to 128 - needed by camera)
+- 5 Enable Camera - Enable
 - Finish
 
 Disable camera LED when taking pictures (optional):
 
 ```bash
-sudo -i
-echo "disable_camera_led=1" >> /boot/config.txt
-exit
+sudo sh -c 'echo "disable_camera_led=1" >> /boot/config.txt'
 ```
 
 Reboot for the camera settings to take effect:
 
 ```bash
-reboot
+sudo reboot
 ```
 
 
@@ -55,17 +55,21 @@ Install WebApp:
 
 ```bash
 # Check out this repository:
-cd /home/pi
+cd ~
 git clone https://github.com/not-implemented/raspicam-timelapse.git
 
 # The WebApp needs Bootstrap and jQuery:
 wget https://github.com/twbs/bootstrap/releases/download/v3.3.5/bootstrap-3.3.5-dist.zip
 unzip -d raspicam-timelapse/webapp bootstrap-3.3.5-dist.zip
 mv raspicam-timelapse/webapp/bootstrap-3.3.5-dist raspicam-timelapse/webapp/bootstrap
+rm bootstrap-3.3.5-dist.zip
 
 wget http://code.jquery.com/jquery-2.1.4.min.js
 mkdir raspicam-timelapse/webapp/jquery
 mv jquery-2.1.4.min.js raspicam-timelapse/webapp/jquery/jquery.min.js
+
+# Make config directory writable by Webserver:
+chmod 777 raspicam-timelapse/config
 
 # Prepare capture directory:
 mkdir capture && chmod 777 capture
@@ -81,9 +85,9 @@ sudo apt-get install apache2 php5
 sudo usermod -a -G video www-data
 
 # Change document-root:
-sudo vi /etc/apache2/sites-available/default
+sudo editor /etc/apache2/sites-available/default
 
-# Please change "DocumentRoot" and "Directory" to this:
+# Please change "DocumentRoot /var/www" and "<Directory /var/www/>" to this:
 DocumentRoot /home/pi/raspicam-timelapse/webapp
 <Directory /home/pi/raspicam-timelapse/webapp>
 
@@ -91,7 +95,7 @@ DocumentRoot /home/pi/raspicam-timelapse/webapp
 sudo service apache2 restart
 ```
 
-... now open your browser i.e. with http://raspberrypi/ :-)
+... now open your browser - i.e. with http://raspberrypi/ or IP address :-)
 
 
 ### Reverse SSH-Tunnel (optional)
@@ -106,25 +110,31 @@ cat .ssh/id_rsa.pub
 Allow SSH connections from Raspberry Pi on your remote server:
 
 ```bash
-# Add a user - i.e. "timelapse" on your remote server:
+# Maybe add a user - i.e. "timelapse" on your remote server:
 adduser --gecos Timelapse timelapse
 chmod go-rwx /home/timelapse
 cd /home/timelapse
 
 # Add the key on your remote server to the new user:
-mkdir .ssh
+mkdir -p .ssh
 echo "{raspberry-public-key-from-above}" >> .ssh/authorized_keys
 chmod -R go-rwx .ssh
 chown -R timelapse:timelapse .ssh
 
-# Enable listening on all interfaces for port-forwarding on your remote server:
-vi /etc/ssh/sshd_config
+# Enable listening on all interfaces for port-forwarding on your remote server
+# (otherwise port-forwarding will listen only on localhost):
+editor /etc/ssh/sshd_config
+
+# Add this line:
 GatewayPorts yes
+
+# Restart SSH server:
 service sshd restart
 ```
 
-Configure tunnels to be established - create a script with `vi tunnels.sh` like this to
-forward port 10022 from your remote server to port 22 on Raspberry Pi - same with port 80:
+Back on Raspberry Pi: Configure tunnels to be established - create a script with
+`editor tunnels.sh` like the following example to forward port 10022 from your
+remote server to port 22 on Raspberry Pi - same with port 80:
 
 ```bash
 #!/bin/bash
@@ -137,9 +147,13 @@ forward port 10022 from your remote server to port 22 on Raspberry Pi - same wit
 # Make it executable:
 chmod +x tunnels.sh
 
+# Check SSH-Connection and permanently add the key (type "yes"):
+ssh timelapse@www.example.com echo "test"
+
 # Add script to crontab:
 crontab -e
 
+# Insert this lines into crontab:
 @reboot ~/tunnels.sh
 * * * * * ~/tunnels.sh
 ```
@@ -153,15 +167,17 @@ sudo cp raspicam-timelapse/dynamic-dns-client/etc_ifplugd_action.d_z-dynamic-dns
 sudo chmod 700 /etc/ifplugd/action.d/z-dynamic-dns
 
 # Change config vars directly in z-dynamic-dns:
-sudo vi /etc/ifplugd/action.d/z-dynamic-dns
+sudo editor /etc/ifplugd/action.d/z-dynamic-dns
 ```
 
 
 ### Wi-Fi autoconnect (optional)
 
 ```bash
-sudo vi /etc/wpa_supplicant/wpa_supplicant.conf
+sudo editor /etc/wpa_supplicant/wpa_supplicant.conf
 ```
+
+Append as many networks as you want - some examples:
 
 ```
 # Secure Wi-Fi example:
@@ -176,3 +192,11 @@ network={
     key_mgmt=NONE
 }
 ```
+
+
+TODO
+----
+
+- Implement cron-mode
+- Implement --hflip, --vflip
+- Change umask to avoid permission problems
