@@ -84,12 +84,21 @@ sudo apt-get install apache2 php5
 # Allow access to Camera for Apache:
 sudo usermod -a -G video www-data
 
-# Change document-root:
+# Create a user for HTTP-Login:
+htpasswd -c .htpasswd timelapse
+
+# Enable WebApp in Webserver:
 sudo editor /etc/apache2/sites-available/default
 
 # Please change "DocumentRoot /var/www" and "<Directory /var/www/>" to this:
 DocumentRoot /home/pi/raspicam-timelapse/webapp
 <Directory /home/pi/raspicam-timelapse/webapp>
+
+# Enable HTTP-Login - put this inside "<Directory /home/pi/raspicam-timelapse/webapp>":
+AuthType Basic
+AuthName "RaspiCam-Timelapse"
+AuthUserFile "/home/pi/.htpasswd"
+Require valid-user
 
 # Restart Apache:
 sudo service apache2 restart
@@ -99,6 +108,9 @@ sudo service apache2 restart
 
 
 ### Reverse SSH-Tunnel (optional)
+
+Be sure, to change the default password before allowing connections from untrusted
+networks - [see here](Raspberry-Customizing.md).
 
 Generate key on Raspberry Pi (press ENTER everywhere):
 
