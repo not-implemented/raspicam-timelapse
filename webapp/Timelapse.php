@@ -149,6 +149,10 @@ class Timelapse {
             'type' => 'default'
         ];
 
+        if (isset($GLOBALS['startTime'])) {
+            $status->duration = round((microtime(true) - $GLOBALS['startTime']) * 1000);
+        }
+
         return $status;
     }
 

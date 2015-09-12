@@ -1,5 +1,7 @@
 <?php
 
+$GLOBALS['startTime'] = microtime(true);
+
 require_once 'Timelapse.php';
 
 $allowedActions = ['startCapture', 'stopCapture', 'loadStatus', 'loadConfig', 'saveConfig'];

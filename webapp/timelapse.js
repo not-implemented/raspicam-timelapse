@@ -47,7 +47,15 @@ jQuery(function($) {
     });
 
     function updateStatus(callback) {
+        var startTime = performance.now();
         api('loadStatus', function (status) {
+            var latency = Math.round(performance.now() - startTime - (status.duration || 0));
+            status.latency = {
+                title: 'Latency',
+                value: 'network ' + latency + ' ms' + (status.duration ? ' (+ server ' + status.duration + ' ms)' : ''),
+                type: latency > 500 ? (latency > 1000 ? 'danger' : 'warning') : 'success'
+            }
+
             isCapturing = status.isCapturing;
 
             if (status.latestPictureHash) {
