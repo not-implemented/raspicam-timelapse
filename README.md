@@ -68,11 +68,12 @@ wget http://code.jquery.com/jquery-2.1.4.min.js
 mkdir raspicam-timelapse/webapp/jquery
 mv jquery-2.1.4.min.js raspicam-timelapse/webapp/jquery/jquery.min.js
 
-# Make config directory writable by Webserver:
-chmod 777 raspicam-timelapse/config
-
 # Prepare capture directory:
-mkdir capture && chmod 777 capture
+mkdir capture
+
+# Make directories writable by Webserver (only needed if you don't run Apache as "pi" user):
+chmod 777 raspicam-timelapse/config
+chmod 777 capture
 ```
 
 Install Webserver:
@@ -81,8 +82,17 @@ Install Webserver:
 # We need Apache and PHP:
 sudo apt-get install apache2 php5
 
-# Allow access to Camera for Apache:
+# Allow access to Camera for Apache (only needed if you don't run Apache as "pi" user):
 sudo usermod -a -G video www-data
+
+# Run Apache as "pi" user to avoid permission problems:
+sudo editor /etc/apache2/envvars
+
+export APACHE_RUN_USER=pi
+export APACHE_RUN_GROUP=pi
+
+# ... and fix permissions then:
+sudo chown pi /var/lock/apache2
 
 # Create a user for HTTP-Login:
 htpasswd -c .htpasswd timelapse
