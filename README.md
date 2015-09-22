@@ -135,12 +135,15 @@ echo "command=\"echo 'This account can only be used for port-forwarding'\",no-ag
 chmod -R go-rwx .ssh
 chown -R timelapse:timelapse .ssh
 
-# Enable listening on all interfaces for port-forwarding on your remote server
-# (otherwise port-forwarding will listen only on localhost):
+# Some global settings:
 editor /etc/ssh/sshd_config
 
-# Add this line:
+# Enable listening on all interfaces for port-forwarding on your remote server
+# (otherwise port-forwarding will listen only on localhost):
 GatewayPorts yes
+
+# Detect and close dead connections faster and close forwarded ports to reuse them:
+ClientAliveInterval 60
 
 # Restart SSH server:
 service sshd restart
