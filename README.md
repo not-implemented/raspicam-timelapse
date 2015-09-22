@@ -127,9 +127,11 @@ adduser --gecos Timelapse timelapse
 chmod go-rwx /home/timelapse
 cd /home/timelapse
 
-# Add the key on your remote server to the new user:
+# Add the raspberry's key (.ssh/id_rsa.pub from above) on your remote server
+# to the new user and just allow port-forwarding (no login):
 mkdir -p .ssh
-echo "{raspberry-public-key-from-above}" >> .ssh/authorized_keys
+echo "command=\"echo 'This account can only be used for port-forwarding'\",no-agent-forwarding,no-X11-forwarding" \
+    "{raspberry-public-key-from-above}" >> .ssh/authorized_keys
 chmod -R go-rwx .ssh
 chown -R timelapse:timelapse .ssh
 
