@@ -118,6 +118,30 @@
                                     </select>
                                 </div>
                             </td></tr>
+                            <tr><td>EV Compensation</td><td>
+                                <div class="form-inline">
+                                    <input id="option-ev" type="text" class="form-control" placeholder="-10 ... +10">
+                                </div>
+                            </td></tr>
+                            <tr><td>ISO</td><td>
+                                <div class="form-inline">
+                                    <select id="option-iso" class="form-control">
+                                        <option value=""></option>
+                                        <option value="100">100</option>
+                                        <option value="200">200</option>
+                                        <option value="400">400</option>
+                                        <option value="800">800</option>
+                                    </select>
+                                </div>
+                            </td></tr>
+                            <tr><td>Shutter Speed (sec)</td><td>
+                                <div class="form-inline">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">1 / </span>
+                                        <input id="option-shutterSpeed" type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </td></tr>
                             <tr><td>Automatic White Balance</td><td>
                                 <div class="form-inline">
                                     <select id="option-awb" class="form-control">
@@ -135,15 +159,16 @@
                                     </select>
                                 </div>
                             </td></tr>
-                            <tr><td>ISO</td><td>
+                            <tr><td>Manual AWB (when AWB=off)</td><td>
                                 <div class="form-inline">
-                                    <select id="option-iso" class="form-control">
-                                        <option value=""></option>
-                                        <option value="100">100</option>
-                                        <option value="200">200</option>
-                                        <option value="400">400</option>
-                                        <option value="800">800</option>
-                                    </select>
+                                    <div class="input-group">
+                                        <span class="input-group-addon">Red</span>
+                                        <input id="option-awbRedGain" type="text" class="form-control" placeholder="i.e. 1.5">
+                                    </div>
+                                    <div class="input-group">
+                                        <span class="input-group-addon">Blue</span>
+                                        <input id="option-awbBlueGain" type="text" class="form-control" placeholder="i.e. 1.2">
+                                    </div>
                                 </div>
                             </td></tr>
                         </table>

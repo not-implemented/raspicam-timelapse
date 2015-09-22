@@ -44,9 +44,12 @@ class Timelapse {
             'latest' => $config->capturePath . '/latest.jpg',
 
             'exposure' => $config->exposure,
-            'ev' => 0,
-            'awb' => $config->awb,
+            'ev' => $config->ev != 0 ? $config->ev : false,
             'ISO' => $config->iso,
+            'shutter' => $config->shutterSpeed !== 'auto' ? 1 / $config->shutterSpeed * 1000000 : false,
+            'awb' => $config->awb,
+            'awbgains' => $config->awbRedGain !== 'auto' && $config->awbBlueGain !== 'auto' ?
+                $config->awbRedGain . ',' . $config->awbBlueGain : false,
 
             'timelapse' => round($config->timelapseInterval * 1000),
             'timeout' => $config->captureMode === 'cron' ? $config->warmupTime : 10 * 365 * 24 * 3600,
@@ -55,6 +58,7 @@ class Timelapse {
 
         $raspistillOptionsRaw = [];
         foreach ($raspistillOptions as $name => $value) {
+            if ($value === false) continue;
             $raspistillOptionsRaw[] = '--' . $name . ' ' . $value;
         }
 
@@ -166,8 +170,12 @@ class Timelapse {
             'captureMode' => 'raspistill',
             'warmupTime' => 5,
             'exposure' => 'auto',
+            'ev' => 0,
+            'iso' => 100,
+            'shutterSpeed' => 'auto',
             'awb' => 'auto',
-            'iso' => 400,
+            'awbRedGain' => 'auto',
+            'awbBlueGain' => 'auto',
             'width' => 1920,
             'height' => 1080,
             'thumbnailWidth' => 480,
