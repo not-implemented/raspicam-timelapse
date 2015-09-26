@@ -47,13 +47,13 @@ jQuery(function($) {
     });
 
     function updateStatus(callback) {
-        var startTime = performance.now();
-        api('loadStatus', function (status) {
-            var latency = Math.round(performance.now() - startTime - (status.duration || 0));
-            status.latency = {
-                title: 'Latency',
-                value: 'network ' + latency + ' ms' + (status.duration ? ' (+ server ' + status.duration + ' ms)' : ''),
-                type: latency > 500 ? (latency > 1000 ? 'danger' : 'warning') : 'success'
+        api('loadStatus', function (status, info) {
+            if (info && info.responseTime) {
+                status.responseTime = {
+                    title: 'Response Time',
+                    value: 'network ' + info.responseTime + ' ms' + (info.duration ? ' (+ server ' + info.duration + ' ms)' : ''),
+                    type: info.responseTime > 500 ? (info.responseTime > 2000 ? 'danger' : 'warning') : 'success'
+                }
             }
 
             isCapturing = status.isCapturing;
@@ -118,17 +118,26 @@ jQuery(function($) {
         }
 
         if (data) setBusy(true);
+        if (window.performance) window.performance.clearResourceTimings();
 
-        $.ajax('api.php?action=' + action, {
+        $.ajax('/api.php?action=' + action, {
             method: data ? 'POST' : 'GET',
             data: data,
             timeout: 10000,
-            success: function (response) {
+            success: function (response, textStatus, jqXHR) {
+                var perf = window.performance &&
+                    window.performance.getEntriesByName(location.origin + '/api.php?action=' + action).pop();
+                var duration = parseFloat(jqXHR.getResponseHeader('X-Duration')) || null;
+                var info = {
+                    responseTime: Math.round((perf.responseEnd - perf.requestStart - (duration || 0)) * 10) / 10,
+                    duration: duration
+                };
+
                 if (response.error) {
                     alertBox.html('<strong>Error:</strong> ' + response.error);
                     alertBox.show();
                 } else {
-                    callback(response);
+                    callback(response, info);
                     alertBox.hide();
                 }
                 if (data) setBusy(false);
