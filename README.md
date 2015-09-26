@@ -22,31 +22,18 @@ HowTo
 - Attach the camera to the Raspberry Pi - [see instructions](https://www.raspberrypi.org/documentation/configuration/camera.md)
 - Put the SD-Card into your Raspberry Pi, Connect to your LAN (DHCP server needed), Power on
 - Login via SSH (maybe use local IP): `ssh raspberrypi` (Login: pi / Password: raspberry)
+- Make complete SD-Card usable: `sudo raspi-config` - 1 Expand Filesystem - Finish - Reboot
+
+
+### Setup Raspbian + Raspberry Pi Camera
+
 - Install updates: `sudo apt-get update` and `sudo apt-get dist-upgrade`
 - For some helpful optional customizations of your Raspberry Pi - [see here](Raspberry-Customizing.md)
-- Make complete SD-Card usable: `sudo raspi-config` - 1 Expand Filesystem - Finish
-- `sudo reboot` (partition gets resized on reboot - but you can do the Camera Setup first)
-
-
-### Setup Raspberry Pi Camera
-
-Enable camera (this also sets Memory Split to 128 MB):
-
-- `sudo raspi-config`
-- 5 Enable Camera - Enable
-- Finish
-
-Disable camera LED when taking pictures (optional):
-
-```bash
-sudo sh -c 'echo "disable_camera_led=1" >> /boot/config.txt'
-```
-
-Reboot for the camera settings to take effect:
-
-```bash
-sudo reboot
-```
+- Enable camera: `sudo raspi-config` - 5 Enable Camera - Enable - Finish  
+  (this also sets Memory Split to 128 MB)
+- Disable camera LED when taking pictures (optional):  
+  `sudo sh -c 'echo "disable_camera_led=1" >> /boot/config.txt'`
+- Reboot for the camera settings to take effect: `sudo reboot`
 
 
 ### Setup RaspiCam-Timelapse
