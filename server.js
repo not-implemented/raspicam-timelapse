@@ -6,11 +6,14 @@ var querystring = require('querystring');
 var fs = require('fs');
 var os = require('os');
 var st = require('st');
+var auth = require('basic-auth');
 var vcgencmd = require('vcgencmd');
 var diskusage = require('diskusage');
 
 var config = {
-    capturePath: __dirname + '/../capture',
+    username: 'timelapse',
+    password: 'timelapse',
+    capturePath: __dirname + '/../capture'
 }
 
 var serverOptions = {
@@ -112,9 +115,17 @@ var apiActions = {
 
 https.createServer(serverOptions, function (request, response) {
     var startTime = process.hrtime();
-    var url = urlModule.parse(request.url);
+    var credentials = auth(request);
 
-    // TODO: authentication
+    if (!credentials || credentials.name !== config.username || credentials.pass !== config.password) {
+        response.writeHead(401, {
+            'WWW-Authenticate': 'Basic realm="RaspiCam-Timelapse"'
+        });
+        response.end('Access denied');
+        return;
+    }
+
+    var url = urlModule.parse(request.url);
 
     if (url.pathname === '/api.php') {
         var query = querystring.parse(url.query);
