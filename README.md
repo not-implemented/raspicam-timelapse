@@ -3,7 +3,7 @@ RaspiCam-Timelapse
 
 Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for Time-lapse Photography.
 
-- Web-App for controlling and monitoring the camera and the Raspberry Pi
+- [Node.js](https://nodejs.org/) based Web-App for controlling and monitoring the camera and the Raspberry Pi
 - Reverse-SSH-Tunnel to another server - reach your Raspberry Pi behind firewalls (optional)
 - Dynamic-DNS-Client - find your Raspberry Pi easier in your local network (optional)
 - Wi-Fi autoconnect - if you have a USB Wi-Fi Adapter (optional)
@@ -38,70 +38,49 @@ HowTo
 
 ### Setup RaspiCam-Timelapse
 
-Install WebApp:
+Install Node.js:
+
+With Raspbian "jessie" (still no official image available) you can use the current Node.js 4.x -
+with Raspbian "wheezy" you have to use the old Node.js 0.12 - otherwise the native modules won't
+compile.
+
+You can use the binary release from [conoroneill.net](http://conoroneill.net/node-v01040-and-v0127-for-arm-v7-raspberry-pi-2-banana-pi-odroid-c1-available):
 
 ```bash
-# Check out this repository:
+wget http://conoroneill.net.s3.amazonaws.com/wp-content/uploads/2015/09/node-v0.12.7-linux-arm-v6.tar.gz
+mkdir nodetemp && cd nodetemp
+tar -xvzf ../node-v0.12.7-linux-arm-v6.tar.gz
+sudo cp -R * /usr/local/
+cd .. && rm -rf nodetemp
+```
+
+Check out this repository:
+
+```bash
 cd ~
 git clone https://github.com/not-implemented/raspicam-timelapse.git
+cd raspicam-timelapse
+npm install
+```
 
-# The WebApp needs Bootstrap and jQuery:
-wget https://github.com/twbs/bootstrap/releases/download/v3.3.5/bootstrap-3.3.5-dist.zip
-unzip -d raspicam-timelapse/webapp bootstrap-3.3.5-dist.zip
-mv raspicam-timelapse/webapp/bootstrap-3.3.5-dist raspicam-timelapse/webapp/bootstrap
-rm bootstrap-3.3.5-dist.zip
+Configuration:
 
-wget http://code.jquery.com/jquery-2.1.4.min.js
-mkdir raspicam-timelapse/webapp/jquery
-mv jquery-2.1.4.min.js raspicam-timelapse/webapp/jquery/jquery.min.js
+```bash
+# Create a self-signed certificate:
+openssl req -x509 -days 3650 -sha256 -nodes -newkey rsa:2048 -keyout config/timelapse.key -out config/timelapse.crt
+chmod og= config/timelapse.key
 
 # Prepare capture directory:
 mkdir capture
-
-# Make directories writable by Webserver (only needed if you don't run Apache as "pi" user):
-chmod 777 raspicam-timelapse/config
-chmod 777 capture
 ```
 
-Install Webserver:
+Start server:
 
 ```bash
-# We need Apache and PHP:
-sudo apt-get install apache2 php5
-
-# Allow access to Camera for Apache (only needed if you don't run Apache as "pi" user):
-sudo usermod -a -G video www-data
-
-# Run Apache as "pi" user to avoid permission problems:
-sudo editor /etc/apache2/envvars
-
-export APACHE_RUN_USER=pi
-export APACHE_RUN_GROUP=pi
-
-# ... and fix permissions then:
-sudo chown pi /var/lock/apache2
-
-# Create a user for HTTP-Login:
-htpasswd -c .htpasswd timelapse
-
-# Enable WebApp in Webserver:
-sudo editor /etc/apache2/sites-available/default
-
-# Please change "DocumentRoot /var/www" and "<Directory /var/www/>" to this:
-DocumentRoot /home/pi/raspicam-timelapse/webapp
-<Directory /home/pi/raspicam-timelapse/webapp>
-
-# Enable HTTP-Login - put this inside "<Directory /home/pi/raspicam-timelapse/webapp>":
-AuthType Basic
-AuthName "RaspiCam-Timelapse"
-AuthUserFile "/home/pi/.htpasswd"
-Require valid-user
-
-# Restart Apache:
-sudo service apache2 restart
+npm start
 ```
 
-... now open your browser - i.e. with http://raspberrypi/ or IP address :-)
+... now open your browser - i.e. with https://raspberrypi:8000/ or IP address :-)
 
 
 ### Reverse SSH-Tunnel (optional)
