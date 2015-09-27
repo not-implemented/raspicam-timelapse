@@ -190,8 +190,9 @@ network={
 TODO
 ----
 
+- Implement as a service (start on boot, restart on crash, ...)
 - Implement cron-mode (and automatic recover in raspistill mode after reboot)
 - Implement --hflip, --vflip
-- Change umask to avoid permission problems
 - Implement sync of pictures to a remote server and local cleanup
 - Get Dynamic-DNS-Client more stable (trigger on IP adress changes, not just on cable plug)
+- Wi-Fi does not reliably reconnect after broken connection
