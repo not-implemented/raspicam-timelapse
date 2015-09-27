@@ -1,0 +1,29 @@
+{
+  "name": "raspicam-timelapse",
+  "description": "Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for Time-lapse Photography",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": {
+    "name": "Mark Plomer",
+    "email": "mail@mark-plomer.de"
+  },
+  "homepage": "https://github.com/not-implemented/raspicam-timelapse",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/not-implemented/raspicam-timelapse.git"
+  },
+  "engines": {
+    "node": ">=0.10.28"
+  },
+  "dependencies": {
+    "st": "^0.5.5",
+    "basic-auth": "^1.0.3",
+    "exif": "^0.4.0",
+    "vcgencmd": "git://github.com/loyd/node-vcgencmd.git",
+    "diskusage": "git://github.com/not-implemented/node-diskusage.git",
+    "bootstrap": "^3.3.5",
+    "jquery": "^2.1.4"
+  }
+}
