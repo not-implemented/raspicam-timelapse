@@ -78,8 +78,7 @@ function updatePreviewImage() {
 
                         previewImage = thumbnail;
                         previewImageHash = newHash;
-                        previewImageInfo = stat.mtime.toISOString().replace('T', ' ').replace(/\..*/, '') +
-                            ' (' + formatBytes(stat.size) + ')';
+                        previewImageInfo = formatDate(stat.mtime) + ' (' + formatBytes(stat.size) + ')';
                     });
                 });
             });
@@ -145,19 +144,25 @@ function updateStatus(partial) {
     var minutes = Math.floor(uptime / 60); uptime -= minutes * 60;
     var seconds = uptime;
     status.uptime.value = (days > 0 ? days + 'd ' : '') +
-        pad(hours, 2) + ':' + pad(minutes, 2) + ':' + pad(seconds, 2);
-
-    function pad(num, size) {
-        var str = '' + num;
-        if (str.length < size) {
-            str = new Array(size - str.length + 1).join('0') + str;
-        }
-        return str;
-    }
+        pad2(hours) + ':' + pad2(minutes) + ':' + pad2(seconds);
 }
 
 setInterval(updateStatus, 10000);
 updateStatus();
+
+function formatDate(date) {
+    return pad2(date.getFullYear()) +
+        '-' + pad2(date.getMonth() + 1) +
+        '-' + pad2(date.getDate()) +
+        ' ' + pad2(date.getHours()) +
+        ':' + pad2(date.getMinutes()) +
+        ':' + pad2(date.getSeconds());
+};
+
+function pad2(number) {
+    if (number < 10) return '0' + number;
+    return '' + number;
+}
 
 function formatBytes(bytes) {
     var unit = 'B', units = ['KB', 'MB', 'GB'];
