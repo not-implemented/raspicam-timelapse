@@ -1,5 +1,6 @@
 {
   "name": "raspicam-timelapse",
+  "version": "2.0.0",
   "description": "Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for Time-lapse Photography",
   "scripts": {
     "start": "node server.js"
