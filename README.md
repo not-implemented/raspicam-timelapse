@@ -71,7 +71,7 @@ openssl req -x509 -days 3650 -sha256 -nodes -newkey rsa:2048 -keyout config/time
 chmod og= config/timelapse.key
 
 # Prepare capture directory:
-mkdir capture
+mkdir ../capture
 ```
 
 Start server:
