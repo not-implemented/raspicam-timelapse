@@ -5,6 +5,7 @@ var urlModule = require('url');
 var querystring = require('querystring');
 var fs = require('fs');
 var os = require('os');
+var child_process = require('child_process');
 var st = require('st');
 var auth = require('basic-auth');
 var crypto = require('crypto');
@@ -35,6 +36,9 @@ var config = {
     thumbnailHeight: 270,
     jpegQuality: 100,
 }
+
+var daemonConfigFilename = __dirname + '/config/camera-daemon.conf';
+var daemonFilename = __dirname + '/camera/camera-daemon.sh';
 
 function loadConfig() {
     try {
@@ -220,12 +224,101 @@ function formatBytes(bytes) {
     return bytes.toFixed(2) + ' ' + unit;
 }
 
+function generateDaemonConfig(callback) {
+    var raspistillOptions = {
+        width: config.width,
+        height: config.height,
+        encoding: 'jpg',
+        quality: config.jpegQuality,
+        thumb: config.thumbnailWidth + ':' + config.thumbnailHeight + ':70',
+        output: config.capturePath + '/' + config.captureFolder + '/img_%04d.jpg',
+        latest: config.capturePath + '/latest.jpg',
+
+        exposure: config.exposure,
+        ev: config.ev != 0 ? config.ev : undefined,
+        ISO: config.iso,
+        shutter: config.shutterSpeed !== 'auto' ? Math.round(1 / config.shutterSpeed * 1000000) : undefined,
+        awb: config.awb,
+        awbgains: config.awbRedGain !== 'auto' && config.awbBlueGain !== 'auto' ?
+            config.awbRedGain + ',' + config.awbBlueGain : undefined,
+
+        timelapse: Math.round(config.timelapseInterval * 1000),
+        timeout: config.captureMode === 'cron' ? config.warmupTime : 10 * 365 * 24 * 3600,
+        verbose: null,
+    };
+
+    var escapeShellArg = function(arg) {
+        return '"' + arg.replace(/(["'$`\\])/g, '\\$1') + '"';
+    };
+
+    var raspistillOptionsRaw = [];
+    for (var name in raspistillOptions) {
+        if (typeof raspistillOptions[name] === 'undefined') continue;
+        if (raspistillOptions[name] === null) {
+            raspistillOptionsRaw.push('--' + name);
+        } else {
+            raspistillOptionsRaw.push('--' + name + ' ' + escapeShellArg('' + raspistillOptions[name]));
+        }
+    }
+
+    var daemonOptions = {
+        TIMELAPSE_IS_CAPTURING: config.isCapturing ? 1 : 0,
+        TIMELAPSE_TIMELAPSE_INTERVAL: config.timelapseInterval,
+        TIMELAPSE_CAPTURE_MODE: config.captureMode,
+        TIMELAPSE_CAPTURE_PATH: config.capturePath,
+        TIMELAPSE_CAPTURE_FOLDER: config.captureFolder,
+        TIMELAPSE_RASPISTILL_OPTIONS: raspistillOptionsRaw.join(' '),
+    };
+
+    var daemonConfig = '';
+    for (name in daemonOptions) {
+        daemonConfig += name + '=' + escapeShellArg('' + daemonOptions[name]) + "\n";
+    }
+
+    fs.writeFile(daemonConfigFilename, daemonConfig, callback);
+}
+
+function execDaemon(command, callback) {
+    saveConfig(function (err) {
+        if (err) return callback('Error saving config');
+
+        generateDaemonConfig(function (err) {
+            if (err) return callback('Error saving daemon config');
+
+            if (config.captureMode === 'raspistill') {
+                child_process.exec(daemonFilename + ' ' + command, function (err, stdout, stderr) {
+                    if (err) return callback('Error executing daemon ' + command + ': ' + (stderr || stdout));
+                    callback();
+                });
+            } else {
+                callback();
+            }
+        });
+    });
+}
+
 var apiActions = {
     startCapture: function (data, callback) {
-        callback({error: 'Action startCapture not implemented'}, 501);
+        config.isCapturing = true;
+        config.captureFolder = formatDate(new Date()).replace(/:/g, '.');
+
+        execDaemon('start', function (err) {
+            if (err) {
+                config.isCapturing = false;
+                saveConfig();
+                generateDaemonConfig();
+                return callback({error: err}, 500);
+            }
+            callback(status, 200);
+        });
     },
     stopCapture: function (data, callback) {
-        callback({error: 'Action stopCapture not implemented'}, 501);
+        config.isCapturing = false;
+
+        execDaemon('stop', function (err) {
+            if (err) return callback({error: err}, 500);
+            callback(status, 200);
+        });
     },
     loadStatus: function (data, callback) {
         updateStatus(true);
