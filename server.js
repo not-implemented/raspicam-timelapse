@@ -71,7 +71,10 @@ function updatePreviewImage() {
                         fs.close(fd);
                         if (err) return onError(err);
 
-                        // TODO: thumbnail is padded to 24KB by raspistill - remove 0x00 bytes at the end
+                        // Thumbnail is padded to 24KB by raspistill - remove 0x00 bytes at the end:
+                        var length = thumbnail.length;
+                        while (length > 0 && thumbnail[length - 1] === 0) length--;
+                        thumbnail = thumbnail.slice(0, length);
 
                         previewImage = thumbnail;
                         previewImageHash = newHash;
