@@ -265,14 +265,14 @@ function generateDaemonConfig(callback) {
         TIMELAPSE_IS_CAPTURING: config.isCapturing ? 1 : 0,
         TIMELAPSE_TIMELAPSE_INTERVAL: config.timelapseInterval,
         TIMELAPSE_CAPTURE_MODE: config.captureMode,
-        TIMELAPSE_CAPTURE_PATH: config.capturePath,
-        TIMELAPSE_CAPTURE_FOLDER: config.captureFolder,
-        TIMELAPSE_RASPISTILL_OPTIONS: raspistillOptionsRaw.join(' '),
+        TIMELAPSE_CAPTURE_PATH: escapeShellArg(config.capturePath),
+        TIMELAPSE_CAPTURE_FOLDER: escapeShellArg(config.captureFolder),
+        TIMELAPSE_RASPISTILL_OPTIONS: '(' + raspistillOptionsRaw.join(' ') + ')',
     };
 
     var daemonConfig = '';
     for (name in daemonOptions) {
-        daemonConfig += name + '=' + escapeShellArg('' + daemonOptions[name]) + "\n";
+        daemonConfig += name + '=' + daemonOptions[name] + '\n';
     }
 
     fs.writeFile(daemonConfigFilename, daemonConfig, callback);
