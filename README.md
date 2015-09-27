@@ -80,7 +80,7 @@ Start server:
 npm start
 ```
 
-... now open your browser - i.e. with https://raspberrypi:8000/ or IP address :-)
+... now open your browser - i.e. with https://raspberrypi:4443/ or IP address :-)
 
 
 ### Reverse SSH-Tunnel (optional)
@@ -127,13 +127,13 @@ service sshd restart
 
 Back on Raspberry Pi: Configure tunnels to be established - create a script with
 `editor tunnels.sh` like the following example to forward port 10022 from your
-remote server to port 22 on Raspberry Pi - same with port 80:
+remote server to port 22 on Raspberry Pi - same with port 4443:
 
 ```bash
 #!/bin/bash
 
 ~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh timelapse@www.example.com 10022 22 &
-~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh timelapse@www.example.com 10080 80 &
+~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh timelapse@www.example.com 4443 4443 &
 ```
 
 ```bash
