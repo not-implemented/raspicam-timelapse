@@ -59,7 +59,7 @@ jQuery(function($) {
             isCapturing = status.isCapturing;
 
             if (status.latestPictureHash) {
-                previewImage.attr('src', 'preview.php?_=' + status.latestPictureHash);
+                previewImage.attr('src', '/preview?_=' + status.latestPictureHash);
             } else {
                 previewImage.removeAttr('src');
             }
@@ -120,14 +120,14 @@ jQuery(function($) {
         if (data) setBusy(true);
         if (window.performance) window.performance.clearResourceTimings();
 
-        $.ajax('/api.php?action=' + action, {
+        $.ajax('/api?action=' + action, {
             method: data ? 'POST' : 'GET',
             data: data ? JSON.stringify(data) : null,
             contentType: data ? 'application/json' : null,
             timeout: 10000,
             success: function (response, textStatus, jqXHR) {
                 var perf = window.performance &&
-                    window.performance.getEntriesByName(location.origin + '/api.php?action=' + action).pop();
+                    window.performance.getEntriesByName(location.origin + '/api?action=' + action).pop();
                 var duration = parseFloat(jqXHR.getResponseHeader('X-Duration')) || null;
                 var info = {
                     responseTime: Math.round((perf.responseEnd - perf.requestStart - (duration || 0)) * 10) / 10,

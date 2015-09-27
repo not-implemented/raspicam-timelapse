@@ -265,7 +265,7 @@ https.createServer(serverOptions, function (request, response) {
 
     var url = urlModule.parse(request.url);
 
-    if (url.pathname === '/api.php') {
+    if (url.pathname === '/api') {
         var query = querystring.parse(url.query);
         var action = query.action;
 
@@ -308,7 +308,7 @@ https.createServer(serverOptions, function (request, response) {
         });
     }
 
-    if (url.pathname === '/preview.php') {
+    if (url.pathname === '/preview') {
         if (!previewImage) {
             response.writeHead(404);
             response.end('No preview image available');
