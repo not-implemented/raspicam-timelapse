@@ -24,3 +24,7 @@
     position: relative;
     top: 6px;
 }
+
+#status-table tr td:first-child {
+    width: 40%;
+}
