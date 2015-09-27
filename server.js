@@ -37,6 +37,7 @@ var config = {
     jpegQuality: 100,
 }
 
+var cameraDetected = vcgencmd.getCamera().detected;
 var daemonConfigFilename = __dirname + '/config/camera-daemon.conf';
 var daemonFilename = __dirname + '/camera/camera-daemon.sh';
 
@@ -154,18 +155,18 @@ function updateStatus(partial) {
     status.latestPicture.value = previewImage ? previewImageInfo : '(none)';
     status.latestPicture.type = previewImage ? 'success' : 'danger';
 
-    if (!partial) {
-        if (!vcgencmd.getCamera().detected) {
-            status.captureMode.value = 'No camera detected';
-            status.captureMode.type = 'danger';
-        } else if (!config.isCapturing) {
-            status.captureMode.value = 'Not capturing';
-            status.captureMode.type = 'danger';
-        } else {
-            status.captureMode.value = config.captureMode;
-            status.captureMode.type = 'success';
-        }
+    if (!cameraDetected) {
+        status.captureMode.value = 'No camera detected';
+        status.captureMode.type = 'danger';
+    } else if (!config.isCapturing) {
+        status.captureMode.value = 'Not capturing';
+        status.captureMode.type = 'danger';
+    } else {
+        status.captureMode.value = config.captureMode;
+        status.captureMode.type = 'success';
+    }
 
+    if (!partial) {
         diskusage.check(config.capturePath, function(err, info) {
             if (err) {
                 status.freeDiskSpace.value = 'error';
