@@ -20,6 +20,7 @@
   "dependencies": {
     "st": "^0.5.5",
     "basic-auth": "^1.0.3",
+    "exif": "^0.4.0",
     "vcgencmd": "git://github.com/loyd/node-vcgencmd.git",
     "diskusage": "^0.1.3",
     "bootstrap": "^3.3.5",

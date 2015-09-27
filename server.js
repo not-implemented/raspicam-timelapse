@@ -7,6 +7,8 @@ var fs = require('fs');
 var os = require('os');
 var st = require('st');
 var auth = require('basic-auth');
+var crypto = require('crypto');
+var ExifImage = require('exif').ExifImage;
 var vcgencmd = require('vcgencmd');
 var diskusage = require('diskusage');
 
@@ -32,6 +34,61 @@ var mounts = [st({
     index: 'index.html'
 })];
 
+var previewImage = null;
+var previewImageHash = null;
+var previewImageInfo = null;
+
+function updatePreviewImage() {
+    var previewImageName = config.capturePath + '/latest.jpg';
+
+    function onError(err) {
+        previewImage = null;
+        previewImageHash = null;
+        previewImageInfo = null;
+    }
+
+    fs.stat(previewImageName, function (err, stat) {
+        if (err) return onError(err);
+
+        var newHash = crypto.createHash('md5').
+            update('' + stat.mtime + '#' + stat.size).
+            digest('hex');
+
+        if (newHash === previewImageHash) return;
+
+        try {
+            new ExifImage({image: previewImageName}, function (err, exifData) {
+                if (err) return onError(err);
+
+                fs.open(previewImageName, 'r', function (err, fd) {
+                    if (err) return onError(err);
+
+                    var offset = exifData.thumbnail.ThumbnailOffset + 12; // see https://github.com/gomfunkel/node-exif/issues/31
+                    var length = exifData.thumbnail.ThumbnailLength;
+                    var thumbnail = new Buffer(length);
+
+                    fs.read(fd, thumbnail, 0, length, offset, function (err) {
+                        fs.close(fd);
+                        if (err) return onError(err);
+
+                        // TODO: thumbnail is padded to 24KB by raspistill - remove 0x00 bytes at the end
+
+                        previewImage = thumbnail;
+                        previewImageHash = newHash;
+                        previewImageInfo = '' + stat.mtime + '#' + stat.size;
+                        //TODO: date('Y-m-d H:i:s') + ' (' . round($latestPictureSize / 1024 / 1024, 2) . ' MB)'
+                    });
+                });
+            });
+        } catch (err) {
+            onError(err);
+        }
+    });
+}
+
+setInterval(updatePreviewImage, 1000);
+updatePreviewImage();
+
 var status = {
     isCapturing: false,
     latestPictureHash: null,
@@ -47,6 +104,11 @@ function updateStatus(partial) {
     function formatBytes(bytes) {
         return '' + (Math.round(bytes / 1024 / 1024 / 1024 * 100) / 100) + ' GB';
     }
+
+    status.latestPictureHash = previewImageHash;
+
+    status.latestPicture.value = previewImage ? previewImageInfo : '(none)';
+    status.latestPicture.type = previewImage ? 'success' : 'danger';
 
     if (!partial) {
         if (!vcgencmd.getCamera().detected) {
@@ -144,6 +206,22 @@ https.createServer(serverOptions, function (request, response) {
             });
             response.end(json);
         });
+        return;
+    }
+
+    if (url.pathname === '/preview.php') {
+        if (!previewImage) {
+            response.writeHead(404);
+            response.end('No preview image available');
+            return;
+        }
+
+        response.writeHead(200, {
+            'Content-Type': 'image/jpeg',
+            'Cache-Control': 'must-revalidate',
+            'Expires': '0'
+        });
+        response.end(previewImage);
         return;
     }
 
