@@ -75,8 +75,8 @@ function updatePreviewImage() {
 
                         previewImage = thumbnail;
                         previewImageHash = newHash;
-                        previewImageInfo = '' + stat.mtime + '#' + stat.size;
-                        //TODO: date('Y-m-d H:i:s') + ' (' . round($latestPictureSize / 1024 / 1024, 2) . ' MB)'
+                        previewImageInfo = stat.mtime.toISOString().replace('T', ' ').replace(/\..*/, '') +
+                            ' (' + formatBytes(stat.size) + ')';
                     });
                 });
             });
@@ -101,10 +101,6 @@ var status = {
 };
 
 function updateStatus(partial) {
-    function formatBytes(bytes) {
-        return '' + (Math.round(bytes / 1024 / 1024 / 1024 * 100) / 100) + ' GB';
-    }
-
     status.latestPictureHash = previewImageHash;
 
     status.latestPicture.value = previewImage ? previewImageInfo : '(none)';
@@ -137,8 +133,7 @@ function updateStatus(partial) {
     }
 
     var systemLoad = os.loadavg();
-    // TODO: format float numbers correctly:
-    status.systemLoad.value = systemLoad.map(function (load) {return Math.round(load * 100) / 100;}).join(' - ');
+    status.systemLoad.value = systemLoad.map(function (load) {return load.toFixed(2);}).join(' - ');
     status.systemLoad.type = systemLoad[0] >= 2 ? (systemLoad[0] >= 5 ? 'danger' : 'warning') : 'success';
 
     var uptime = os.uptime();
@@ -146,12 +141,31 @@ function updateStatus(partial) {
     var hours = Math.floor(uptime / 3600); uptime -= hours * 3600;
     var minutes = Math.floor(uptime / 60); uptime -= minutes * 60;
     var seconds = uptime;
-    // TODO: format digits correctly:
-    status.uptime.value = (days > 0 ? days + 'd ' : '') + hours + ':' + minutes + ':' + seconds;
+    status.uptime.value = (days > 0 ? days + 'd ' : '') +
+        pad(hours, 2) + ':' + pad(minutes, 2) + ':' + pad(seconds, 2);
+
+    function pad(num, size) {
+        var str = '' + num;
+        if (str.length < size) {
+            str = new Array(size - str.length + 1).join('0') + str;
+        }
+        return str;
+    }
 }
 
 setInterval(updateStatus, 10000);
 updateStatus();
+
+function formatBytes(bytes) {
+    var unit = 'B', units = ['KB', 'MB', 'GB'];
+
+    for (var i = 0; i < units.length; i++) {
+        if (bytes < 1024) break;
+        bytes /= 1024;
+        unit = units[i];
+    }
+    return bytes.toFixed(2) + ' ' + unit;
+}
 
 var apiActions = {
     startCapture: function (data, callback) {
