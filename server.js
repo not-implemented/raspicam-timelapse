@@ -12,10 +12,51 @@ var ExifImage = require('exif').ExifImage;
 var vcgencmd = require('vcgencmd');
 var diskusage = require('diskusage');
 
+var configFilename = __dirname + '/config/timelapse.json';
 var config = {
     username: 'timelapse',
     password: 'timelapse',
-    capturePath: __dirname + '/../capture'
+    isCapturing: false,
+    capturePath:  __dirname + '/../capture',
+    captureFolder: 'default',
+    timelapseInterval: 1,
+    captureMode: 'raspistill',
+    warmupTime: 5,
+    exposure: 'auto',
+    ev: 0,
+    iso: 100,
+    shutterSpeed: 'auto',
+    awb: 'auto',
+    awbRedGain: 'auto',
+    awbBlueGain: 'auto',
+    width: 1920,
+    height: 1080,
+    thumbnailWidth: 480,
+    thumbnailHeight: 270,
+    jpegQuality: 100,
+}
+
+function loadConfig() {
+    try {
+        var savedConfig = fs.readFileSync(configFilename, 'utf8');
+        savedConfig = JSON.parse(savedConfig);
+
+        if (savedConfig) {
+            for (var name in savedConfig) {
+                if (typeof config[name] !== 'undefined') {
+                    config[name] = savedConfig[name];
+                }
+            }
+        }
+    } catch (err) {
+        // ignore config errors - we start with default config
+    }
+}
+
+loadConfig();
+
+function saveConfig(callback) {
+    fs.writeFile(configFilename, JSON.stringify(config), callback);
 }
 
 var serverOptions = {
@@ -103,6 +144,7 @@ var status = {
 };
 
 function updateStatus(partial) {
+    status.isCapturing = config.isCapturing;
     status.latestPictureHash = previewImageHash;
 
     status.latestPicture.value = previewImage ? previewImageInfo : '(none)';
@@ -112,9 +154,12 @@ function updateStatus(partial) {
         if (!vcgencmd.getCamera().detected) {
             status.captureMode.value = 'No camera detected';
             status.captureMode.type = 'danger';
+        } else if (!config.isCapturing) {
+            status.captureMode.value = 'Not capturing';
+            status.captureMode.type = 'danger';
         } else {
-            status.captureMode.value = 'unknown';
-            status.captureMode.type = 'default';
+            status.captureMode.value = config.captureMode;
+            status.captureMode.type = 'success';
         }
 
         diskusage.check(config.capturePath, function(err, info) {
@@ -187,10 +232,19 @@ var apiActions = {
         callback(status, 200);
     },
     loadConfig: function (data, callback) {
-        callback({error: 'Action loadConfig not implemented'}, 501);
+        callback(config, 200);
     },
-    saveConfig: function (data, callback) {
-        callback({error: 'Action saveConfig not implemented'}, 501);
+    saveConfig: function (newConfig, callback) {
+        for (var name in newConfig) {
+            if (typeof config[name] !== 'undefined') {
+                config[name] = newConfig[name];
+            }
+        }
+
+        saveConfig(function (err) {
+            if (err) return callback({error: 'Error saving config'}, 500);
+            callback(config, 200);
+        });
     },
     unknown: function (data, callback) {
         callback({error: 'Unknown API-Action'}, 404);
@@ -214,8 +268,32 @@ https.createServer(serverOptions, function (request, response) {
     if (url.pathname === '/api.php') {
         var query = querystring.parse(url.query);
         var action = query.action;
-        var requestData = null; // TODO: process POST data
 
+        if (request.method === 'POST') {
+            var body = '';
+            request.on('data', function (data) {
+                body += data;
+                if (body.length > 65536) request.connection.destroy();
+            });
+            request.on('end', function () {
+                try {
+                    var requestData = JSON.parse(body);
+                    if (typeof requestData !== 'object') throw new Error();
+                } catch (err) {
+                    response.writeHead(400);
+                    response.end('Invalid JSON');
+                    return;
+                }
+
+                handleApiCall(action, requestData);
+            });
+        } else {
+            handleApiCall(action, null);
+        }
+        return;
+    }
+
+    function handleApiCall(action, requestData) {
         if (!apiActions[action]) action = 'unknown';
 
         apiActions[action](requestData, function (data, statusCode) {
@@ -228,7 +306,6 @@ https.createServer(serverOptions, function (request, response) {
             });
             response.end(json);
         });
-        return;
     }
 
     if (url.pathname === '/preview.php') {

@@ -122,7 +122,8 @@ jQuery(function($) {
 
         $.ajax('/api.php?action=' + action, {
             method: data ? 'POST' : 'GET',
-            data: data,
+            data: data ? JSON.stringify(data) : null,
+            contentType: data ? 'application/json' : null,
             timeout: 10000,
             success: function (response, textStatus, jqXHR) {
                 var perf = window.performance &&
