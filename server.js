@@ -125,8 +125,8 @@ function updateStatus(partial) {
                 return;
             }
 
-            var freePercent = Math.round(info.free / info.total * 10) * 10;
-            status.freeDiskSpace.value = formatBytes(info.free) + ' (' + freePercent + ' %)';
+            var freePercent = Math.round(info.available / info.total * 10) * 10;
+            status.freeDiskSpace.value = formatBytes(info.available) + ' (' + freePercent + ' %)';
             status.freeDiskSpace.type = freePercent < 10 ? (freePercent < 3 ? 'danger' : 'warning') : 'success';
         });
 

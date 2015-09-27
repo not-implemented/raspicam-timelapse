@@ -22,7 +22,7 @@
     "basic-auth": "^1.0.3",
     "exif": "^0.4.0",
     "vcgencmd": "git://github.com/loyd/node-vcgencmd.git",
-    "diskusage": "^0.1.3",
+    "diskusage": "git://github.com/not-implemented/node-diskusage.git",
     "bootstrap": "^3.3.5",
     "jquery": "^2.1.4"
   }
