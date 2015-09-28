@@ -118,7 +118,8 @@ jQuery(function($) {
         }
 
         if (data) setBusy(true);
-        if (window.performance) window.performance.clearResourceTimings();
+        if (window.performance && window.performance.clearResourceTimings)
+            window.performance.clearResourceTimings();
 
         $.ajax('/api?action=' + action, {
             method: data ? 'POST' : 'GET',
@@ -126,13 +127,16 @@ jQuery(function($) {
             contentType: data ? 'application/json' : null,
             timeout: 10000,
             success: function (response, textStatus, jqXHR) {
-                var perf = window.performance &&
+                var perf = window.performance && window.performance.getEntriesByName &&
                     window.performance.getEntriesByName(location.origin + '/api?action=' + action).pop();
                 var duration = parseFloat(jqXHR.getResponseHeader('X-Duration')) || null;
-                var info = {
-                    responseTime: Math.round((perf.responseEnd - perf.requestStart - (duration || 0)) * 10) / 10,
-                    duration: duration
-                };
+                var info = null;
+                if (perf) {
+                    info = {
+                        responseTime: Math.round((perf.responseEnd - perf.requestStart - (duration || 0)) * 10) / 10,
+                        duration: duration
+                    };
+                }
 
                 if (response.error) {
                     alertBox.html('<strong>Error:</strong> ' + response.error);
