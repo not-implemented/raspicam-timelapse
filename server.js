@@ -199,6 +199,15 @@ function updateStatus(partial) {
     status.uptime.value = (days > 0 ? days + 'd ' : '') +
         pad2(hours) + ':' + pad2(minutes) + ':' + pad2(seconds);
 
+    if (!partial) {
+        // visitor garbage collection:
+        var expirationTime = Date.now() - 10 * 1000;
+        Object.keys(visitors).forEach(function (deviceId) {
+            if (visitors[deviceId] < expirationTime) {
+                delete visitors[deviceId];
+            }
+        });
+    }
     status.visitors.value = '' + Object.keys(visitors).length + ' users online';
 }
 
@@ -256,14 +265,7 @@ function updateVisitors(request, response) {
             'expires=' + (new Date(Date.now() + maxAge)).toGMTString());
     }
 
-    var currentTime = Date.now();
-    visitors[deviceId] = currentTime;
-
-    Object.keys(visitors).forEach(function (deviceId) {
-        if (visitors[deviceId] < currentTime - 10 * 1000) {
-            delete visitors[deviceId];
-        }
-    });
+    visitors[deviceId] = Date.now();
 }
 
 function generateDaemonConfig(callback) {
