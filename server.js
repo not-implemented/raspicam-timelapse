@@ -145,8 +145,11 @@ var status = {
     freeDiskSpace: {title: 'Free Disk Space', value: 'unknown', type: 'default'},
     cpuTemp: {title: 'CPU Temperature', value: 'unknown', type: 'default'},
     systemLoad: {title: 'System Load', value: 'unknown', type: 'default'},
-    uptime: {title: 'Uptime', value: 'unknown', type: 'default'}
+    uptime: {title: 'Uptime', value: 'unknown', type: 'default'},
+    visitors: {title: 'Visitors', value: 'unknown', type: 'default'}
 };
+
+var visitors = {};
 
 function updateStatus(partial) {
     status.isCapturing = config.isCapturing;
@@ -195,6 +198,8 @@ function updateStatus(partial) {
     var seconds = uptime;
     status.uptime.value = (days > 0 ? days + 'd ' : '') +
         pad2(hours) + ':' + pad2(minutes) + ':' + pad2(seconds);
+
+    status.visitors.value = '' + Object.keys(visitors).length + ' users online';
 }
 
 setInterval(updateStatus, 10000);
@@ -223,6 +228,42 @@ function formatBytes(bytes) {
         unit = units[i];
     }
     return bytes.toFixed(2) + ' ' + unit;
+}
+
+function parseCookies(request) {
+    var cookies = {}, header = request.headers.cookie;
+
+    if (header) {
+        header.split(';').forEach(function(cookie) {
+            var parts = cookie.split('=', 2);
+            cookies[parts.shift().trim()] = decodeURIComponent(parts.join(''));
+        });
+    }
+
+    return cookies;
+}
+
+function updateVisitors(request, response) {
+    var cookies = parseCookies(request);
+    var maxAge = 10 * 365 * 24 * 60 * 60 * 1000;
+    var deviceId;
+
+    if (cookies.deviceId) {
+        deviceId = cookies.deviceId;
+    } else {
+        deviceId = crypto.randomBytes(16).toString('hex');
+        response.setHeader('Set-Cookie', 'deviceId=' + deviceId + ';' +
+            'expires=' + (new Date(Date.now() + maxAge)).toGMTString());
+    }
+
+    var currentTime = Date.now();
+    visitors[deviceId] = currentTime;
+
+    Object.keys(visitors).forEach(function (deviceId) {
+        if (visitors[deviceId] < currentTime - 10 * 1000) {
+            delete visitors[deviceId];
+        }
+    });
 }
 
 function generateDaemonConfig(callback) {
@@ -362,6 +403,8 @@ https.createServer(serverOptions, function (request, response) {
     if (url.pathname === '/api') {
         var query = querystring.parse(url.query);
         var action = query.action;
+
+        updateVisitors(request, response);
 
         if (request.method === 'POST') {
             var body = '';
