@@ -406,7 +406,9 @@ https.createServer(serverOptions, function (request, response) {
         var query = querystring.parse(url.query);
         var action = query.action;
 
-        updateVisitors(request, response);
+        if (action === 'loadStatus') {
+            updateVisitors(request, response);
+        }
 
         if (request.method === 'POST') {
             var body = '';
