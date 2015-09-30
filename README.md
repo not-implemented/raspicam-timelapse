@@ -88,23 +88,25 @@ npm start &
 Be sure, to change the default password before allowing connections from untrusted
 networks - [see here](Raspberry-Customizing.md).
 
-Generate key on Raspberry Pi (press ENTER everywhere):
+Generate SSH-Key on Raspberry Pi (just press ENTER everywhere):
 
 ```bash
 ssh-keygen -t rsa
+
+# Show the public key for using later:
 cat .ssh/id_rsa.pub
 ```
 
 Allow SSH connections from Raspberry Pi on your remote server:
 
 ```bash
-# Maybe add a user - i.e. "timelapse" on your remote server:
+# Maybe add a new user - i.e. "timelapse" on your remote server (but you can use an existing one):
 adduser --gecos Timelapse timelapse
 chmod go-rwx /home/timelapse
 cd /home/timelapse
 
 # Add the raspberry's key (.ssh/id_rsa.pub from above) on your remote server
-# to the new user and just allow port-forwarding (no login):
+# to the user and just allow port-forwarding (no login):
 mkdir -p .ssh
 echo "command=\"echo 'This account can only be used for port-forwarding'\",no-agent-forwarding,no-X11-forwarding" \
     "{raspberry-public-key-from-above}" >> .ssh/authorized_keys
@@ -119,7 +121,8 @@ editor /etc/ssh/sshd_config
 GatewayPorts yes
 
 # Detect and close dead connections faster and close forwarded ports to reuse them:
-ClientAliveInterval 60
+ClientAliveInterval 30
+ClientAliveCountMax 3
 
 # Restart SSH server:
 service sshd restart
@@ -141,7 +144,7 @@ remote server to port 22 on Raspberry Pi - same with port 4443:
 chmod +x tunnels.sh
 
 # Check SSH-Connection and permanently add the key (type "yes"):
-ssh timelapse@www.example.com echo "test"
+ssh timelapse@www.example.com
 
 # Add script to crontab:
 crontab -e
