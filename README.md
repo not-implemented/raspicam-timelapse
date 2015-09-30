@@ -77,10 +77,10 @@ mkdir ../capture
 Start server:
 
 ```bash
-npm start
+npm start &
 ```
 
-... now open your browser - i.e. with https://raspberrypi:4443/ or IP address :-)
+... now open your browser - i.e. with https://raspberrypi:4443/ or IP address (Login: timelapse / Password: timelapse) :-)
 
 
 ### Reverse SSH-Tunnel (optional)
@@ -190,9 +190,9 @@ network={
 TODO
 ----
 
-- Implement as a service (start on boot, restart on crash, ...)
-- Implement cron-mode (and automatic recover in raspistill mode after reboot)
-- Implement --hflip, --vflip
+- Implement as a service (start on boot, restart on crash, restart raspistill after crash)
+- Remove cron-mode
+- Implement more options in frontend (username/password, camera upside-down with --hflip --vflip, ...)
 - Implement sync of pictures to a remote server and local cleanup
 - Get Dynamic-DNS-Client more stable (trigger on IP adress changes, not just on cable plug)
 - Wi-Fi does not reliably reconnect after broken connection
