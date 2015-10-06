@@ -7,6 +7,7 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
 - Reverse-SSH-Tunnel to another server - reach your Raspberry Pi behind firewalls (optional)
 - Dynamic-DNS-Client - find your Raspberry Pi easier in your local network (optional)
 - Wi-Fi autoconnect - if you have a USB Wi-Fi Adapter (optional)
+- BitTorrent-Sync - as sync-solution to get the photos out of the Pi (optional)
 - Prerequisites: Raspberry Pi + Power + SD-Card, RaspiCam, USB Wi-Fi Adapter (optional)
 
 ![Screenshot](screenshot.jpg)
@@ -123,13 +124,14 @@ service sshd restart
 
 Back on Raspberry Pi: Configure tunnels to be established - create a script with
 `editor tunnels.sh` like the following example to forward port 10022 from your
-remote server to port 22 on Raspberry Pi - same with port 4443:
+remote server to port 22 on Raspberry Pi - same with port 4443 and 8888:
 
 ```bash
 #!/bin/bash
 
 ~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh timelapse@www.example.com 10022 22 &
 ~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh timelapse@www.example.com 4443 4443 &
+~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh timelapse@www.example.com 18888 8888 &
 ```
 
 ```bash
@@ -184,12 +186,41 @@ network={
 ```
 
 
+### Install BitTorrent-Sync (optional)
+
+We currently use BitTorrent-Sync as sync-solution, because Syncthing is very slow on Raspberry Pi.
+
+```bash
+wget https://download-cdn.getsync.com/stable/linux-arm/BitTorrent-Sync_arm.tar.gz
+mkdir btsync && cd btsync
+tar -xvzf ../BitTorrent-Sync_arm.tar.gz
+
+# Start BitTorrent-Sync:
+./btsync --webui.listen 0.0.0.0:8888
+cd ..
+
+# Enable start on reboot:
+crontab -e
+@reboot ~/btsync/btsync --webui.listen 0.0.0.0:8888
+```
+
+Now open Web-Interface via "https://raspberrypi:8888/" and add "/home/pi/capture" folder for sync.
+
+After that disable sync of "latest.jpg":
+
+```bash
+editor capture/.sync/IgnoreList
+
+# Append to the end:
+/latest.jpg
+```
+
+
 TODO
 ----
 
 - Implement as a service (start on boot, restart on crash, restart raspistill after crash)
 - Remove cron-mode
 - Implement more options in frontend (username/password, camera upside-down with --hflip --vflip, ...)
-- Implement sync of pictures to a remote server and local cleanup
 - Get Dynamic-DNS-Client more stable (trigger on IP adress changes, not just on cable plug)
 - Wi-Fi does not reliably reconnect after broken connection
