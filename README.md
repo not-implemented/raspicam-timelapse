@@ -76,6 +76,15 @@ npm start &
 
 ... now open your browser - i.e. with https://raspberrypi:4443/ or IP address (Login: timelapse / Password: timelapse) :-)
 
+Enable start on reboot:
+
+```bash
+crontab -e
+
+# Insert this line into crontab:
+@reboot /usr/local/bin/node ~/raspicam-timelapse/server.js &
+```
+
 
 ### Reverse SSH-Tunnel (optional)
 
