@@ -17,7 +17,7 @@ HowTo
 
 ### Setup SD-Card
 
-- Download current [Raspbian](https://www.raspberrypi.org/downloads/raspbian/)
+- Download current [Raspbian](https://www.raspberrypi.org/downloads/raspbian/) ("Jessie" or newer)
 - Write extracted ".img"-file to SD-Card - [see OS specific instructions](https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
 - Attach the camera to the Raspberry Pi - [see instructions](https://www.raspberrypi.org/documentation/configuration/camera.md)
 - Put the SD-Card into your Raspberry Pi, Connect to your LAN (DHCP server needed), Power on
@@ -38,20 +38,13 @@ HowTo
 
 ### Setup RaspiCam-Timelapse
 
-Install Node.js:
-
-With Raspbian "jessie" (still no official image available) you can use the current Node.js 4.x -
-with Raspbian "wheezy" you have to use the old Node.js 0.12 - otherwise the native modules won't
-compile.
-
-You can use the binary release from [conoroneill.net](http://conoroneill.net/node-v01040-and-v0127-for-arm-v7-raspberry-pi-2-banana-pi-odroid-c1-available):
+Install Node.js (for Node.js >=4.x you need Raspbian "Jessie" or newer - otherwise the native modules won't compile):
 
 ```bash
-wget http://conoroneill.net.s3.amazonaws.com/wp-content/uploads/2015/09/node-v0.12.7-linux-arm-v6.tar.gz
-mkdir nodetemp && cd nodetemp
-tar -xvzf ../node-v0.12.7-linux-arm-v6.tar.gz
-sudo cp -R * /usr/local/
-cd .. && rm -rf nodetemp
+wget https://nodejs.org/dist/v4.1.2/node-v4.1.2-linux-armv6l.tar.gz
+tar -xvzf node-v4.1.2-linux-armv6l.tar.gz
+sudo cp -R node-v4.1.2-linux-armv6l/{bin,include,lib,share} /usr/local/
+rm -rf node-v4.1.2-linux-armv6l
 ```
 
 Check out this repository:
@@ -94,7 +87,7 @@ Generate SSH-Key on Raspberry Pi (just press ENTER everywhere):
 ssh-keygen -t rsa
 
 # Show the public key for using later:
-cat .ssh/id_rsa.pub
+cat ~/.ssh/id_rsa.pub
 ```
 
 Allow SSH connections from Raspberry Pi on your remote server:
@@ -145,6 +138,7 @@ chmod +x tunnels.sh
 
 # Check SSH-Connection and permanently add the key (type "yes"):
 ssh timelapse@www.example.com
+# (... should print "This account can only be used for port-forwarding" and close SSH connection)
 
 # Add script to crontab:
 crontab -e
