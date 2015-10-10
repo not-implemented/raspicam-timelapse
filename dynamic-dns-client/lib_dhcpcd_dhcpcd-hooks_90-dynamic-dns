@@ -1,0 +1,28 @@
+# Register current local IP address to your Dynamic DNS service with local hostname
+DYN_USERNAME=you
+DYN_PASSWORD=secret
+DYN_DOMAIN=dyn.example.com
+DYN_UPDATEURL=https://admin.example.com/dynamic-dns/update.php
+
+dynamic_dns_refresh() {
+    while true; do
+        DYN_HOSTNAME=`hostname -s`.$DYN_DOMAIN
+        DYN_IPADDR=$new_ip_address
+
+        /usr/bin/wget -q -O /dev/null --no-check-certificate "$DYN_UPDATEURL?hostname=$DYN_HOSTNAME&ipaddr=$DYN_IPADDR&username=$DYN_USERNAME&password=$DYN_PASSWORD"
+        if [ $? -eq 0 ]; then
+            /usr/bin/logger "Updated Dynamic DNS host \"$DYN_HOSTNAME\" to address \"$DYN_IPADDR\""
+            break
+        fi
+
+        sleep 60
+    done
+}
+
+case $reason in
+    BOUND|RENEW|REBIND|REBOOT)
+        if [ "$interface" != "lo" ]; then
+            dynamic_dns_refresh
+        fi
+        ;;
+esac

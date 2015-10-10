@@ -164,11 +164,11 @@ crontab -e
 
 ```bash
 # Copy script:
-sudo cp raspicam-timelapse/dynamic-dns-client/etc_ifplugd_action.d_z-dynamic-dns /etc/ifplugd/action.d/z-dynamic-dns
-sudo chmod 700 /etc/ifplugd/action.d/z-dynamic-dns
+sudo cp raspicam-timelapse/dynamic-dns-client/lib_dhcpcd_dhcpcd-hooks_90-dynamic-dns /lib/dhcpcd/dhcpcd-hooks/90-dynamic-dns
+sudo chmod go= /lib/dhcpcd/dhcpcd-hooks/90-dynamic-dns
 
-# Change config vars directly in z-dynamic-dns:
-sudo editor /etc/ifplugd/action.d/z-dynamic-dns
+# Change config vars directly in 90-dynamic-dns:
+sudo editor /lib/dhcpcd/dhcpcd-hooks/90-dynamic-dns
 ```
 
 
