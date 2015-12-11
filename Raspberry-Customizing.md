@@ -54,3 +54,9 @@ But for Camera usage 128 MB is needed - and will be set anyway later by Camera S
 - `sudo raspi-config`
 - 8 Advanced Options - A3 Memory Split - (i.e. "16")
 - Finish
+
+Disable GUI
+-----------
+When installed full desktop image of Raspbian, you may disable start of GUI:
+
+sudo systemctl set-default multi-user.target

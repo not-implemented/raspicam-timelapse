@@ -8,7 +8,7 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
 - Dynamic-DNS-Client - find your Raspberry Pi easier in your local network (optional)
 - Wi-Fi autoconnect - if you have a USB Wi-Fi Adapter (optional)
 - BitTorrent-Sync - as sync-solution to get the photos out of the Pi (optional)
-- Prerequisites: Raspberry Pi + Power + SD-Card, RaspiCam, USB Wi-Fi Adapter (optional)
+- Prerequisites: Raspberry Pi + Power + SD-Card, RaspiCam, LAN Cable, USB Wi-Fi Adapter (optional)
 
 ![Screenshot](screenshot.jpg)
 
@@ -18,7 +18,7 @@ HowTo
 
 ### Setup SD-Card
 
-- Download current [Raspbian](https://www.raspberrypi.org/downloads/raspbian/) ("Jessie" or newer)
+- Download current [Raspbian](https://www.raspberrypi.org/downloads/raspbian/) ("Jessie" or newer - "Lite" is enough)
 - Write extracted ".img"-file to SD-Card - [see OS specific instructions](https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
 - Attach the camera to the Raspberry Pi - [see instructions](https://www.raspberrypi.org/documentation/configuration/camera.md)
 - Put the SD-Card into your Raspberry Pi, Connect to your LAN (DHCP server needed), Power on
@@ -42,10 +42,16 @@ HowTo
 Install Node.js (for Node.js >=4.x you need Raspbian "Jessie" or newer - otherwise the native modules won't compile):
 
 ```bash
-wget https://nodejs.org/dist/v4.1.2/node-v4.1.2-linux-armv6l.tar.gz
-tar -xvzf node-v4.1.2-linux-armv6l.tar.gz
-sudo cp -R node-v4.1.2-linux-armv6l/{bin,include,lib,share} /usr/local/
-rm -rf node-v4.1.2-linux-armv6l
+wget https://nodejs.org/dist/v4.2.3/node-v4.2.3-linux-armv6l.tar.gz
+tar -xvzf node-v4.2.3-linux-armv6l.tar.gz
+sudo cp -R node-v4.2.3-linux-armv6l/{bin,include,lib,share} /usr/local/
+rm -rf node-v4.2.3-linux-armv6l
+```
+
+Install GIT:
+
+```bash
+sudo apt-get install git
 ```
 
 Check out this repository:
@@ -94,6 +100,7 @@ networks - [see here](Raspberry-Customizing.md).
 Generate SSH-Key on Raspberry Pi (just press ENTER everywhere):
 
 ```bash
+cd ~
 ssh-keygen -t rsa
 
 # Show the public key for using later:
@@ -229,6 +236,7 @@ TODO
 ----
 
 - Implement as a service (start on boot, restart on crash, restart raspistill after crash)
+- Use NVM for installing Node.js - https://github.com/creationix/nvm
 - Remove cron-mode
 - Implement more options in frontend (username/password, camera upside-down with --hflip --vflip, ...)
 - Get Dynamic-DNS-Client more stable (trigger on IP adress changes, not just on cable plug)
