@@ -28,7 +28,7 @@ HowTo
 
 ### Setup Raspbian + Raspberry Pi Camera
 
-- Install updates: `sudo apt-get update` and `sudo apt-get dist-upgrade`
+- Install updates: `sudo apt-get update`, `sudo apt-get dist-upgrade` and `sudo apt-get clean`
 - For some helpful optional customizations of your Raspberry Pi - [see here](Raspberry-Customizing.md)
 - Enable camera: `sudo raspi-config` - 5 Enable Camera - Enable - Finish  
   (this also sets Memory Split to 128 MB)
