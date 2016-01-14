@@ -65,6 +65,13 @@ function saveConfig(callback) {
     fs.writeFile(configFilename, JSON.stringify(config), callback);
 }
 
+process.on('SIGTERM', function () {
+    saveConfig(function (err) {
+             process.exit();
+         }
+    );
+});
+
 var serverOptions = {
     key: fs.readFileSync(__dirname + '/config/timelapse.key'),
     cert: fs.readFileSync(__dirname + '/config/timelapse.crt')
@@ -388,6 +395,10 @@ var apiActions = {
         callback({error: 'Unknown API-Action'}, 404);
     }
 };
+
+if (config.isCapturing) {
+    apiActions['startCapture']({}, function() {})
+}
 
 https.createServer(serverOptions, function (request, response) {
     var startTime = process.hrtime();
