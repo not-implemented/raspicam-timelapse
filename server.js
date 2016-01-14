@@ -61,6 +61,7 @@ function loadConfig() {
 loadConfig();
 
 function saveConfig(callback) {
+    fs.rename(configFilename, configFilename + '.previous');
     fs.writeFile(configFilename, JSON.stringify(config), callback);
 }
 
