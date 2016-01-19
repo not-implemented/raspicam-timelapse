@@ -60,17 +60,29 @@ function loadConfig() {
 
 loadConfig();
 
-function saveConfig(callback) {
+function saveConfig(callback, sync) {
     fs.rename(configFilename, configFilename + '.previous');
-    fs.writeFile(configFilename, JSON.stringify(config), callback);
+    if (sync === true) {
+        fs.writeFileSync(configFilename, JSON.stringify(config, null, 4));
+    } else {
+        fs.writeFile(configFilename, JSON.stringify(config, null, 4), callback);
+    }
 }
 
-process.on('SIGTERM', function () {
-    saveConfig(function (err) {
-             process.exit();
-         }
-    );
-});
+function exitHandler(options, err) {
+    server.close(function() {});
+    saveConfig(function() {}, true);
+    process.exit();
+}
+
+//do something when app is closing
+process.on('exit', exitHandler.bind(null));
+//catches ctrl+c event
+process.on('SIGINT', exitHandler.bind(null));
+//catches SIGTERM
+process.on('SIGTERM', exitHandler.bind(null));
+//catches uncaught exceptions
+//process.on('uncaughtException', exitHandler.bind(null));
 
 var serverOptions = {
     key: fs.readFileSync(__dirname + '/config/timelapse.key'),
@@ -400,7 +412,7 @@ if (config.isCapturing) {
     apiActions['startCapture']({}, function() {})
 }
 
-https.createServer(serverOptions, function (request, response) {
+var server = https.createServer(serverOptions, function (request, response) {
     var startTime = process.hrtime();
     var credentials = auth(request);
 
@@ -481,4 +493,6 @@ https.createServer(serverOptions, function (request, response) {
     for (var i = 0; i < mounts.length; i++) {
         if (mounts[i](request, response)) break;
     }
-}).listen(4443);
+});
+
+server.listen(4443);
