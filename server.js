@@ -392,7 +392,7 @@ if (config.isCapturing) {
     apiActions['startCapture']({}, function() {})
 }
 
-https.createServer(serverOptions, function (request, response) {
+var server = https.createServer(serverOptions, function (request, response) {
     var startTime = process.hrtime();
     var credentials = auth(request);
 
@@ -473,4 +473,15 @@ https.createServer(serverOptions, function (request, response) {
     for (var i = 0; i < mounts.length; i++) {
         if (mounts[i](request, response)) break;
     }
-}).listen(4443);
+});
+
+server.listen(4443);
+
+function shutdown() {
+    server.close();
+}
+
+//catches ctrl+c event
+process.on('SIGINT', shutdown);
+
+process.on('SIGTERM', shutdown);
