@@ -388,6 +388,10 @@ var apiActions = {
     }
 };
 
+if (config.isCapturing) {
+    apiActions['startCapture']({}, function() {})
+}
+
 https.createServer(serverOptions, function (request, response) {
     var startTime = process.hrtime();
     var credentials = auth(request);
