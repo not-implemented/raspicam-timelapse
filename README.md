@@ -7,6 +7,7 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
 - Reverse-SSH-Tunnel to another server - reach your Raspberry Pi behind firewalls (optional)
 - Dynamic-DNS-Client - find your Raspberry Pi easier in your local network (optional)
 - Wi-Fi autoconnect - if you have a USB Wi-Fi Adapter (optional)
+- Network-Watchdog - reset network and maybe emergency-reboot if connection is broken (optional)
 - BitTorrent-Sync - as sync-solution to get the photos out of the Pi (optional)
 - Prerequisites: Raspberry Pi + Power + SD-Card, RaspiCam, LAN Cable, USB Wi-Fi Adapter (optional)
 
@@ -202,6 +203,16 @@ network={
 ```
 
 
+### Activate Network-Watchdog (optional)
+
+```bash
+crontab -e
+
+# Insert this line into crontab:
+* * * * * sudo ~/raspicam-timelapse/network-watchdog/check-network.sh
+```
+
+
 ### Install BitTorrent-Sync (optional)
 
 We currently use BitTorrent-Sync as sync-solution, because Syncthing is very slow on Raspberry Pi.
@@ -240,4 +251,3 @@ TODO
 - Remove cron-mode
 - Implement more options in frontend (username/password, camera upside-down with --hflip --vflip, ...)
 - Get Dynamic-DNS-Client more stable (trigger on IP adress changes, not just on cable plug)
-- Wi-Fi does not reliably reconnect after broken connection
