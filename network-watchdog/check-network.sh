@@ -2,7 +2,8 @@
 
 LOG=/home/pi/capture/check-network.log
 USB_ID_WLAN0="1-1.3"
-STATUS_FILE=/home/pi/capture/last_status.inc.sh
+STATUS_FILE=/home/pi/raspicam-timelapse/config/last_status.inc.sh
+CONFIG_FILE=/home/pi/raspicam-timelapse/config/check-network.conf
 SAVE_VARIABLE_PREFIX=STATUS_
 
 save_variables() {
@@ -105,16 +106,23 @@ logrotate
 exec >> $LOG
 exec 2>> $LOG
 
+DEFAULT_GATEWAY_V4=$(ip -4 route show default | awk '/^default/ {print $3}')
+DEFAULT_GATEWAY_V6=$(ip -6 route show default | awk '/^default/ {print $3}')
+
+IPV4_PING_DEST=$DEFAULT_GATEWAY_V4
+IPV6_PING_DEST=$DEFAULT_GATEWAY_V6
+
+# load config file
+if [ -e $CONFIG_FILE ]
+then
+    . $CONFIG_FILE
+fi
+
+# load status file
 if [ -e $STATUS_FILE ]
 then
     . $STATUS_FILE
 fi
-
-DEFAULT_GATEWAY=$(ip route show default | awk '/^default/ {print $3}')
-FFMUC_OFFLOADER_V6=fe80:0:0:0:32b5:c2ff:fee3:58%wlan0
-
-IPV4_PING_DEST=$DEFAULT_GATEWAY
-IPV6_PING_DEST=$FFMUC_OFFLOADER_V6
 
 # v6
 if [ "$IPV6_PING_DEST" != "" ] && ping6 -c5 -q $IPV6_PING_DEST > /dev/null; then
