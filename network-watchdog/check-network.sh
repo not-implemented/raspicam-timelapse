@@ -2,7 +2,7 @@
 
 LOG=/home/pi/capture/check-network.log
 USB_ID_WLAN0="1-1.3"
-STATUS_FILE=/home/pi/capture/last_status.inc.sh
+STATUS_FILE=/home/pi/raspicam-timelapse/config/last_status.inc.sh
 SAVE_VARIABLE_PREFIX=STATUS_
 
 save_variables() {
