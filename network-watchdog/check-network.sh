@@ -107,7 +107,7 @@ exec >> $LOG
 exec 2>> $LOG
 
 DEFAULT_GATEWAY_V4=$(ip -4 route show default | awk '/^default/ {print $3}')
-DEFAULT_GATEWAY_V6=$(ip -6 route show default | awk '/^default/ {print $3}')
+DEFAULT_GATEWAY_V6=$(ip -6 route show default | awk '/^default/ {print $3"%"$5}')
 
 IPV4_PING_DEST=$DEFAULT_GATEWAY_V4
 IPV6_PING_DEST=$DEFAULT_GATEWAY_V6
