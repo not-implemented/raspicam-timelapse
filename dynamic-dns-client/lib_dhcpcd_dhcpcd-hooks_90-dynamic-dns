@@ -1,28 +1,46 @@
-# Register new local IPv4 address to your Dynamic DNS service with local hostname
-DYN_USERNAME=you
-DYN_PASSWORD=secret
-DYN_DOMAIN=dyn.example.com
-DYN_UPDATEURL=https://admin.example.com/dynamic-dns/update.php
+# include config
+. /home/pi/raspicam-timelapse/dynamic-dns-client/dynamic-dns.conf
 
 dynamic_dns_refresh() {
-    while true; do
-        DYN_HOSTNAME=`hostname -s`.$DYN_DOMAIN
-        DYN_IPADDR=$new_ip_address
-
-        /usr/bin/wget -q -O /dev/null --no-check-certificate "$DYN_UPDATEURL?hostname=$DYN_HOSTNAME&ipaddr=$DYN_IPADDR&username=$DYN_USERNAME&password=$DYN_PASSWORD"
-        if [ $? -eq 0 ]; then
-            /usr/bin/logger -t dynamic-dns "Updated IPv4 address of host \"$DYN_HOSTNAME\" to \"$DYN_IPADDR\""
-            break
+    PROTOCOL="$1"
+    case $PROTOCOL in
+        ipv4)
+            IP_URL_PARAMETER=ipaddr
+            ;;
+        ipv6)
+            IP_URL_PARAMETER=ip6addr
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+    DYN_HOSTNAME=`hostname -s`.$DYN_DOMAIN
+    DYN_IPADDR=$new_ip_address
+    EXIT_CODE=99
+    while [ $EXIT_CODE -ne 0 ]; do
+        /usr/bin/wget -q -O /dev/null --no-check-certificate "$DYN_UPDATEURL?hostname=$DYN_HOSTNAME&$IP_URL_PARAMETER=$DYN_IPADDR&username=$DYN_USERNAME&password=$DYN_PASSWORD"
+        EXIT_CODE=$?
+        if [ $EXIT_CODE -ne 0 ]; then
+            /usr/bin/logger -t dynamic-dns "Update of $PROTOCOL address of host \"$DYN_HOSTNAME\" to \"$DYN_IPADDR\" failed -- retrying"
+            sleep 60
+        else
+            /usr/bin/logger -t dynamic-dns "Updated $PROTOCOL address of host \"$DYN_HOSTNAME\" to \"$DYN_IPADDR\""
         fi
-
-        sleep 60
     done
+
 }
 
 case $reason in
     BOUND|RENEW|REBIND|REBOOT)
         if [ "$interface" != "lo" ]; then
-            dynamic_dns_refresh
+            # to background if we have to retry, so it won't block other hooks and the main process
+            [ $new_ip_address = $old_ip_address ] && dynamic_dns_refresh ipv4 &
+        fi
+        ;;
+    BOUND6|RENEW6|REBIND6|REBOOT6)
+        if [ "$interface" != "lo" ]; then
+            # to background if we have to retry, so it won't block other hooks and the main process
+            [ $new_ip_address = $old_ip_address ] && dynamic_dns_refresh ipv6 &
         fi
         ;;
 esac
