@@ -1,8 +1,5 @@
-# Register new local IPv4 address to your Dynamic DNS service with local hostname
-DYN_USERNAME=you
-DYN_PASSWORD=secret
-DYN_DOMAIN=dyn.example.com
-DYN_UPDATEURL=https://admin.example.com/dynamic-dns/update.php
+# include config
+. /home/pi/raspicam-timelapse/dynamic-dns-client/dynamic-dns.conf
 
 dynamic_dns_refresh() {
     PROTOCOL="$1"
