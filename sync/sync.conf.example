@@ -21,4 +21,4 @@ OPTS_DIR="--recursive"
 # options when syncing a file
 OPTS_FILE="--relative"
 # common options for all sync types
-OPTS="--times --remove-source-files --partial --include=\*.jpg --exclude=latest.jpg"
+OPTS="--times --remove-source-files --partial --exclude=latest.jpg --exclude=.* --include=*/ --include=*.jpg --exclude=*"
