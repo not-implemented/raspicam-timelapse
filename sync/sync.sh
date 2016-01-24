@@ -6,14 +6,14 @@
 # default sync function
 sync_directory() {
     # sync
-    $SYNC_COMMAND $OPTS $OPTS_DIR $ROOT_DIR/ $SYNC_DEST
+    $SYNC_COMMAND $OPTS $OPTS_DIR "$ROOT_DIR"/ "$SYNC_DEST"
 }
 
 sync_file() {
     # change to directory so we can sync with relative path (--relative parameter of rsync)
     cd "$ROOT_DIR"
     # sync
-    $SYNC_COMMAND $OPTS $OPTS_FILE $FILE $SYNC_DEST
+    $SYNC_COMMAND $OPTS $OPTS_FILE "$FILE" "$SYNC_DEST"
 }
 
 # overwrite sync function with own implementation
