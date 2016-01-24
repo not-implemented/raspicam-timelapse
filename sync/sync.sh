@@ -17,7 +17,7 @@ sync_file() {
 }
 
 # overwrite sync function with own implementation
-. `dirname $0`/sync.inc.sh || true
+[ -e `dirname $0`/sync.inc.sh ] && . `dirname $0`/sync.inc.sh
 
 # if used with inotify 
 ## first parameter is the watched directory
