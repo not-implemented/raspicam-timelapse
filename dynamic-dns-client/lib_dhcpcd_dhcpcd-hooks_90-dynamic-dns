@@ -34,13 +34,13 @@ case $reason in
     BOUND|RENEW|REBIND|REBOOT)
         if [ "$interface" != "lo" ]; then
             # to background if we have to retry, so it won't block other hooks and the main process
-            [ $new_ip_address != $old_ip_address ] && dynamic_dns_refresh ipv4 &
+            [ -n "$new_ip_address" ] && [ $new_ip_address != $old_ip_address ] && dynamic_dns_refresh ipv4 &
         fi
         ;;
     BOUND6|RENEW6|REBIND6|REBOOT6)
         if [ "$interface" != "lo" ]; then
             # to background if we have to retry, so it won't block other hooks and the main process
-            [ $new_ip_address != $old_ip_address ] && dynamic_dns_refresh ipv6 &
+            [ -n "$new_ip_address" ] && [ $new_ip_address != $old_ip_address ] && dynamic_dns_refresh ipv6 &
         fi
         ;;
 esac
