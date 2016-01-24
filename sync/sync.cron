@@ -1,0 +1,1 @@
+* * * * * pgrep -f "sync.sh /home/pi/capture" >/dev/null || /home/pi/raspicam-timelapse/sync/sync.sh /home/pi/capture
