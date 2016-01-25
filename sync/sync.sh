@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ -e `dirname $0`/../global/global.inc.sh ] && . `dirname $0`/../global/global.inc.sh
+
 # config parameters
 . `dirname $0`/sync.conf || { echo "Error loading config file" >&2; exit 1; }
 
