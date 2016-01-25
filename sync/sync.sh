@@ -18,6 +18,11 @@ sync_file() {
     $SYNC_COMMAND $OPTS $OPTS_FILE "$FILE" "$SYNC_DEST"
 }
 
+cleanup_empty_directories() {
+    # cleanup all empty directories except newest (usually the latest/current raspistill directory)
+    ls -d1tr "$ROOT_DIR"/*/ | head -n-1 | xargs --no-run-if-empty --delim '\n' rmdir
+}
+
 # overwrite sync function with own implementation
 [ -e `dirname $0`/sync.inc.sh ] && . `dirname $0`/sync.inc.sh
 
@@ -46,3 +51,6 @@ elif [ $# -eq 2 ] && [ -e "$ROOT_DIR"/"$FILE" ]
 then
     sync_file
 fi
+
+# rsync doesn't delete empty directories
+cleanup_empty_directories
