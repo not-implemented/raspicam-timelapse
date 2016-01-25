@@ -21,6 +21,9 @@ sync_file() {
 # overwrite sync function with own implementation
 [ -e `dirname $0`/sync.inc.sh ] && . `dirname $0`/sync.inc.sh
 
+# Locking
+[ -e `dirname $0`/../global/bash-locking.inc.sh ] && . `dirname $0`/../global/bash-locking.inc.sh
+
 #### 
 logrotate
 
