@@ -100,6 +100,9 @@ count_error_lines() {
     echo  $cnt
 }
 
+# Locking
+[ -e `dirname $0`/../global/bash-locking.inc.sh ] && . `dirname $0`/../global/bash-locking.inc.sh
+
 #### 
 logrotate
 
