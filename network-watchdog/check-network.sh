@@ -57,6 +57,10 @@ print_current_network_status() {
     iwlist wlan0 scanning | grep SSID
 }
 
+
+# Locking
+[ -e `dirname $0`/../global/bash-locking.inc.sh ] && . `dirname $0`/../global/bash-locking.inc.sh
+
 #### 
 logrotate
 
