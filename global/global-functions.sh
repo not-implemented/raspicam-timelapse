@@ -1,11 +1,12 @@
 # global functions
 
 logrotate() {
-    log_size=`stat --format="%s" $LOG`
+    [ -e "$LOG" ] || return 0
+    log_size=`stat --format="%s" "$LOG"`
 
     if [ $log_size -gt $((100*1024)) ]
     then
-        mv $LOG $LOG.old
+        mv "$LOG" "$LOG".old
     fi
 }
 
@@ -32,7 +33,7 @@ count_error_lines() {
     exec 3<> $fifo
     # limit to 100 lines we search string
     # reverse it since "read" reads from top to bottom but we want to count from bottom to top
-    tail -n 100 $LOG | grep "$first_grep_string" | tac > $fifo
+    tail -n 100 "$LOG" | grep "$first_grep_string" | tac > $fifo
     while read -u3 -t1 line
     do
         # break if we don't find pattern
