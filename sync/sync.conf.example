@@ -1,0 +1,24 @@
+# rsync
+SYNC_COMMAND="rsync"
+
+# rsync over ssh
+SYNC_DEST_HOST=host.domain.tld
+SYNC_DEST_USER=user
+SYNC_DEST_DIR=/home/user/timelapse_sync/$HOSTNAME
+
+SYNC_DEST=$SYNC_DEST_USER@$SYNC_DEST_HOST:$SYNC_DEST_DIR
+# rsync over ssh -- END
+
+# rsyncd server
+SYNC_DEST_HOST=host.domain.tld
+SYNC_DEST_MODULE=$HOSTNAME
+
+SYNC_DEST=$SYNC_DEST_USER@$SYNC_DEST_HOST::$SYNC_DEST_MODULE
+# rsyncd server -- END
+
+# options when syncing a directory
+OPTS_DIR="--recursive"
+# options when syncing a file
+OPTS_FILE="--relative"
+# common options for all sync types
+OPTS="--times --remove-source-files --partial --prune-empty-dirs --exclude=latest.jpg --exclude=.* --include=*/ --include=*.jpg --exclude=*"

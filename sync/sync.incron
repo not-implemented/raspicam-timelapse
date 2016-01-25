@@ -1,0 +1,1 @@
+/home/pi/capture IN_MOVED_TO,IN_NO_LOOP pgrep -f "sync.sh /home/pi/capture" >/dev/null || /home/pi/raspicam-timelapse/sync/sync.sh $@ $#
