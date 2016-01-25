@@ -20,7 +20,7 @@ sync_file() {
 
 cleanup_empty_directories() {
     # cleanup all empty directories except newest (usually the latest/current raspistill directory)
-    ls -d1tr "$ROOT_DIR"/*/ | head -n-1 | xargs --no-run-if-empty --delim '\n' rmdir
+    ls -d1tr "$ROOT_DIR"/*/ | head -n-1 | xargs --no-run-if-empty --delim '\n' rmdir --ignore-fail-on-non-empty
 }
 
 # overwrite sync function with own implementation
