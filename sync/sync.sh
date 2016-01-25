@@ -21,6 +21,12 @@ sync_file() {
 # overwrite sync function with own implementation
 [ -e `dirname $0`/sync.inc.sh ] && . `dirname $0`/sync.inc.sh
 
+#### 
+logrotate
+
+exec >> $LOG
+exec 2>> $LOG
+
 # if used with inotify 
 ## first parameter is the watched directory
 ## the second the relative path to the file
