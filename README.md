@@ -119,7 +119,7 @@ cd /home/timelapse
 # Add the raspberry's key (.ssh/id_rsa.pub from above) on your remote server
 # to the user and just allow port-forwarding (no login):
 mkdir -p .ssh
-echo "command=\"echo 'This account can only be used for port-forwarding'\",no-agent-forwarding,no-X11-forwarding" \
+echo "command=\"echo 'This account can only be used for port-forwarding'\",no-agent-forwarding,no-pty,no-X11-forwarding" \
     "{raspberry-public-key-from-above}" >> .ssh/authorized_keys
 chmod -R go-rwx .ssh
 chown -R timelapse:timelapse .ssh
@@ -171,12 +171,11 @@ crontab -e
 ### Dynamic-DNS-Client (optional)
 
 ```bash
-# Copy script:
-sudo cp raspicam-timelapse/dynamic-dns-client/lib_dhcpcd_dhcpcd-hooks_90-dynamic-dns /lib/dhcpcd/dhcpcd-hooks/90-dynamic-dns
-sudo chmod go= /lib/dhcpcd/dhcpcd-hooks/90-dynamic-dns
+# Link script:
+sudo ln -snf /home/pi/raspicam-timelapse/dynamic-dns-client/lib_dhcpcd_dhcpcd-hooks_90-dynamic-dns /lib/dhcpcd/dhcpcd-hooks/90-dynamic-dns
 
-# Change config vars directly in 90-dynamic-dns:
-sudo editor /lib/dhcpcd/dhcpcd-hooks/90-dynamic-dns
+# Change config vars in dynamic-dns.conf:
+sudo editor dynamic-dns-client/dynamic-dns.conf
 ```
 
 
@@ -211,7 +210,9 @@ crontab -e
 # Insert this line into crontab:
 * * * * * sudo ~/raspicam-timelapse/network-watchdog/check-network.sh
 ```
-
+#### Setup config file (optional)
+You can override IPV4_PING_DEST and IPV6_PING_DEST which are set to the default gateway by default.  
+Location: config/check-network.conf
 
 ### Install BitTorrent-Sync (optional)
 
@@ -242,6 +243,44 @@ editor capture/.sync/IgnoreList
 /latest.jpg
 ```
 
+### Use sync script (optional)
+second sync method is a [configurable sync script](sync/sync.sh). Currently only tested with rsync.
+
+#### Setup config file
+You have to configure some options in sync/sync.conf ([examples](sync/sync.conf.example)) at first 
+#### Crontab
+```
+# add sync script to crontab
+crontab -e
+*/5 * * * * ~/raspicam-timelapse/sync/sync.sh ~/capture
+```
+#### less strict ssh restrictions needed
+You have to modify the authorized_keys line to allow the sync command to be executed
+```diff
+-command="echo 'This account can only be used for port-forwarding'"
++command=/path/to/command_validation.sh
+```
+Example for command_validation.sh:
+```bash
+#!/bin/bash
+
+if [[ "$SSH_ORIGINAL_COMMAND" =~ [\&\;] ]] ;
+then
+    echo "Error: Invalid character found in command."
+    exit 1
+fi
+
+case "$SSH_ORIGINAL_COMMAND" in
+    rsync*/timelapse/capture*)
+        ;;
+    *)
+        echo "Error: Invalid command over ssh executed."
+        exit 1
+        ;;
+esac
+
+exec $SSH_ORIGINAL_COMMAND
+```
 
 TODO
 ----
