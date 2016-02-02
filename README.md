@@ -254,7 +254,7 @@ You have to configure some options in sync/sync.conf ([examples](sync/sync.conf.
 crontab -e
 */5 * * * * ~/raspicam-timelapse/sync/sync.sh ~/capture
 ```
-#### less strict ssh restrictions needed
+#### less strict ssh restrictions needed on your remote server
 You have to modify the authorized_keys line to allow the sync command to be executed
 ```diff
 -command="echo 'This account can only be used for port-forwarding'"
