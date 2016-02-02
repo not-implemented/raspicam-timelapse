@@ -1,3 +1,18 @@
+RaspiCam-Timelapse
+==================
+
+Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for Time-lapse Photography.
+
+- [Node.js](https://nodejs.org/) based Web-App for controlling and monitoring the camera and the Raspberry Pi
+- Reverse-SSH-Tunnel to another server - reach your Raspberry Pi behind firewalls (optional)
+- Dynamic-DNS-Client - find your Raspberry Pi easier in your local network (optional)
+- Wi-Fi autoconnect - if you have a USB Wi-Fi Adapter (optional)
+- Network-Watchdog - reset network and maybe emergency-reboot if connection is broken (optional)
+- BitTorrent-Sync - as sync-solution to get the photos out of the Pi (optional)
+- Prerequisites: Raspberry Pi + Power + SD-Card, RaspiCam, LAN Cable, USB Wi-Fi Adapter (optional)
+
+![Screenshot](screenshot.jpg)
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
@@ -20,22 +35,6 @@
   - [TODO](#todo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-RaspiCam-Timelapse
-==================
-
-Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for Time-lapse Photography.
-
-- [Node.js](https://nodejs.org/) based Web-App for controlling and monitoring the camera and the Raspberry Pi
-- Reverse-SSH-Tunnel to another server - reach your Raspberry Pi behind firewalls (optional)
-- Dynamic-DNS-Client - find your Raspberry Pi easier in your local network (optional)
-- Wi-Fi autoconnect - if you have a USB Wi-Fi Adapter (optional)
-- Network-Watchdog - reset network and maybe emergency-reboot if connection is broken (optional)
-- BitTorrent-Sync - as sync-solution to get the photos out of the Pi (optional)
-- Prerequisites: Raspberry Pi + Power + SD-Card, RaspiCam, LAN Cable, USB Wi-Fi Adapter (optional)
-
-![Screenshot](screenshot.jpg)
-
 
 HowTo
 -----
