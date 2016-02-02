@@ -17,22 +17,21 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [RaspiCam-Timelapse](#raspicam-timelapse)
-  - [HowTo](#howto)
-    - [Setup SD-Card](#setup-sd-card)
-    - [Setup Raspbian + Raspberry Pi Camera](#setup-raspbian--raspberry-pi-camera)
-    - [Setup RaspiCam-Timelapse](#setup-raspicam-timelapse)
-    - [Reverse SSH-Tunnel (optional)](#reverse-ssh-tunnel-optional)
-    - [Dynamic-DNS-Client (optional)](#dynamic-dns-client-optional)
-    - [Wi-Fi autoconnect (optional)](#wi-fi-autoconnect-optional)
-    - [Activate Network-Watchdog (optional)](#activate-network-watchdog-optional)
-      - [Setup config file (optional)](#setup-config-file-optional)
-    - [Install BitTorrent-Sync (optional)](#install-bittorrent-sync-optional)
-    - [Use sync script (optional)](#use-sync-script-optional)
-      - [Setup config file](#setup-config-file)
-      - [Crontab](#crontab)
-      - [less strict ssh restrictions needed on your remote server](#less-strict-ssh-restrictions-needed-on-your-remote-server)
-  - [TODO](#todo)
+- [HowTo](#howto)
+  - [Setup SD-Card](#setup-sd-card)
+  - [Setup Raspbian + Raspberry Pi Camera](#setup-raspbian--raspberry-pi-camera)
+  - [Setup RaspiCam-Timelapse](#setup-raspicam-timelapse)
+  - [Reverse SSH-Tunnel (optional)](#reverse-ssh-tunnel-optional)
+  - [Dynamic-DNS-Client (optional)](#dynamic-dns-client-optional)
+  - [Wi-Fi autoconnect (optional)](#wi-fi-autoconnect-optional)
+  - [Activate Network-Watchdog (optional)](#activate-network-watchdog-optional)
+    - [Setup config file (optional)](#setup-config-file-optional)
+  - [Install BitTorrent-Sync (optional)](#install-bittorrent-sync-optional)
+  - [Use sync script (optional)](#use-sync-script-optional)
+    - [Setup config file](#setup-config-file)
+    - [Crontab](#crontab)
+    - [less strict ssh restrictions needed on your remote server](#less-strict-ssh-restrictions-needed-on-your-remote-server)
+- [TODO](#todo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
