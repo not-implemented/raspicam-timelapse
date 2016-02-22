@@ -31,7 +31,7 @@ HowTo
 
 - Install updates: `sudo apt-get update`, `sudo apt-get dist-upgrade` and `sudo apt-get clean`
 - For some helpful optional customizations of your Raspberry Pi - [see here](Raspberry-Customizing.md)
-- Enable camera: `sudo raspi-config` - 5 Enable Camera - Enable - Finish  
+- Enable camera: `sudo raspi-config` - 6 Enable Camera - Enable - Finish  
   (this also sets Memory Split to 128 MB)
 - Disable camera LED when taking pictures (optional):  
   `sudo sh -c 'echo "disable_camera_led=1" >> /boot/config.txt'`
@@ -43,10 +43,10 @@ HowTo
 Install Node.js (for Node.js >=4.x you need Raspbian "Jessie" or newer - otherwise the native modules won't compile):
 
 ```bash
-wget https://nodejs.org/dist/v4.2.3/node-v4.2.3-linux-armv6l.tar.gz
-tar -xvzf node-v4.2.3-linux-armv6l.tar.gz
-sudo cp -R node-v4.2.3-linux-armv6l/{bin,include,lib,share} /usr/local/
-rm -rf node-v4.2.3-linux-armv6l
+wget https://nodejs.org/dist/v4.3.1/node-v4.3.1-linux-armv6l.tar.xz
+tar -xvf node-v4.3.1-linux-armv6l.tar.xz
+sudo cp -R node-v4.3.1-linux-armv6l/{bin,include,lib,share} /usr/local/
+rm -rf node-v4.3.1-linux-armv6l
 ```
 
 Install GIT:

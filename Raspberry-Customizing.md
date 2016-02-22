@@ -13,15 +13,15 @@ Change Password
 Change Hostname
 ---------------
 - `sudo raspi-config`
-- 8 Advanced Options - A2 Hostname - (i.e. "timelapse")
+- 9 Advanced Options - A2 Hostname - (i.e. "timelapse")
 - Finish
 
 Change Locale
 -------------
 - `sudo raspi-config`
-- 4 Internationalisation Options - I1 Change Locale - (i.e. "de_DE.UTF-8")
-- 4 Internationalisation Options - I2 Change Timezone - (i.e. "Europe/Berlin")
-- 4 Internationalisation Options - I3 Change Keyboard Layout
+- 5 Internationalisation Options - I1 Change Locale - (i.e. "de_DE.UTF-8")
+- 5 Internationalisation Options - I2 Change Timezone - (i.e. "Europe/Berlin")
+- 5 Internationalisation Options - I3 Change Keyboard Layout
 - Finish
 
 Install vim
@@ -52,11 +52,13 @@ If you use the Raspberry Pi without a GUI, you can reduce the GPU RAM to 16 MB.
 But for Camera usage 128 MB is needed - and will be set anyway later by Camera Setup.
 
 - `sudo raspi-config`
-- 8 Advanced Options - A3 Memory Split - (i.e. "16")
+- 9 Advanced Options - A3 Memory Split - (i.e. "16")
 - Finish
 
 Disable GUI
 -----------
 When installed full desktop image of Raspbian, you may disable start of GUI:
 
+```bash
 sudo systemctl set-default multi-user.target
+```
