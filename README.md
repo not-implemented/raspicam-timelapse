@@ -9,6 +9,7 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
 - Wi-Fi autoconnect - if you have a USB Wi-Fi Adapter (optional)
 - Network-Watchdog - reset network and maybe emergency-reboot if connection is broken (optional)
 - BitTorrent-Sync - as sync-solution to get the photos out of the Pi (optional)
+- Sync-Script - via rsync as alternative to BitTorrent-Sync (optional)
 - Prerequisites: Raspberry Pi + Power + SD-Card, RaspiCam, LAN Cable, USB Wi-Fi Adapter (optional)
 
 ![Screenshot](screenshot.jpg)
@@ -25,9 +26,8 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
   - [Dynamic-DNS-Client (optional)](#dynamic-dns-client-optional)
   - [Wi-Fi autoconnect (optional)](#wi-fi-autoconnect-optional)
   - [Activate Network-Watchdog (optional)](#activate-network-watchdog-optional)
-    - [Setup config file (optional)](#setup-config-file-optional)
   - [Install BitTorrent-Sync (optional)](#install-bittorrent-sync-optional)
-  - [Use sync script (optional)](#use-sync-script-optional)
+  - [Install Sync-Script (optional)](#use-sync-script-optional)
     - [Setup config file](#setup-config-file)
     - [Crontab](#crontab)
     - [less strict ssh restrictions needed on your remote server](#less-strict-ssh-restrictions-needed-on-your-remote-server)
@@ -196,7 +196,7 @@ crontab -e
 sudo ln -snf /home/pi/raspicam-timelapse/dynamic-dns-client/lib_dhcpcd_dhcpcd-hooks_90-dynamic-dns /lib/dhcpcd/dhcpcd-hooks/90-dynamic-dns
 
 # Change config vars in dynamic-dns.conf:
-sudo editor dynamic-dns-client/dynamic-dns.conf
+sudo editor ~/raspicam-timelapse/dynamic-dns-client/dynamic-dns.conf
 ```
 
 
@@ -230,10 +230,10 @@ crontab -e
 
 # Insert this line into crontab:
 * * * * * sudo ~/raspicam-timelapse/network-watchdog/check-network.sh
+
+# Default ping destination is the default gateway - override via IPV4_PING_DEST/IPV6_PING_DEST when needed:
+sudo editor ~/raspicam-timelapse/config/check-network.conf
 ```
-#### Setup config file (optional)
-You can override IPV4_PING_DEST and IPV6_PING_DEST which are set to the default gateway by default.  
-Location: config/check-network.conf
 
 ### Install BitTorrent-Sync (optional)
 
@@ -264,8 +264,9 @@ editor capture/.sync/IgnoreList
 /latest.jpg
 ```
 
-### Use sync script (optional)
-second sync method is a [configurable sync script](sync/sync.sh). Currently only tested with rsync.
+### Install Sync-Script (optional)
+
+Second sync method is a [configurable sync script](sync/sync.sh). Currently only tested with rsync.
 
 #### Setup config file
 You have to configure some options in sync/sync.conf ([examples](sync/sync.conf.example)) at first 
