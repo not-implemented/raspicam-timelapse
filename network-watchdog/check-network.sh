@@ -50,6 +50,9 @@ print_current_network_status() {
     log "Output of: ip route"
     ip route
 
+    log "Output of: ip -6 route"
+    ip -6 route
+
     log "Output of: iwconfig wlan0"
     iwconfig wlan0
 
@@ -73,6 +76,13 @@ DEFAULT_GATEWAY_V6=$(ip -6 route show default | awk '/^default/ {print $3"%"$5}'
 IPV4_PING_DEST=$DEFAULT_GATEWAY_V4
 IPV6_PING_DEST=$DEFAULT_GATEWAY_V6
 
+IPV4_ENABLED=1
+IPV6_ENABLED=1
+
+PING_LIMIT_1=1
+PING_LIMIT_2=3
+PING_LIMIT_3=10
+
 # load config file
 if [ -e $CONFIG_FILE ]
 then
@@ -86,39 +96,44 @@ then
 fi
 
 # v6
-if [ "$IPV6_PING_DEST" != "" ] && ping6 -c5 -q $IPV6_PING_DEST > /dev/null; then
+if [ $IPV6_ENABLED -ne 0 ] && [ "$IPV6_PING_DEST" != "" ] && ping6 -c5 -q $IPV6_PING_DEST > /dev/null; then
     STATUS_FAILED_V6=0
 else
     STATUS_FAILED_V6=$(( ${STATUS_FAILED_V6:-0} + 1 ))
 fi
 # v4
-if [ "$IPV4_PING_DEST" != "" ] && ping -c5 -q $IPV4_PING_DEST > /dev/null; then
+if [ $IPV4_ENABLED -ne 0 ] && [ "$IPV4_PING_DEST" != "" ] && ping -c5 -q $IPV4_PING_DEST > /dev/null; then
     STATUS_FAILED_V4=0
 else
      STATUS_FAILED_V4=$(( ${STATUS_FAILED_V4:-0} + 1 ))
 fi
 
-if [ "$STATUS_FAILED_V6" -eq 0 ]; then
+if [ $IPV6_ENABLED -eq 0 ]; then
+    :
+elif [ "$STATUS_FAILED_V6" -eq 0 ]; then
     log "Ping v6 $IPV6_PING_DEST: OK"
 else
     log "Ping v6 ${IPV6_PING_DEST:-no v6 address to ping}: ERROR"
 fi
 
-if [ "$STATUS_FAILED_V4" -eq 0 ]; then
+if [ $IPV4_ENABLED -eq 0 ]; then
+    :
+elif [ "$STATUS_FAILED_V4" -eq 0 ]; then
     log "Ping v4 $IPV4_PING_DEST OK"
 else
     log "Ping v4 ${IPV4_PING_DEST:-no v4 address to ping}: ERROR"
 fi
 
-if [ $STATUS_FAILED_V4 -ge 1 -a $STATUS_FAILED_V6 -eq 0 ]; then
+if [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 -a $STATUS_FAILED_V6 -eq 0 ]; then
     print_current_network_status
     dhcpd_restart
-elif [ $STATUS_FAILED_V6 -ge 1 ]; then
+elif ([ $IPV4_ENABLED -ne 0 ] && [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 ]) || 
+     ([ $IPV6_ENABLED -ne 0 ] && [ $STATUS_FAILED_V6 -ge $PING_LIMIT_1 ]); then
     print_current_network_status
     network_stop
-    [ $STATUS_FAILED_V6 -ge 3 ] && usb_reset
+    [ $STATUS_FAILED_V6 -ge $PING_LIMIT_2 ] && usb_reset
     network_start
-elif [ $STATUS_FAILED_V6 -ge 10 ]; then
+elif [ $STATUS_FAILED_V6 -ge $PING_LIMIT_3 ]; then
     print_current_network_status
     do_reboot && exit
 fi
