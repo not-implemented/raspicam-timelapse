@@ -27,10 +27,12 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
   - [Wi-Fi autoconnect (optional)](#wi-fi-autoconnect-optional)
   - [Activate Network-Watchdog (optional)](#activate-network-watchdog-optional)
   - [Install BitTorrent-Sync (optional)](#install-bittorrent-sync-optional)
-  - [Install Sync-Script (optional)](#use-sync-script-optional)
+  - [Install Sync-Script (optional)](#install-sync-script-optional)
     - [Setup config file](#setup-config-file)
     - [Crontab](#crontab)
     - [less strict ssh restrictions needed on your remote server](#less-strict-ssh-restrictions-needed-on-your-remote-server)
+  - [Use Ramdisk as primary capture folder (optional)](#use-ramdisk-as-primary-capture-folder-optional)
+    - [Crontab](#crontab-1)
 - [TODO](#todo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -303,6 +305,28 @@ esac
 
 exec $SSH_ORIGINAL_COMMAND
 ```
+
+### Use Ramdisk as primary capture folder (optional)
+fstab entry (sudo vim /etc/fstab)
+```
+capture_ramdisk /home/pi/capture_ramdisk tmpfs size=30M,uid=1000,gid=1000,mode=755 0 0
+```
+```
+mkdir /home/pi/capture_ramdisk
+sudo mount /home/pi/capture_ramdisk
+```
+#### Crontab
+```
+# add sync script to crontab
+crontab -e
+```
+```
+# sync job for ramdisk
+* * * * * ~/raspicam-timelapse/sync/sync.sh ~/capture_ramdisk
+# move files older than 3 minutes to sd card
+* * * * * cd ~/capture_ramdisk/; find . -mmin +3 | while read file; do destdir=~/capture/$(dirname "$file"); mkdir -p "$destdir"; mv "$file" "$destdir"; done
+```
+
 
 TODO
 ----
