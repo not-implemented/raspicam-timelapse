@@ -66,10 +66,10 @@ HowTo
 Install Node.js (for Node.js >=4.x you need Raspbian "Jessie" or newer - otherwise the native modules won't compile):
 
 ```bash
-wget https://nodejs.org/dist/v4.3.1/node-v4.3.1-linux-armv6l.tar.xz
-tar -xvf node-v4.3.1-linux-armv6l.tar.xz
-sudo cp -R node-v4.3.1-linux-armv6l/{bin,include,lib,share} /usr/local/
-rm -rf node-v4.3.1-linux-armv6l
+wget https://nodejs.org/dist/v4.4.3/node-v4.4.3-linux-armv6l.tar.xz
+tar -xvf node-v4.4.3-linux-armv6l.tar.xz
+sudo cp -R node-v4.4.3-linux-armv6l/{bin,include,lib,share} /usr/local/
+rm -rf node-v4.4.3-linux-armv6l
 ```
 
 Install GIT:
