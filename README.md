@@ -234,7 +234,8 @@ crontab -e
 * * * * * sudo ~/raspicam-timelapse/network-watchdog/check-network.sh
 
 # Default ping destination is the default gateway - override via IPV4_PING_DEST/IPV6_PING_DEST when needed:
-sudo editor ~/raspicam-timelapse/config/check-network.conf
+cp ~/raspicam-timelapse/config/check-network.conf.example
+editor ~/raspicam-timelapse/config/check-network.conf.example
 ```
 
 ### Install BitTorrent-Sync (optional)
