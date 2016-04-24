@@ -32,7 +32,7 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
     - [Crontab](#crontab)
     - [less strict ssh restrictions needed on your remote server](#less-strict-ssh-restrictions-needed-on-your-remote-server)
   - [Use Ramdisk as primary capture folder (optional)](#use-ramdisk-as-primary-capture-folder-optional)
-    - [Crontab](#crontab-1)
+    - [Additional crontab entries](#additional-crontab-entries)
 - [TODO](#todo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -316,7 +316,7 @@ capture_ramdisk /home/pi/capture_ramdisk tmpfs size=30M,uid=1000,gid=1000,mode=7
 mkdir /home/pi/capture_ramdisk
 sudo mount /home/pi/capture_ramdisk
 ```
-#### Crontab
+#### Additional crontab entries
 ```
 # add sync script to crontab
 crontab -e
