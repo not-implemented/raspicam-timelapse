@@ -325,7 +325,7 @@ crontab -e
 # sync job for ramdisk
 * * * * * ~/raspicam-timelapse/sync/sync.sh ~/capture_ramdisk
 # move files older than 3 minutes to sd card
-* * * * * cd ~/capture_ramdisk/; find . -mmin +3 | while read file; do destdir=~/capture/$(dirname "$file"); mkdir -p "$destdir"; mv "$file" "$destdir"; done
+* * * * * ~/raspicam-timelapse/sync/sync.sh ~/capture_ramdisk ~/capture
 ```
 
 
