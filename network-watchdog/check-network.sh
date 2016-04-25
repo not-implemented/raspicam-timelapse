@@ -60,7 +60,6 @@ print_current_network_status() {
     iwlist wlan0 scanning | grep SSID
 }
 
-
 # Locking
 [ -e `dirname $0`/../global/bash-locking.inc.sh ] && . `dirname $0`/../global/bash-locking.inc.sh
 
@@ -94,6 +93,9 @@ if [ -e $STATUS_FILE ]
 then
     . $STATUS_FILE
 fi
+
+# save variables to file which start with $SAVE_VARIABLE_PREFIX
+trap 'save_variables > $STATUS_FILE' EXIT
 
 # v6
 if [ $IPV6_ENABLED -ne 0 ] && [ "$IPV6_PING_DEST" != "" ] && ping6 -c5 -q $IPV6_PING_DEST > /dev/null; then
@@ -135,8 +137,8 @@ elif ([ $IPV4_ENABLED -ne 0 ] && [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 ]) ||
     network_start
 elif [ $STATUS_FAILED_V6 -ge $PING_LIMIT_3 ]; then
     print_current_network_status
+    # reset variables to prevent reboot loop
+    STATUS_FAILED_V4=0
+    STATUS_FAILED_V6=0
     do_reboot && exit
 fi
-
-# save variables to file wich start with $SAVE_VARIABLE_PREFIX
-save_variables > $STATUS_FILE
