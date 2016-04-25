@@ -99,6 +99,7 @@ trap 'save_variables > $STATUS_FILE' EXIT
 
 # v6
 if [ $IPV6_ENABLED -eq 0 ]; then
+    # set it to zero for easier error conditions
     STATUS_FAILED_V6=0
 else
     if [ "$IPV6_PING_DEST" != "" ] && ping6 -c5 -q $IPV6_PING_DEST > /dev/null; then
@@ -115,7 +116,7 @@ else
 fi
 # v4
 if [ $IPV4_ENABLED -eq 0 ]; then
-    # set it to zero for easier
+    # set it to zero for easier error conditions
     STATUS_FAILED_V4=0
 else
     if [ "$IPV4_PING_DEST" != "" ] && ping -c5 -q $IPV4_PING_DEST > /dev/null; then
