@@ -98,47 +98,62 @@ fi
 trap 'save_variables > $STATUS_FILE' EXIT
 
 # v6
-if [ $IPV6_ENABLED -ne 0 ] && [ "$IPV6_PING_DEST" != "" ] && ping6 -c5 -q $IPV6_PING_DEST > /dev/null; then
+if [ $IPV6_ENABLED -eq 0 ]; then
     STATUS_FAILED_V6=0
 else
-    STATUS_FAILED_V6=$(( ${STATUS_FAILED_V6:-0} + 1 ))
+    if [ "$IPV6_PING_DEST" != "" ] && ping6 -c5 -q $IPV6_PING_DEST > /dev/null; then
+        STATUS_FAILED_V6=0
+    else
+        STATUS_FAILED_V6=$(( ${STATUS_FAILED_V6:-0} + 1 ))
+    fi
+    
+    if [ "$STATUS_FAILED_V6" -eq 0 ]; then
+        log "Ping v6 $IPV6_PING_DEST: OK"
+    else
+        log "Ping v6 ${IPV6_PING_DEST:-no v6 address to ping}: ERROR"
+    fi
 fi
 # v4
-if [ $IPV4_ENABLED -ne 0 ] && [ "$IPV4_PING_DEST" != "" ] && ping -c5 -q $IPV4_PING_DEST > /dev/null; then
-    STATUS_FAILED_V4=0
-else
-     STATUS_FAILED_V4=$(( ${STATUS_FAILED_V4:-0} + 1 ))
-fi
-
-if [ $IPV6_ENABLED -eq 0 ]; then
-    :
-elif [ "$STATUS_FAILED_V6" -eq 0 ]; then
-    log "Ping v6 $IPV6_PING_DEST: OK"
-else
-    log "Ping v6 ${IPV6_PING_DEST:-no v6 address to ping}: ERROR"
-fi
-
 if [ $IPV4_ENABLED -eq 0 ]; then
-    :
-elif [ "$STATUS_FAILED_V4" -eq 0 ]; then
-    log "Ping v4 $IPV4_PING_DEST OK"
+    # set it to zero for easier
+    STATUS_FAILED_V4=0
 else
-    log "Ping v4 ${IPV4_PING_DEST:-no v4 address to ping}: ERROR"
+    if [ "$IPV4_PING_DEST" != "" ] && ping -c5 -q $IPV4_PING_DEST > /dev/null; then
+        STATUS_FAILED_V4=0
+    else
+        STATUS_FAILED_V4=$(( ${STATUS_FAILED_V4:-0} + 1 ))
+    fi
+    
+    if [ "$STATUS_FAILED_V4" -eq 0 ]; then
+        log "Ping v4 $IPV4_PING_DEST: OK"
+    else
+        log "Ping v4 ${IPV4_PING_DEST:-no v4 address to ping}: ERROR"
+    fi
 fi
 
-if [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 -a $STATUS_FAILED_V6 -eq 0 ]; then
-    print_current_network_status
-    dhcpd_restart
-elif ([ $IPV4_ENABLED -ne 0 ] && [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 ]) || 
-     ([ $IPV6_ENABLED -ne 0 ] && [ $STATUS_FAILED_V6 -ge $PING_LIMIT_1 ]); then
-    print_current_network_status
-    network_stop
-    [ $STATUS_FAILED_V6 -ge $PING_LIMIT_2 ] && usb_reset
-    network_start
-elif [ $STATUS_FAILED_V6 -ge $PING_LIMIT_3 ]; then
-    print_current_network_status
-    # reset variables to prevent reboot loop
-    STATUS_FAILED_V4=0
-    STATUS_FAILED_V6=0
-    do_reboot && exit
+if [ $IPV4_ENABLED -ne 0 ] || [ $IPV6_ENABLED -ne 0 ]; then
+    if [ $IPV6_ENABLED -ne 0 ] && [ $STATUS_FAILED_V6 -ge $PING_LIMIT_3 ]; then
+        print_current_network_status
+        # reset variables to prevent reboot loop
+        STATUS_FAILED_V4=0
+        STATUS_FAILED_V6=0
+        do_reboot && exit
+    elif [ $IPV6_ENABLED -eq 0 ] && [ $IPV4_ENABLED -ne 0 ] && [ $STATUS_FAILED_V4 -ge $PING_LIMIT_3 ]; then
+        print_current_network_status
+        # reset variables to prevent reboot loop
+        STATUS_FAILED_V4=0
+        STATUS_FAILED_V6=0
+        do_reboot
+    elif [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 ] && [ $STATUS_FAILED_V6 -eq 0 ]; then
+        print_current_network_status
+        dhcpd_restart
+    elif [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 ] || 
+        [ $STATUS_FAILED_V6 -ge $PING_LIMIT_1 ]; then
+        print_current_network_status
+        network_stop
+        if [ $STATUS_FAILED_V6 -ge $PING_LIMIT_2 ] || ([ $IPV6_ENABLED -eq 0 ] && [ $STATUS_FAILED_V4 -ge $PING_LIMIT_2 ]); then
+            usb_reset
+        fi
+        network_start
+    fi
 fi
