@@ -309,6 +309,10 @@ exec $SSH_ORIGINAL_COMMAND
 ```
 
 ### Use Ramdisk as primary capture folder (optional)
+
+To save SD-Cards life, you can capture to a Ramdisk and sync immediately up. Only when sync
+does not work for any reason, files are moved to SD-Card and synced up from there.
+
 fstab entry (sudo vim /etc/fstab)
 ```
 capture_ramdisk /home/pi/capture_ramdisk tmpfs size=30M,uid=1000,gid=1000,mode=755 0 0
@@ -326,7 +330,7 @@ crontab -e
 # sync job for ramdisk
 * * * * * ~/raspicam-timelapse/sync/sync.sh ~/capture_ramdisk
 # move files older than 3 minutes to sd card
-* * * * * ~/raspicam-timelapse/sync/sync.sh ~/capture_ramdisk ~/capture
+* * * * * ~/raspicam-timelapse/sync/ramdisk2sd-move.sh ~/capture_ramdisk ~/capture
 ```
 
 
