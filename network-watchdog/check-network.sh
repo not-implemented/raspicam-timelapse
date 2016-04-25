@@ -132,20 +132,20 @@ else
     fi
 fi
 
-if [ $IPV4_ENABLED -ne 0 ] || [ $IPV6_ENABLED -ne 0 ]; then
-    if [ $IPV6_ENABLED -ne 0 ] && [ $STATUS_FAILED_V6 -ge $PING_LIMIT_3 ]; then
-        print_current_network_status
-        # reset variables to prevent reboot loop
-        STATUS_FAILED_V4=0
-        STATUS_FAILED_V6=0
-        do_reboot && exit
-    elif [ $IPV6_ENABLED -eq 0 ] && [ $IPV4_ENABLED -ne 0 ] && [ $STATUS_FAILED_V4 -ge $PING_LIMIT_3 ]; then
+if [ $IPV4_ENABLED -eq 1 ] || [ $IPV6_ENABLED -eq 1 ]; then
+    if [ $IPV6_ENABLED -eq 1 ] && [ $STATUS_FAILED_V6 -ge $PING_LIMIT_3 ]; then
         print_current_network_status
         # reset variables to prevent reboot loop
         STATUS_FAILED_V4=0
         STATUS_FAILED_V6=0
         do_reboot
-    elif [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 ] && [ $STATUS_FAILED_V6 -eq 0 ]; then
+    elif [ $IPV6_ENABLED -eq 0 ] && [ $IPV4_ENABLED -eq 1 ] && [ $STATUS_FAILED_V4 -ge $PING_LIMIT_3 ]; then
+        print_current_network_status
+        # reset variables to prevent reboot loop
+        STATUS_FAILED_V4=0
+        STATUS_FAILED_V6=0
+        do_reboot
+    elif [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 ] && [ $IPV6_ENABLED -eq 1 ] && [ $STATUS_FAILED_V6 -eq 0 ]; then
         print_current_network_status
         dhcpd_restart
     elif [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 ] || 
