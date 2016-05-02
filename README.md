@@ -231,7 +231,7 @@ network={
 crontab -e
 
 # Insert this line into crontab:
-* * * * * sudo ~/raspicam-timelapse/network-watchdog/check-network.sh
+* * * * * sudo timeout -k 120 100 ~/raspicam-timelapse/network-watchdog/check-network.sh
 
 # To enable the watchdog set IPV4_ENABLED=1 and/or IPV6_ENABLED=1 - default ping destination
 # is the default gateway - override via IPV4_PING_DEST/IPV6_PING_DEST when needed:
