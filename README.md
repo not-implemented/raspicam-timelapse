@@ -33,6 +33,13 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
     - [less strict ssh restrictions needed on your remote server](#less-strict-ssh-restrictions-needed-on-your-remote-server)
   - [Use Ramdisk as primary capture folder (optional)](#use-ramdisk-as-primary-capture-folder-optional)
     - [Additional crontab entries](#additional-crontab-entries)
+  - [3G/4G backup connection (optional)](#3g4g-backup-connection-optional)
+    - [Setup usb-modeswitch to put modem into ethernet mode](#setup-usb-modeswitch-to-put-modem-into-ethernet-mode)
+      - [add udev rule](#add-udev-rule)
+      - [Example values (Huawei E303)](#example-values-huawei-e303)
+    - [Setup routing](#setup-routing)
+    - [Add additional tunnels to tunnels.sh](#add-additional-tunnels-to-tunnelssh)
+      - [Example values (Huawei E303)](#example-values-huawei-e303-1)
 - [TODO](#todo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -331,6 +338,46 @@ crontab -e
 * * * * * ~/raspicam-timelapse/sync/sync.sh ~/capture_ramdisk
 # move files older than 3 minutes to sd card
 * * * * * ~/raspicam-timelapse/sync/ramdisk2sd-move.sh ~/capture_ramdisk ~/capture
+```
+
+
+### 3G/4G backup connection (optional)
+
+#### Setup usb-modeswitch to put modem into ethernet mode
+`sudo apt-get install usb-modeswitch usb-modeswitch-data`
+
+##### add udev rule
+```
+# Example values for Huawei E303 (please change for your specific device!):
+vendor_id=12d1
+product_id=1f01
+switch_message=55534243123456780000000000000011062000000101000100000000000000
+
+cat <<EOF | sudo tee /etc/udev/rules.d/70-usb-modeswitch.rules > /dev/null
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="$vendor_id", ATTRS{idProduct}=="$product_id", RUN+="/usr/sbin/usb_modeswitch -v $vendor_id -p $product_id -M $switch_message"
+EOF
+
+# reload udev:
+sudo udevadm control --reload
+```
+
+#### Setup interfaces and routing
+
+```bash
+cp ~/raspicam-timelapse/config/interfaces-post-up.conf.example ~/raspicam-timelapse/config/interfaces-post-up.conf
+editor ~/raspicam-timelapse/config/interfaces-post-up.conf
+sudo editor /etc/network/interfaces
+
+# add these lines:
+iface eth1 inet dhcp
+    post-up /home/pi/raspicam-timelapse/backup-connection/interfaces-post-up.sh
+```
+
+**Now plug in your UMTS stick.**
+
+#### Add additional tunnels to tunnels.sh (replace `<stick_local_ip>`!)
+```
+~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh timelapse@www.example.com 11022 22 <stick_local_ip> &
 ```
 
 

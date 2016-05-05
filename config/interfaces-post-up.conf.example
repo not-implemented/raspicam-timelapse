@@ -1,0 +1,6 @@
+# Example values for Huawei E303 (please change for your specific device!):
+
+#stick_net=192.168.8.0/24
+#stick_interface=eth1
+#stick_local_ip=192.168.8.100
+#stick_gw_ip=192.168.8.1
