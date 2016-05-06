@@ -1,5 +1,18 @@
 ---
 - hosts: timelapse
   roles:
-      - hostname
-
+  - role: hostname
+  - role: dresden-weekly.network-interfaces
+    become: true
+    network_manage_devices: no
+    network_interfaces:
+    - device: eth0
+      description: on-board ethernet interface
+      auto: true
+      family: inet
+      method: dhcp
+    - device: eth1
+      description: 3G/4G stick or other interface if present
+      auto: true
+      family: inet
+      method: dhcp
