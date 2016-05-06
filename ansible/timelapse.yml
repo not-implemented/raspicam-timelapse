@@ -1,0 +1,7 @@
+---
+- hosts: timelapse
+  tasks:
+      - name: "debug 1"
+        debug: msg="System {{ inventory_hostname }} has gateway {{ ansible_default_ipv4.gateway }}"
+        when: ansible_default_ipv4.gateway is defined
+
