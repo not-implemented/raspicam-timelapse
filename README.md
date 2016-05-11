@@ -244,6 +244,24 @@ cp ~/raspicam-timelapse/config/check-network.conf.example ~/raspicam-timelapse/c
 editor ~/raspicam-timelapse/config/check-network.conf
 ```
 
+### Use hardware watchdog with Network-Watchdog (optional)
+
+`apt-get install watchdog`  
+`sudo editor /etc/default/watchdog`  
+```diff
+-watchdog_module="none"
++watchdog_module="bcm2708_wdog"
+```
+`sudo mkdir /etc/watchdog.d`
+```
+# To enable the watchdog set IPV4_ENABLED=1 and/or IPV6_ENABLED=1 - default ping destination
+# is the default gateway - override via IPV4_PING_DEST/IPV6_PING_DEST when needed:
+cp ~/raspicam-timelapse/config/check-network.conf.example ~/raspicam-timelapse/config/check-network.conf
+editor ~/raspicam-timelapse/config/check-network.conf
+sudo ln -s ~/raspicam-timelapse/network-watchdog/check-network.sh /etc/watchdog.d/
+```
+`systemctl enable watchdog`  
+
 ### Install BitTorrent-Sync (optional)
 
 We currently use BitTorrent-Sync as sync-solution, because Syncthing is very slow on Raspberry Pi.
