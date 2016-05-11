@@ -36,10 +36,8 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
   - [3G/4G backup connection (optional)](#3g4g-backup-connection-optional)
     - [Setup usb-modeswitch to put modem into ethernet mode](#setup-usb-modeswitch-to-put-modem-into-ethernet-mode)
       - [add udev rule](#add-udev-rule)
-      - [Example values (Huawei E303)](#example-values-huawei-e303)
-    - [Setup routing](#setup-routing)
-    - [Add additional tunnels to tunnels.sh](#add-additional-tunnels-to-tunnelssh)
-      - [Example values (Huawei E303)](#example-values-huawei-e303-1)
+    - [Setup interfaces and routing](#setup-interfaces-and-routing)
+    - [Add additional tunnels to tunnels.sh (replace `<stick_local_ip>`!)](#add-additional-tunnels-to-tunnelssh-replace-stick_local_ip)
 - [TODO](#todo)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
