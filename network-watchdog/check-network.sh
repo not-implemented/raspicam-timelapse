@@ -60,6 +60,12 @@ print_current_network_status() {
     iwlist wlan0 scanning | grep SSID
 }
 
+check_modulo() {
+    local counter=$1
+    local limit=$2
+    [ $counter -gt 0 ] && (( $counter % $limit == 0 ))
+}
+
 # Locking
 [ -e `dirname $0`/../global/bash-locking.inc.sh ] && . `dirname $0`/../global/bash-locking.inc.sh
 
@@ -78,9 +84,10 @@ IPV6_PING_DEST=$DEFAULT_GATEWAY_V6
 IPV4_ENABLED=0
 IPV6_ENABLED=0
 
-PING_LIMIT_1=1
-PING_LIMIT_2=3
-PING_LIMIT_3=10
+PING_LIMIT_1=5
+PING_LIMIT_2=10
+PING_LIMIT_3=60
+PING_LIMIT_4=70
 
 # load config file
 if [ -e $CONFIG_FILE ]
@@ -133,28 +140,34 @@ else
 fi
 
 if [ $IPV4_ENABLED -eq 1 ] || [ $IPV6_ENABLED -eq 1 ]; then
-    if [ $IPV6_ENABLED -eq 1 ] && [ $STATUS_FAILED_V6 -ge $PING_LIMIT_3 ]; then
+    if [ $IPV6_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V6 $PING_LIMIT_4; then
+        log "exiting with error code for watchdog"
+        exit 1
+    elif [ $IPV6_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V6 $PING_LIMIT_3; then
+        print_current_network_status
+        do_reboot
+    elif [ $IPV6_ENABLED -eq 0 ] && [ $IPV4_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V4 $PING_LIMIT_3; then
         print_current_network_status
         # reset variables to prevent reboot loop
         STATUS_FAILED_V4=0
         STATUS_FAILED_V6=0
         do_reboot
-    elif [ $IPV6_ENABLED -eq 0 ] && [ $IPV4_ENABLED -eq 1 ] && [ $STATUS_FAILED_V4 -ge $PING_LIMIT_3 ]; then
-        print_current_network_status
-        # reset variables to prevent reboot loop
-        STATUS_FAILED_V4=0
-        STATUS_FAILED_V6=0
-        do_reboot
-    elif [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 ] && [ $IPV6_ENABLED -eq 1 ] && [ $STATUS_FAILED_V6 -eq 0 ]; then
+    elif check_modulo $STATUS_FAILED_V4 $PING_LIMIT_1 && [ $IPV6_ENABLED -eq 1 ] && [ $STATUS_FAILED_V6 -eq 0 ]; then
         print_current_network_status
         dhcpd_restart
-    elif [ $STATUS_FAILED_V4 -ge $PING_LIMIT_1 ] || 
-        [ $STATUS_FAILED_V6 -ge $PING_LIMIT_1 ]; then
+    elif check_modulo $STATUS_FAILED_V4 $PING_LIMIT_1 || 
+        check_modulo $STATUS_FAILED_V6 $PING_LIMIT_1; then
         print_current_network_status
         network_stop
-        if [ $STATUS_FAILED_V6 -ge $PING_LIMIT_2 ] || ([ $IPV6_ENABLED -eq 0 ] && [ $STATUS_FAILED_V4 -ge $PING_LIMIT_2 ]); then
+        if check_modulo $STATUS_FAILED_V6 $PING_LIMIT_2 || ([ $IPV6_ENABLED -eq 0 ] && check_modulo $STATUS_FAILED_V4 $PING_LIMIT_2 ); then
             usb_reset
         fi
         network_start
+    else
+        # reset variables
+        STATUS_FAILED_V4=0
+        STATUS_FAILED_V6=0
     fi
 fi
+
+exit 0
