@@ -26,6 +26,7 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
   - [Dynamic-DNS-Client (optional)](#dynamic-dns-client-optional)
   - [Wi-Fi autoconnect (optional)](#wi-fi-autoconnect-optional)
   - [Activate Network-Watchdog (optional)](#activate-network-watchdog-optional)
+  - [Use hardware watchdog with Network-Watchdog (optional)](#use-hardware-watchdog-with-network-watchdog-optional)
   - [Install BitTorrent-Sync (optional)](#install-bittorrent-sync-optional)
   - [Install Sync-Script (optional)](#install-sync-script-optional)
     - [Setup config file](#setup-config-file)
