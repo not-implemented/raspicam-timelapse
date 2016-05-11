@@ -12,6 +12,7 @@ var crypto = require('crypto');
 var ExifImage = require('exif').ExifImage;
 var vcgencmd = require('vcgencmd');
 var diskusage = require('diskusage');
+var getInterfaceInfo = require('./build/Release/binding').getInterfaceInfo;
 
 var configFilename = __dirname + '/config/timelapse.json';
 var config = {
@@ -209,6 +210,21 @@ function updateStatus(partial) {
         });
     }
     status.visitors.value = '' + Object.keys(visitors).length + ' users online';
+
+    if (!partial) {
+        var networkInterfaces = os.networkInterfaces();
+        for (var interfaceName in networkInterfaces) {
+            var interfaceInfo = getInterfaceInfo(interfaceName);
+            if (interfaceInfo.loopback) continue;
+            if (!interfaceInfo.running) continue;
+
+            status['interface_' + interfaceName] = {
+                title: 'Interface ' + interfaceName,
+                value: interfaceInfo.essid ? (interfaceInfo.essid + ' (' + interfaceInfo.accessPoint + '): ' + interfaceInfo.signalLevel + '%') : 'link detected',
+                type: interfaceInfo.essid && interfaceInfo.signalLevel < 50 ? (interfaceInfo.signalLevel < 20 ? 'danger' : 'warning') : 'success'
+            };
+        }
+    }
 }
 
 setInterval(updateStatus, 10000);
