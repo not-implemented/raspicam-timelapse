@@ -1,0 +1,4 @@
+iface eth1 inet manual
+    post-up /home/pi/raspicam-timelapse/backup-connection/interfaces-up_down.sh up
+    pre-down /home/pi/raspicam-timelapse/backup-connection/interfaces-up_down.sh down
+
