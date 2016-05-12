@@ -13,6 +13,8 @@ var ExifImage = require('exif').ExifImage;
 var vcgencmd = require('vcgencmd');
 var diskusage = require('diskusage');
 var getInterfaceInfo = require('./build/Release/binding').getInterfaceInfo;
+var socketIo = require('socket.io');
+var io;
 
 var configFilename = __dirname + '/config/timelapse.json';
 var config = {
@@ -224,6 +226,10 @@ function updateStatus(partial) {
                 type: interfaceInfo.essid && interfaceInfo.signalLevel < 50 ? (interfaceInfo.signalLevel < 20 ? 'danger' : 'warning') : 'success'
             };
         }
+    }
+
+    if (io) {
+        io.emit('status', status);
     }
 }
 
@@ -490,6 +496,8 @@ var server = https.createServer(serverOptions, function (request, response) {
         if (mounts[i](request, response)) break;
     }
 });
+
+io = socketIo(server);
 
 server.listen(4443);
 

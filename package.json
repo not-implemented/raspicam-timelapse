@@ -26,6 +26,7 @@
     "vcgencmd": "^0.3.0",
     "diskusage": "^0.1.4",
     "bootstrap": "^3.3.5",
-    "jquery": "^2.1.4"
+    "jquery": "^2.1.4",
+    "socket.io": "^1.4.6"
   }
 }
