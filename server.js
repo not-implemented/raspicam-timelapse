@@ -171,16 +171,27 @@ function updateStatus(partial) {
     }
 
     if (!partial) {
-        diskusage.check(config.capturePath, function(err, info) {
-            if (err) {
-                status.freeDiskSpace.value = 'error';
-                status.freeDiskSpace.type = 'danger';
-                return;
-            }
+        fs.stat('/', function(err2, sdStat) {
+            fs.stat(config.capturePath, function (err1, captureStat) {
+                diskusage.check('/', function (err4, sdInfo) {
+                    diskusage.check(config.capturePath, function (err3, captureInfo) {
+                        if (err1 || err2 || err3 || err4) {
+                            status.freeDiskSpace.value = 'error';
+                            status.freeDiskSpace.type = 'danger';
+                            return;
+                        }
 
-            var freePercent = Math.round(info.available / info.total * 1000) / 10;
-            status.freeDiskSpace.value = formatBytes(info.available) + ' (' + freePercent + ' %)';
-            status.freeDiskSpace.type = freePercent < 10 ? (freePercent < 3 ? 'danger' : 'warning') : 'success';
+                        var sdFreePercent = Math.round(sdInfo.available / sdInfo.total * 1000) / 10;
+                        var captureFreePercent = Math.round(captureInfo.available / captureInfo.total * 1000) / 10;
+                        var minFreePercent = Math.min(sdFreePercent, captureFreePercent);
+                        status.freeDiskSpace.value = 'SD-Card: ' + formatBytes(sdInfo.available) + ' (' + sdFreePercent + ' %)';
+                        if (captureStat.dev !== sdStat.dev) {
+                            status.freeDiskSpace.value += ' - Capture: ' + formatBytes(captureInfo.available) + ' (' + captureFreePercent + ' %)';
+                        }
+                        status.freeDiskSpace.type = minFreePercent < 10 ? (minFreePercent < 3 ? 'danger' : 'warning') : 'success';
+                    });
+                });
+            });
         });
 
         var cpuTemp = vcgencmd.measureTemp();
