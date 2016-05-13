@@ -82,11 +82,12 @@ var mounts = [st({
 })];
 
 var previewImage = null;
+var previewImageName = null;
 var previewImageHash = null;
 var previewImageInfo = null;
 
 function updatePreviewImage() {
-    var previewImageName = config.capturePath + '/latest.jpg';
+    previewImageName = config.capturePath + '/latest.jpg';
 
     function onError(err) {
         previewImage = null;
@@ -480,7 +481,7 @@ var server = https.createServer(serverOptions, function (request, response) {
         });
     }
 
-    if (url.pathname === '/preview') {
+    if (url.pathname === '/preview' || url.pathname === '/full-preview') {
         if (!previewImage) {
             response.writeHead(404);
             response.end('No preview image available');
@@ -492,7 +493,12 @@ var server = https.createServer(serverOptions, function (request, response) {
             'Cache-Control': 'must-revalidate',
             'Expires': '0'
         });
-        response.end(previewImage);
+
+        if (url.pathname === '/preview') {
+            response.end(previewImage);
+        } else if (url.pathname === '/full-preview') {
+            fs.createReadStream(previewImageName).pipe(response);
+        }
         return;
     }
 

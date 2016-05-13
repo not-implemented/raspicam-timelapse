@@ -19,6 +19,10 @@
     color: #999;
 }
 
+#full-preview {
+    display: inline-block;
+}
+
 #busy-indicator {
     font-size: 5px;
     position: relative;
