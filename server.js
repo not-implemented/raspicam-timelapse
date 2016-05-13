@@ -136,7 +136,7 @@ function updatePreviewImage() {
     });
 }
 
-setInterval(updatePreviewImage, 1000);
+var updatePreviewImageInterval = setInterval(updatePreviewImage, 1000);
 updatePreviewImage();
 
 var status = {
@@ -239,7 +239,7 @@ function updateStatus(partial) {
     }
 }
 
-setInterval(updateStatus, 10000);
+var updateStatusInterval = setInterval(updateStatus, 10000);
 updateStatus();
 
 function formatDate(date) {
@@ -511,6 +511,8 @@ var server = https.createServer(serverOptions, function (request, response) {
 server.listen(4443);
 
 function shutdown() {
+    clearInterval(updatePreviewImageInterval);
+    clearInterval(updateStatusInterval);
     server.close();
 }
 
