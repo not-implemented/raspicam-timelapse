@@ -101,6 +101,16 @@ then
     . $STATUS_FILE
 fi
 
+# reboot detection:
+CURRENT_STATUS_UPTIME=$(cut -d"." -f1 /proc/uptime)
+
+if [ -z $STATUS_UPTIME ] || [ $CURRENT_STATUS_UPTIME -lt $STATUS_UPTIME ]; then
+    STATUS_FAILED_V4=0
+    STATUS_FAILED_V6=0
+fi
+
+STATUS_UPTIME=$CURRENT_STATUS_UPTIME
+
 # save variables to file which start with $SAVE_VARIABLE_PREFIX
 trap 'save_variables > $STATUS_FILE' EXIT
 
@@ -148,9 +158,6 @@ if [ $IPV4_ENABLED -eq 1 ] || [ $IPV6_ENABLED -eq 1 ]; then
         do_reboot
     elif [ $IPV6_ENABLED -eq 0 ] && [ $IPV4_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V4 $PING_LIMIT_3; then
         print_current_network_status
-        # reset variables to prevent reboot loop
-        STATUS_FAILED_V4=0
-        STATUS_FAILED_V6=0
         do_reboot
     elif check_modulo $STATUS_FAILED_V4 $PING_LIMIT_1 && [ $IPV6_ENABLED -eq 1 ] && [ $STATUS_FAILED_V6 -eq 0 ]; then
         print_current_network_status
@@ -163,10 +170,6 @@ if [ $IPV4_ENABLED -eq 1 ] || [ $IPV6_ENABLED -eq 1 ]; then
             usb_reset
         fi
         network_start
-    else
-        # reset variables
-        STATUS_FAILED_V4=0
-        STATUS_FAILED_V6=0
     fi
 fi
 
