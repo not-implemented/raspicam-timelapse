@@ -10,28 +10,52 @@ jQuery(function($) {
     var statusTable = $('#status-table');
     var saveConfigButton = $('#save-config');
     var resetConfigButton = $('#reset-config');
+    var socket = io('//' + location.hostname + ':' + location.port);
+
+    function noop() {}
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    setBusy(true);
-    updateStatus(function () {
-        setBusy(false);
-    });
-    setInterval(updateStatus, 1000);
+    function updateStatus(status) {
+        isCapturing = status.isCapturing;
+
+        if (status.latestPictureHash) {
+            previewImage.attr('src', '/preview?_=' + status.latestPictureHash);
+        } else {
+            previewImage.removeAttr('src');
+        }
+
+        for (var name in status) {
+            var statusId = 'status-' + name;
+            var statusItem = status[name];
+            if (statusItem === null || typeof statusItem !== 'object') continue;
+
+            var statusNode = $('#' + statusId);
+
+            if (statusNode.length === 0) {
+                statusTable.find('.status-init').remove();
+                statusTable.append('<tr><td>' + statusItem.title + '</td><td><span id="' + statusId + '"></span></td></tr>');
+                statusNode = $('#' + statusId);
+            }
+
+            statusNode.text(statusItem.value);
+            statusNode.removeClass();
+            statusNode.addClass('label label-' + statusItem.type);
+        }
+
+        if (callback) callback();
+
+        setBusy(isBusy); // for updated isCapturing
+    }
+
     loadConfig();
 
     startCaptureButton.on('click', function () {
-        api('startCapture', {}, function (response) {
-            isCapturing = response.isCapturing;
-            updateStatus();
-        });
+        api('startCapture', {}, noop);
     });
 
     stopCaptureButton.on('click', function () {
-        api('stopCapture', {}, function (response) {
-            isCapturing = response.isCapturing;
-            updateStatus();
-        });
+        api('stopCapture', {}, noop);
     });
 
     saveConfigButton.on('click', function () {
@@ -46,47 +70,7 @@ jQuery(function($) {
         loadConfig();
     });
 
-    function updateStatus(callback) {
-        api('loadStatus', function (status, info) {
-            if (info && info.responseTime) {
-                status.responseTime = {
-                    title: 'Response Time',
-                    value: 'network ' + info.responseTime + ' ms' + (info.duration ? ' (+ server ' + info.duration + ' ms)' : ''),
-                    type: info.responseTime > 500 ? (info.responseTime > 2000 ? 'danger' : 'warning') : 'success'
-                }
-            }
-
-            isCapturing = status.isCapturing;
-
-            if (status.latestPictureHash) {
-                previewImage.attr('src', '/preview?_=' + status.latestPictureHash);
-            } else {
-                previewImage.removeAttr('src');
-            }
-
-            for (var name in status) {
-                var statusId = 'status-' + name;
-                var statusItem = status[name];
-                if (statusItem === null || typeof statusItem !== 'object') continue;
-
-                var statusNode = $('#' + statusId);
-
-                if (statusNode.length === 0) {
-                    statusTable.find('.status-init').remove();
-                    statusTable.append('<tr><td>' + statusItem.title + '</td><td><span id="' + statusId + '"></span></td></tr>');
-                    statusNode = $('#' + statusId);
-                }
-
-                statusNode.text(statusItem.value);
-                statusNode.removeClass();
-                statusNode.addClass('label label-' + statusItem.type);
-            }
-
-            if (callback) callback();
-
-            setBusy(isBusy); // for updated isCapturing
-        });
-    }
+    socket.on('status', updateStatus);
 
     function loadConfig() {
         api('loadConfig', function (config) {
