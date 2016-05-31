@@ -8,3 +8,5 @@ IPV6_ENABLED=0
 PING_LIMIT_1=1
 PING_LIMIT_2=3
 PING_LIMIT_3=10
+# space seperated list of interface
+INTERFACES="wlan0"

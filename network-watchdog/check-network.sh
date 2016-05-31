@@ -13,34 +13,22 @@ do_reboot() {
     /bin/systemctl reboot
 }
 
-usb_reset() {
-    log "Reinitialize USB WiFi Stick"
-    echo $USB_ID_WLAN0 > /sys/bus/usb/drivers/usb/unbind
-    modprobe -rv 8192cu
-    sleep 5s
-    modprobe -v 8192cu
-    sleep 5s
-    echo $USB_ID_WLAN0 > /sys/bus/usb/drivers/usb/bind
-    sleep 2s
-}
-
-dhcpd_restart() {
-    /bin/systemctl restart dhcpcd
-}
-
 network_stop() {
-    log "Stopping Network"
-    /bin/systemctl daemon-reload
-    /bin/systemctl stop networking.service
     /bin/systemctl stop dhcpcd
-    pkill wpa_supplicant
-    pkill dhcpcd
+    for interface in $INTERFACES
+    do
+        log "Stopping interface $interface"
+        ifdown $interface
+    done
 }
 
 network_start() {
-    log "Starting Network"
+    for interface in $INTERFACES
+    do
+        log "Starting interface $interface"
+        ifup $interface
+    done
     /bin/systemctl start dhcpcd
-    /bin/systemctl start networking.service
 }
 
 print_current_network_status() {
@@ -53,11 +41,14 @@ print_current_network_status() {
     log "Output of: ip -6 route"
     ip -6 route
 
-    log "Output of: iwconfig wlan0"
-    iwconfig wlan0
+    for interface in $INTERFACES
+    do
+        log "Output of: iwconfig $interface"
+        iwconfig $interface
 
-    log "Output of: iwlist wlan0 scanning | grep SSID"
-    iwlist wlan0 scanning | grep SSID
+        log "Output of: iwlist $interface scanning | grep SSID"
+        iwlist $interface scanning | grep SSID
+    done
 }
 
 check_modulo() {
@@ -88,6 +79,8 @@ PING_LIMIT_1=5
 PING_LIMIT_2=10
 PING_LIMIT_3=60
 PING_LIMIT_4=70
+
+INTERFACES="wlan0"
 
 # load config file
 if [ -e $CONFIG_FILE ]
@@ -159,16 +152,10 @@ if [ $IPV4_ENABLED -eq 1 ] || [ $IPV6_ENABLED -eq 1 ]; then
     elif [ $IPV6_ENABLED -eq 0 ] && [ $IPV4_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V4 $PING_LIMIT_3; then
         print_current_network_status
         do_reboot
-    elif check_modulo $STATUS_FAILED_V4 $PING_LIMIT_1 && [ $IPV6_ENABLED -eq 1 ] && [ $STATUS_FAILED_V6 -eq 0 ]; then
-        print_current_network_status
-        dhcpd_restart
     elif check_modulo $STATUS_FAILED_V4 $PING_LIMIT_1 || 
         check_modulo $STATUS_FAILED_V6 $PING_LIMIT_1; then
         print_current_network_status
         network_stop
-        if check_modulo $STATUS_FAILED_V6 $PING_LIMIT_2 || ([ $IPV6_ENABLED -eq 0 ] && check_modulo $STATUS_FAILED_V4 $PING_LIMIT_2 ); then
-            usb_reset
-        fi
         network_start
     fi
 fi
