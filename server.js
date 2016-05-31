@@ -1,6 +1,7 @@
 'use strict';
 
 var https = require('https');
+var httpShutdownExtend = require('http-shutdown');
 var urlModule = require('url');
 var querystring = require('querystring');
 var fs = require('fs');
@@ -512,12 +513,13 @@ var server = https.createServer(serverOptions, function (request, response) {
     }
 });
 
+httpShutdownExtend(server);
 server.listen(4443);
 
 function shutdown() {
     clearInterval(updatePreviewImageInterval);
     clearInterval(updateStatusInterval);
-    server.close();
+    server.shutdown();
 }
 
 //catches ctrl+c event
