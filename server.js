@@ -20,6 +20,7 @@ var config = {
     username: 'timelapse',
     password: 'timelapse',
     isCapturing: false,
+    captureDaemonPid: null,
     capturePath:  __dirname + '/../capture',
     captureFolder: 'default',
     timelapseInterval: 1,
@@ -40,8 +41,6 @@ var config = {
 }
 
 var cameraDetected = vcgencmd.getCamera().detected;
-var daemonConfigFilename = __dirname + '/config/camera-daemon.conf';
-var daemonFilename = __dirname + '/camera/camera-daemon.sh';
 
 function loadConfig() {
     try {
@@ -168,8 +167,8 @@ function updateStatus(partial) {
         status.captureMode.value = 'Not capturing';
         status.captureMode.type = 'danger';
     } else {
-        status.captureMode.value = 'Capturing';
-        status.captureMode.type = 'success';
+        status.captureMode.value = 'Capturing (' + (config.captureDaemonPid !== null ? 'PID ' + config.captureDaemonPid : 'No active process!') + ')';
+        status.captureMode.type = config.captureDaemonPid !== null ? 'success' : 'warning';
     }
 
     if (!partial) {
@@ -297,7 +296,7 @@ function updateVisitors(request, response) {
     visitors[deviceId] = Date.now();
 }
 
-function generateDaemonConfig(callback) {
+function generateDaemonArguments() {
     var raspistillOptions = {
         width: config.width,
         height: config.height,
@@ -322,71 +321,55 @@ function generateDaemonConfig(callback) {
         verbose: null,
     };
 
-    var escapeShellArg = function(arg) {
-        return '"' + arg.replace(/(["'$`\\])/g, '\\$1') + '"';
-    };
-
     var raspistillOptionsRaw = [];
     for (var name in raspistillOptions) {
         if (typeof raspistillOptions[name] === 'undefined') continue;
-        if (raspistillOptions[name] === null) {
-            raspistillOptionsRaw.push('--' + name);
-        } else {
-            raspistillOptionsRaw.push('--' + name + ' ' + escapeShellArg('' + raspistillOptions[name]));
+        raspistillOptionsRaw.push('--' + name);
+        if (raspistillOptions[name] !== null) {
+            raspistillOptionsRaw.push('' + raspistillOptions[name]);
         }
     }
 
-    var daemonOptions = {
-        TIMELAPSE_IS_CAPTURING: config.isCapturing ? 1 : 0,
-        TIMELAPSE_TIMELAPSE_INTERVAL: config.timelapseInterval,
-        TIMELAPSE_CAPTURE_PATH: escapeShellArg(config.capturePath),
-        TIMELAPSE_CAPTURE_FOLDER: escapeShellArg(config.captureFolder),
-        TIMELAPSE_RASPISTILL_OPTIONS: '(' + raspistillOptionsRaw.join(' ') + ')',
-    };
-
-    var daemonConfig = '';
-    for (name in daemonOptions) {
-        daemonConfig += name + '=' + daemonOptions[name] + '\n';
-    }
-
-    fs.writeFile(daemonConfigFilename, daemonConfig, callback);
-}
-
-function execDaemon(command, callback) {
-    saveConfig(function (err) {
-        if (err) return callback('Error saving config');
-
-        generateDaemonConfig(function (err) {
-            if (err) return callback('Error saving daemon config');
-
-            child_process.exec(daemonFilename + ' ' + command, function (err, stdout, stderr) {
-                if (err) return callback('Error executing daemon ' + command + ': ' + (stderr || stdout));
-                callback();
-            });
-        });
-    });
+    return raspistillOptionsRaw;
 }
 
 var apiActions = {
     startCapture: function (data, callback) {
+        if (config.captureDaemonPid !== null) return callback('Capture daemon already running', 400);
+
         config.isCapturing = true;
         config.captureFolder = formatDate(new Date()).replace(/:/g, '.');
 
-        execDaemon('start', function (err) {
-            if (err) {
-                config.isCapturing = false;
-                saveConfig();
-                generateDaemonConfig();
-                return callback({error: err}, 500);
-            }
-            callback(status, 200);
+        fs.mkdir(config.capturePath + '/' + config.captureFolder, function (err) {
+            if (err) return callback('Error creating capture folder');
+
+            var child = child_process.spawn('/usr/bin/raspistill', generateDaemonArguments(), {
+                cwd: config.capturePath,
+                stdio: 'ignore',
+                detached: true
+            });
+            config.captureDaemonPid = child.pid;
+            child.unref();
+
+            saveConfig(function (err) {
+                if (err) return callback('Error saving config');
+                callback(status, 200);
+            });
         });
     },
     stopCapture: function (data, callback) {
         config.isCapturing = false;
 
-        execDaemon('stop', function (err) {
-            if (err) return callback({error: err}, 500);
+        if (config.captureDaemonPid !== null) {
+            try {
+                process.kill(config.captureDaemonPid);
+            } catch (err) {
+            }
+            config.captureDaemonPid = null;
+        }
+
+        saveConfig(function (err) {
+            if (err) return callback('Error saving config');
             callback(status, 200);
         });
     },
@@ -414,7 +397,15 @@ var apiActions = {
     }
 };
 
-if (config.isCapturing) {
+if (config.captureDaemonPid !== null) {
+    // check if process still exists:
+    try {
+        process.kill(config.captureDaemonPid, 0);
+    } catch (err) {
+        config.captureDaemonPid = null;
+    }
+}
+if (config.isCapturing && config.captureDaemonPid === null) {
     apiActions['startCapture']({}, function() {})
 }
 
