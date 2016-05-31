@@ -98,8 +98,14 @@ jQuery(function($) {
         var config = {};
 
         $('input, select, textarea').each(function (i, node) {
-            var name = node.id.replace(/^option-/, '');
-            config[name] = $(node).val();
+            node = $(node);
+            var name = node.attr('id').replace(/^option-/, '');
+
+            if (node.is('input:checkbox')) {
+                config[name] = node.prop('checked');
+            } else {
+                config[name] = node.val();
+            }
         });
 
         return config;
@@ -107,7 +113,12 @@ jQuery(function($) {
 
     function setConfig(config) {
         for (var name in config) {
-            $('#option-' + name).val(config[name]);
+            var node = $('#option-' + name);
+            if (node.is('input:checkbox')) {
+                node.prop('checked', config[name]);
+            } else {
+                node.val(config[name]);
+            }
         }
     }
 

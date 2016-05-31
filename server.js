@@ -31,6 +31,8 @@ var config = {
     awb: 'auto',
     awbRedGain: 'auto',
     awbBlueGain: 'auto',
+    hflip: false,
+    vflip: false,
     width: 1920,
     height: 1080,
     thumbnailWidth: 480,
@@ -313,6 +315,8 @@ function generateDaemonConfig(callback) {
         awb: config.awb,
         awbgains: config.awbRedGain !== 'auto' && config.awbBlueGain !== 'auto' ?
             config.awbRedGain + ',' + config.awbBlueGain : undefined,
+        hflip: config.hflip ? null : undefined,
+        vflip: config.vflip ? null : undefined,
 
         timelapse: Math.round(config.timelapseInterval * 1000),
         timeout: config.captureMode === 'cron' ? config.warmupTime : 10 * 365 * 24 * 3600,
