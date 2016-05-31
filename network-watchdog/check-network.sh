@@ -75,10 +75,9 @@ IPV6_PING_DEST=$DEFAULT_GATEWAY_V6
 IPV4_ENABLED=0
 IPV6_ENABLED=0
 
-PING_LIMIT_1=5
-PING_LIMIT_2=10
-PING_LIMIT_3=60
-PING_LIMIT_4=70
+PING_LIMIT_NET_RESTART=5
+PING_LIMIT_REBOOT=60
+PING_LIMIT_WATCHDOG_FAIL=70
 
 INTERFACES="wlan0"
 
@@ -93,6 +92,11 @@ if [ -e $STATUS_FILE ]
 then
     . $STATUS_FILE
 fi
+
+# warning for deprecated variables
+for deprecated in PING_LIMIT_1 PING_LIMIT_3 PING_LIMIT_4; do
+    log "$deprecated deprecated! Default value will be used if variable was renamed"
+done
 
 # reboot detection:
 CURRENT_STATUS_UPTIME=$(cut -d"." -f1 /proc/uptime)
@@ -143,17 +147,17 @@ else
 fi
 
 if [ $IPV4_ENABLED -eq 1 ] || [ $IPV6_ENABLED -eq 1 ]; then
-    if [ $IPV6_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V6 $PING_LIMIT_4; then
+    if [ $IPV6_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V6 $PING_LIMIT_WATCHDOG_FAIL; then
         log "exiting with error code for watchdog"
         exit 1
-    elif [ $IPV6_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V6 $PING_LIMIT_3; then
+    elif [ $IPV6_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V6 $PING_LIMIT_REBOOT; then
         print_current_network_status
         do_reboot
-    elif [ $IPV6_ENABLED -eq 0 ] && [ $IPV4_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V4 $PING_LIMIT_3; then
+    elif [ $IPV6_ENABLED -eq 0 ] && [ $IPV4_ENABLED -eq 1 ] && check_modulo $STATUS_FAILED_V4 $PING_LIMIT_REBOOT; then
         print_current_network_status
         do_reboot
-    elif check_modulo $STATUS_FAILED_V4 $PING_LIMIT_1 || 
-        check_modulo $STATUS_FAILED_V6 $PING_LIMIT_1; then
+    elif check_modulo $STATUS_FAILED_V4 $PING_LIMIT_NET_RESTART || 
+        check_modulo $STATUS_FAILED_V6 $PING_LIMIT_NET_RESTART; then
         print_current_network_status
         network_stop
         network_start
