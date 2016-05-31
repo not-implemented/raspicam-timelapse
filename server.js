@@ -23,8 +23,6 @@ var config = {
     capturePath:  __dirname + '/../capture',
     captureFolder: 'default',
     timelapseInterval: 1,
-    captureMode: 'raspistill',
-    warmupTime: 5,
     exposure: 'auto',
     ev: 0,
     iso: 100,
@@ -170,7 +168,7 @@ function updateStatus(partial) {
         status.captureMode.value = 'Not capturing';
         status.captureMode.type = 'danger';
     } else {
-        status.captureMode.value = config.captureMode;
+        status.captureMode.value = 'Capturing';
         status.captureMode.type = 'success';
     }
 
@@ -320,7 +318,7 @@ function generateDaemonConfig(callback) {
         vflip: config.vflip ? null : undefined,
 
         timelapse: Math.round(config.timelapseInterval * 1000),
-        timeout: config.captureMode === 'cron' ? config.warmupTime : 10 * 365 * 24 * 3600,
+        timeout: 10 * 365 * 24 * 3600,
         verbose: null,
     };
 
@@ -341,7 +339,6 @@ function generateDaemonConfig(callback) {
     var daemonOptions = {
         TIMELAPSE_IS_CAPTURING: config.isCapturing ? 1 : 0,
         TIMELAPSE_TIMELAPSE_INTERVAL: config.timelapseInterval,
-        TIMELAPSE_CAPTURE_MODE: config.captureMode,
         TIMELAPSE_CAPTURE_PATH: escapeShellArg(config.capturePath),
         TIMELAPSE_CAPTURE_FOLDER: escapeShellArg(config.captureFolder),
         TIMELAPSE_RASPISTILL_OPTIONS: '(' + raspistillOptionsRaw.join(' ') + ')',
@@ -362,14 +359,10 @@ function execDaemon(command, callback) {
         generateDaemonConfig(function (err) {
             if (err) return callback('Error saving daemon config');
 
-            if (config.captureMode === 'raspistill') {
-                child_process.exec(daemonFilename + ' ' + command, function (err, stdout, stderr) {
-                    if (err) return callback('Error executing daemon ' + command + ': ' + (stderr || stdout));
-                    callback();
-                });
-            } else {
+            child_process.exec(daemonFilename + ' ' + command, function (err, stdout, stderr) {
+                if (err) return callback('Error executing daemon ' + command + ': ' + (stderr || stdout));
                 callback();
-            }
+            });
         });
     });
 }
