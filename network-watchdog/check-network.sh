@@ -94,8 +94,8 @@ then
 fi
 
 # warning for deprecated variables
-for deprecated in PING_LIMIT_1 PING_LIMIT_3 PING_LIMIT_4; do
-    log "$deprecated deprecated! Default value will be used if variable was renamed"
+for deprecated in PING_LIMIT_1 PING_LIMIT_2 PING_LIMIT_3 PING_LIMIT_4; do
+    [ -v $deprecated ] && log "$deprecated deprecated! Default value will be used if variable was renamed"
 done
 
 # reboot detection:
