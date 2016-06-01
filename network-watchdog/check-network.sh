@@ -14,6 +14,7 @@ do_reboot() {
 }
 
 network_stop() {
+    log "Stopping dhcpcd"
     /bin/systemctl stop dhcpcd
     for interface in $INTERFACES
     do
@@ -28,6 +29,7 @@ network_start() {
         log "Starting interface $interface"
         ifup $interface
     done
+    log "Starting dhcpcd"
     /bin/systemctl start dhcpcd
 }
 
