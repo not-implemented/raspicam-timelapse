@@ -388,6 +388,8 @@ sudo editor /etc/network/interfaces
 # add these lines:
 iface eth1 inet dhcp
     post-up /home/pi/raspicam-timelapse/backup-connection/interfaces-post-up.sh
+# add dhcp configuration to dhcp config file
+cat backup-connection/dhcpcd-to_add.conf | sudo tee -a /etc/dhcpcd.conf
 ```
 
 **Now plug in your UMTS stick.**
