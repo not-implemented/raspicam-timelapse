@@ -386,6 +386,7 @@ editor ~/raspicam-timelapse/config/interfaces-post-up.conf
 sudo editor /etc/network/interfaces
 
 # add these lines:
+auto eth1
 iface eth1 inet dhcp
     post-up /home/pi/raspicam-timelapse/backup-connection/interfaces-post-up.sh
 # add dhcp configuration to dhcp config file
