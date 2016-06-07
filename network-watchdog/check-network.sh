@@ -2,7 +2,6 @@
 
 [ -e `dirname $0`/../global/global.inc.sh ] && . `dirname $0`/../global/global.inc.sh
 
-USB_ID_WLAN0="1-1.3"
 STATUS_FILE=/home/pi/raspicam-timelapse/config/last_status.inc.sh
 CONFIG_FILE=/home/pi/raspicam-timelapse/config/check-network.conf
 SAVE_VARIABLE_PREFIX=STATUS_
