@@ -4,7 +4,7 @@ logrotate() {
     [ -e "$LOG" ] || return 0
     log_size=`stat --format="%s" "$LOG"`
 
-    if [ $log_size -gt $((100*1024)) ]
+    if [ $log_size -gt $((1024*1024)) ]
     then
         mv "$LOG" "$LOG".old
     fi
