@@ -404,6 +404,7 @@ cat backup-connection/dhcpcd-to_add.conf | sudo tee -a /etc/dhcpcd.conf
 TODO
 ----
 
-- Implement as a service (start on boot, restart on crash, restart raspistill after crash)
+- Switch to Ansible
+- Implement as a systemd service (start on boot, restart on crash, restart raspistill after crash)
 - Use NVM for installing Node.js - https://github.com/creationix/nvm
 - Get Dynamic-DNS-Client more stable (trigger on IP adress changes, not just on cable plug)
