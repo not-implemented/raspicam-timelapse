@@ -1,18 +1,32 @@
 ---
 - hosts: timelapse
   roles:
-  - role: hostname
-  - role: dresden-weekly.network-interfaces
-    become: true
-    network_manage_devices: no
-    network_interfaces:
-    - device: eth0
-      description: on-board ethernet interface
-      auto: true
-      family: inet
-      method: dhcp
-    - device: eth1
-      description: 3G/4G stick or other interface if present
-      auto: true
-      family: inet
-      method: dhcp
+  - role: basic-raspi-config
+    password: "~encrypted-password~"
+    locale: de_DE.UTF-8
+    timezone: Europe/Berlin
+    sshKey: "~/.ssh/id_rsa.pub"
+
+  - role: enable-raspicam
+
+  - role: nvm
+    nvm_version: "v0.32.0"
+    node_version: "6"
+
+  - role: wlan
+    country: DE
+
+  #- role: dresden-weekly.network-interfaces
+  #  become: true
+  #  network_manage_devices: no
+  #  network_interfaces:
+  #  - device: eth0
+  #    description: on-board ethernet interface
+  #    auto: true
+  #    family: inet
+  #    method: dhcp
+  #  - device: eth1
+  #    description: 3G/4G stick or other interface if present
+  #    auto: true
+  #    family: inet
+  #    method: dhcp

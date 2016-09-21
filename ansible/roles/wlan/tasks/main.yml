@@ -1,0 +1,10 @@
+---
+- name: Configure WLAN
+  become: yes
+  blockinfile:
+    dest: /etc/wpa_supplicant/wpa_supplicant.conf
+    content: |
+      network={
+        ssid="muenchen.freifunk.net"
+        key_mgmt=NONE
+      }

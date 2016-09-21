@@ -1,0 +1,52 @@
+---
+- name: Update all packages (apt-get dist-upgrade)
+  become: true
+  apt: upgrade=dist update_cache=yes
+
+- name: Set password for pi user
+  become: true
+  user: name=pi password="{{password}}"
+
+- name: Set hostname
+  become: true
+  hostname: name="{{inventory_hostname}}"
+
+- name: Set hostname (/etc/hosts)
+  become: true
+  lineinfile:
+    dest: /etc/hosts
+    regexp: "^127.0.0.1"
+    line: "127.0.0.1 {{inventory_hostname}}{% if inventory_hostname != inventory_hostname_short %} {{inventory_hostname_short}}{% endif %} localhost"
+
+- name: Generate locale
+  #become: true
+  locale_gen: name={{locale}} state=present
+
+- name: Set locale
+  become: true
+  command: update-locale LANG={{locale}}
+
+- name: "Set timezone to {{timezone}}"
+  become: true
+  #timezone: "name={{timezone}}" # ansible 2.2.0
+  command: timedatectl set-timezone {{timezone}}
+
+- name: Install vim
+  become: true
+  apt: name=vim
+
+- name: Use vim as default
+  become: true
+  alternatives: name=editor path=/usr/bin/vim.basic
+
+- name: Additional aliases
+  lineinfile:
+    dest: ~/.bash_aliases
+    regexp: "^alias l="
+    line: "alias l='ls -lA'"
+    create: yes
+    mode: 0644
+
+- name: Set SSH-Key for pi user
+  become: true
+  authorized_key: user=pi key="{{ lookup('file', sshKey) }}"

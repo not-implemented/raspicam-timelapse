@@ -1,0 +1,12 @@
+---
+- name: Enable camera
+  become: true
+  lineinfile: dest=/boot/config.txt regexp=^start_x= line=start_x=1
+
+- name: Set GPU mem for camera
+  become: true
+  lineinfile: dest=/boot/config.txt regexp=^gpu_mem= line=gpu_mem=128
+
+- name: Disable camera LED
+  become: true
+  lineinfile: dest=/boot/config.txt regexp=^disable_camera_led= line=disable_camera_led=1
