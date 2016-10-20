@@ -16,17 +16,20 @@
   - role: wlan
     country: DE
 
-  #- role: dresden-weekly.network-interfaces
-  #  become: true
-  #  network_manage_devices: no
-  #  network_interfaces:
-  #  - device: eth0
-  #    description: on-board ethernet interface
-  #    auto: true
-  #    family: inet
-  #    method: dhcp
-  #  - device: eth1
-  #    description: 3G/4G stick or other interface if present
-  #    auto: true
-  #    family: inet
-  #    method: dhcp
+  - role: network
+    interfaces:
+      eth0:
+        iface_inet: manual
+      eth1:
+        configure_type: allow-hotplug
+        iface_inet: dhcp
+      wlan0:
+        configure_type: allow-hotplug
+        iface_inet: manual
+        iface:
+          wpa-conf: /etc/wpa_supplicant/wpa_supplicant.conf
+      wlan1:
+        configure_type: allow-hotplug
+        iface_inet: manual
+        iface:
+          wpa-conf: /etc/wpa_supplicant/wpa_supplicant.conf

@@ -1,0 +1,22 @@
+# interfaces(5) file used by ifup(8) and ifdown(8)
+
+# Please note that this file is written to be used with dhcpcd
+# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'
+
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+
+auto lo
+iface lo inet loopback
+{% for interface, interface_opts in interfaces|dictsort %}
+
+{% if 'configure_type' in interface_opts %}
+{{interface_opts['configure_type']}} {{interface}}
+{% endif %}
+iface {{interface}} inet {{interface_opts['iface_inet'] | default("dhcp")}}
+{%   if 'iface' in interface_opts %}
+{%     for interface_opt, opt_val in interface_opts['iface']|dictsort %}
+    {{interface_opt}} {{opt_val}}
+{%    endfor %}
+{%   endif %}
+{% endfor %}
