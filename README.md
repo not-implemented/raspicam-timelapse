@@ -20,21 +20,69 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
 
 - [HowTo](#howto)
   - [Setup SD-Card](#setup-sd-card)
+    - Ansible status: not planned
   - [Setup Raspbian + Raspberry Pi Camera](#setup-raspbian--raspberry-pi-camera)
+    - Ansible status: config-Flags done
   - [Setup RaspiCam-Timelapse](#setup-raspicam-timelapse)
+    - Ansible status: TODO
+      - done: node isntallation
+      - TODO: git clone/pull
+      - TODO: npm
+      - TODO: certificate setup
+      - TODO: setup directories
+      - TODO: startup node (systemd or cronjob)
   - [Reverse SSH-Tunnel (optional)](#reverse-ssh-tunnel-optional)
+    - Ansible status: TODO
+      - TODO: ssh-keygen
+      - TODO: setup remote server
+        - TODO: setup authorized_keys
+        - TODO: setup ssh server
+        - TODO: setup sync target
+      - TODO: setup tunnel script
+      - TODO: setup tunnel script cronjob
   - [Dynamic-DNS-Client (optional)](#dynamic-dns-client-optional)
+    - Ansible status: TODO
+      - TODO: setup dhcpcd hook
+      - TODO: setup config
   - [Wi-Fi autoconnect (optional)](#wi-fi-autoconnect-optional)
+    - Ansible status: partly done
+      - TODO: make configurable
   - [Activate Network-Watchdog (optional)](#activate-network-watchdog-optional)
+    - Ansible status: TODO
+      - TODO: setup config
+      - TODO: cronjob
   - [Use hardware watchdog with Network-Watchdog (optional)](#use-hardware-watchdog-with-network-watchdog-optional)
+    - Ansible status: TODO
+      - TODO: install package
+      - TODO: set module
+      - TODO: setup config
+      - TODO: start daemon
   - [Install BitTorrent-Sync (optional)](#install-bittorrent-sync-optional)
+    - Ansible status: TODO
+      - TODO: install btsync
+      - TODO: configure startup (cronjob)
+      - TODO: setup sync directory? (config.xml or automated over http)
+      - TODO: setup IgnoreList
   - [Install Sync-Script (optional)](#install-sync-script-optional)
+    - Ansible status: TODO
+      - TODO: setup config
+      - TODO: setup cronjob
+      - TODO: modify target server ssh config
     - [Setup config file](#setup-config-file)
     - [Crontab](#crontab)
     - [less strict ssh restrictions needed on your remote server](#less-strict-ssh-restrictions-needed-on-your-remote-server)
   - [Use Ramdisk as primary capture folder (optional)](#use-ramdisk-as-primary-capture-folder-optional)
+    - Ansible status: TODO (merge with default timelapse setup)
+      - TODO: fstab
+      - TODO: directory
+      - TODO: cronjobs
     - [Additional crontab entries](#additional-crontab-entries)
   - [3G/4G backup connection (optional)](#3g4g-backup-connection-optional)
+    - Ansible status: TODO
+      - TODO: install packages
+      - TODO: setup udev
+      - TODO: setup dhcpcd config
+      - TODO: setup tunnel cronjob
     - [Setup usb-modeswitch to put modem into ethernet mode](#setup-usb-modeswitch-to-put-modem-into-ethernet-mode)
       - [add udev rule](#add-udev-rule)
     - [Setup interfaces and routing](#setup-interfaces-and-routing)
@@ -297,7 +345,7 @@ editor capture/.sync/IgnoreList
 Second sync method is a [configurable sync script](sync/sync.sh). Currently only tested with rsync.
 
 #### Setup config file
-You have to configure some options in sync/sync.conf ([examples](sync/sync.conf.example)) at first 
+You have to configure some options in sync/sync.conf ([examples](sync/sync.conf.example)) at first
 #### Crontab
 ```
 # add sync script to crontab
