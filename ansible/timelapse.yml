@@ -7,12 +7,18 @@
     timezone: Europe/Berlin
     sshKey: "~/.ssh/id_rsa.pub"
 
-  - role: enable-raspicam
-
   - role: nvm
     nvm_version: "v0.32.0"
     node_version: "6"
 
+  - role: basic-facts
+
+- hosts: timelapse
+  environment:
+    PATH: "{{node_path|default(ansible_env.PATH)}}:{{ ansible_env.PATH }}"
+  roles:
+  - role: enable-raspicam
+  
   - role: wlan
     country: DE
 

@@ -1,0 +1,9 @@
+- name: Check if {{ node_version }} is the default node version
+  shell: . ~/.nvm/nvm.sh && echo $PATH | grep -Eo '(^|:)[^:]+/versions/node/[^:]+'
+  args:
+    executable: /bin/bash
+  register: nvm_node_path
+
+- name: set node_path fact
+  set_fact:
+    node_path: "{{nvm_node_path.stdout|trim}}"
