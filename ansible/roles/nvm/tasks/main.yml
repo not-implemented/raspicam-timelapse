@@ -20,12 +20,16 @@
 
 - name: Install {{ node_version }}
   shell: . ~/.nvm/nvm.sh && nvm install {{ node_version }}
+  args:
+    executable: /bin/bash
   #register: nvm_install_result
   #changed_when: "'is already installed.' not in nvm_install_result.stdout"
   tags: nvm
 
 - name: Check if {{ node_version }} is the default node version
   shell: . ~/.nvm/nvm.sh && nvm ls | grep -e 'default -> {{ node_version }}'
+  args:
+    executable: /bin/bash
   register: nvm_check_default
   changed_when: False
   ignore_errors: True
@@ -33,5 +37,7 @@
 
 - name: Set default node version to {{ node_version }}
   shell: . ~/.nvm/nvm.sh && nvm alias default {{ node_version }}
+  args:
+    executable: /bin/bash
   when: nvm_check_default|failed
   tags: nvm
