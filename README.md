@@ -25,11 +25,11 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
     - Ansible status: config-Flags done
   - [Setup RaspiCam-Timelapse](#setup-raspicam-timelapse)
     - Ansible status: TODO
-      - done: node isntallation
-      - TODO: git clone/pull
-      - TODO: npm
-      - TODO: certificate setup
-      - TODO: setup directories
+      - done: node installation
+      - done: git clone/pull
+      - done: npm
+      - done: certificate setup
+      - done: setup directories
       - TODO: startup node (systemd or cronjob)
   - [Reverse SSH-Tunnel (optional)](#reverse-ssh-tunnel-optional)
     - Ansible status: TODO

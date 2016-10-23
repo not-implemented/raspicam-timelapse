@@ -33,3 +33,5 @@
         iface_inet: manual
         iface:
           wpa-conf: /etc/wpa_supplicant/wpa_supplicant.conf
+
+  - role: raspicam-timelapse
