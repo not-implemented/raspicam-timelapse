@@ -19,7 +19,7 @@
     line: "127.0.0.1 {{inventory_hostname}}{% if inventory_hostname != inventory_hostname_short %} {{inventory_hostname_short}}{% endif %} localhost"
 
 - name: Generate locale
-  #become: true
+  become: true
   locale_gen: name={{locale}} state=present
 
 - name: Set locale

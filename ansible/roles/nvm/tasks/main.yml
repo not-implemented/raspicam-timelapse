@@ -1,6 +1,7 @@
 ---
 - name: Install dependencies
   apt: pkg={{ item }} update_cache=yes cache_valid_time=3600
+  become: true
   with_items:
     - git
     - curl
@@ -18,7 +19,7 @@
     line="source ~/.nvm/nvm.sh"
   tags: nvm
 
-- name: Install {{ node_version }}
+- name: Install node {{ node_version }}
   shell: . ~/.nvm/nvm.sh && nvm install {{ node_version }}
   args:
     executable: /bin/bash
