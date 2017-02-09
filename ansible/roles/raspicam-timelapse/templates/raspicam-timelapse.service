@@ -1,0 +1,17 @@
+# /etc/systemd/system/raspicam-timelapse.service
+[Unit]
+Description=raspicam-timelapse service
+
+[Service]
+User=pi
+SyslogIdentifier=raspicam-timelapse
+SyslogFacility=user
+LimitNOFILE=65535
+LimitCORE=infinity
+Environment=NODE_ENV=production
+WorkingDirectory=/home/pi/raspicam-timelapse
+ExecStart=/home/pi/.nvm/versions/node/v6.9.5/bin/node server.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

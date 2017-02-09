@@ -6,3 +6,20 @@
 
 - name: create capture directory
   file: path=/home/pi/capture state=directory
+
+- name: install systemd service
+  become: true
+  template:
+    src: raspicam-timelapse.service
+    dest: /etc/systemd/system/raspicam-timelapse.service
+    owner: pi
+    group: pi
+    mode: 0644
+
+- name: enable/start systemd service
+  become: true
+  systemd:
+    name: raspicam-timelapse
+    enabled: yes
+    state: started
+    daemon_reload: yes
