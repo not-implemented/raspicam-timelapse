@@ -4,20 +4,5 @@
 - name: npm install
   npm: path={{repo_path}}
 
-- name: create private key (https)
-  command: openssl genrsa -out config/timelapse.key 2048
-  args:
-    chdir: "{{repo_path}}/config"
-    creates: "{{repo_path}}/config/timelapse.key"
-
-- name: set permissions on private key
-  file: path="{{repo_path}}/config/timelapse.key" mode="u+rw,g-rwx,o-rwx"
-
-- name: create certificate (https)
-  command: openssl req -x509 -days 3650 -sha256 -nodes -new -key timelapse.key -out timelapse.crt
-  args:
-    chdir: "{{repo_path}}/config"
-    creates: "{{repo_path}}/config/timelapse.crt"
-
 - name: create capture directory
   file: path=/home/pi/capture state=directory

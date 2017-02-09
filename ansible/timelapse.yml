@@ -41,3 +41,19 @@
           wpa-conf: /etc/wpa_supplicant/wpa_supplicant.conf
 
   - role: raspicam-timelapse
+
+  - role: jdauphant.ssl-certs
+    ssl_certs_country: ""
+    ssl_certs_locality: ""
+    ssl_certs_organization: ""
+    ssl_certs_state: ""
+    ssl_certs_common_name: "{{ansible_fqdn}}"
+    ssl_certs_days: "3650"
+    ssl_certs_fields: "/C={{ssl_certs_country}}/ST={{ssl_certs_state}}/L={{ssl_certs_locality}}/O={{ssl_certs_organization}}/CN={{ssl_certs_common_name}}"
+
+    ssl_certs_path: "{{repo_path}}/config"
+    ssl_certs_path_owner: "pi"
+    ssl_certs_path_group: "pi"
+    ssl_certs_privkey_path: "{{ssl_certs_path}}/timelapse.key"
+    ssl_certs_cert_path: "{{ssl_certs_path}}/timelapse.crt"
+    ssl_certs_mode: "0700"
