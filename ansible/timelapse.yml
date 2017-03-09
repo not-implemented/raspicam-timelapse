@@ -1,16 +1,16 @@
 ---
 - hosts: timelapse
   roles:
-  - role: basic-raspi-config
-  - role: nvm
-  - role: basic-facts
+  - basic-raspi-config
+  - nvm
+  - basic-facts
 
 - hosts: timelapse
   environment:
     PATH: "{{node_path|default(ansible_env.PATH)}}:{{ ansible_env.PATH }}"
   roles:
-  - role: enable-raspicam
-  - role: wlan
-  - role: network
-  - role: raspicam-timelapse
-  - role: jdauphant.ssl-certs
+  - enable-raspicam
+  - wlan
+  - network
+  - raspicam-timelapse
+  - jdauphant.ssl-certs
