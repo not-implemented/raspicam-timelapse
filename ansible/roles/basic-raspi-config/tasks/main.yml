@@ -25,11 +25,13 @@
 - name: Set locale
   become: true
   command: update-locale LANG={{locale}}
+  changed_when: false
 
 - name: "Set timezone to {{timezone}}"
   become: true
   #timezone: "name={{timezone}}" # ansible 2.2.0
   command: timedatectl set-timezone {{timezone}}
+  changed_when: false
 
 - name: Install vim
   become: true
