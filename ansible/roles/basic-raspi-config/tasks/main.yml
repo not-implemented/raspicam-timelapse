@@ -1,4 +1,8 @@
 ---
+- name: check ansible version
+  assert:
+    that: ansible_version.major > 2 or (ansible_version.major == 2 and ansible_version.minor >= 2 )
+
 - name: Update all packages (aptitude safe-upgrade)
   become: true
   apt: upgrade=safe update_cache=yes
@@ -29,8 +33,7 @@
 
 - name: "Set timezone to {{timezone}}"
   become: true
-  #timezone: "name={{timezone}}" # ansible 2.2.0
-  command: timedatectl set-timezone {{timezone}}
+  timezone: "name={{timezone}}"
   changed_when: false
 
 - name: Install vim
