@@ -33,7 +33,7 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
       - done: startup node (systemd or cronjob)
   - [Reverse SSH-Tunnel (optional)](#reverse-ssh-tunnel-optional)
     - Ansible status: TODO
-      - TODO: ssh-keygen
+      - done: ssh-keygen
       - TODO: setup remote server
         - TODO: setup authorized_keys
         - TODO: setup ssh server

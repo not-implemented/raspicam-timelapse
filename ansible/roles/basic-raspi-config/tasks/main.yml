@@ -9,7 +9,7 @@
 
 - name: Set password for pi user
   become: true
-  user: name=pi password="{{password}}"
+  user: name=pi password="{{password}}" generate_ssh_key=yes
 
 - name: Set hostname
   become: true
