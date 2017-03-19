@@ -189,8 +189,11 @@ Allow SSH connections from Raspberry Pi on your remote server:
 
 ```bash
 # Maybe add a new user - i.e. "timelapse" on your remote server (but you can use an existing one):
-adduser --gecos Timelapse timelapse
-chmod go-rwx /home/timelapse
+if !getent passwd timelapse >/dev/null
+then
+    adduser --gecos Timelapse timelapse
+    chmod go-rwx /home/timelapse
+fi
 cd /home/timelapse
 
 # Add the raspberry's key (.ssh/id_rsa.pub from above) on your remote server
