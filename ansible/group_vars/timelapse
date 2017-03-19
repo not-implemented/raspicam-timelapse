@@ -47,3 +47,10 @@ ssl_certs_path_group: "pi"
 ssl_certs_privkey_path: "{{ssl_certs_path}}/timelapse.key"
 ssl_certs_cert_path: "{{ssl_certs_path}}/timelapse.crt"
 ssl_certs_mode: "0700"
+# ssh-tunnel
+ssh_tunnel_remote_host: "your-server.tld"
+ssh_tunnel_remote_user: "timelapse"
+# ssh_tunnel_remote_port_ssh: 10022
+# ssh_tunnel_remote_port_ssh_mobile: 11022
+# ssh_tunnel_remote_port_https: 4443
+# ssh_tunnel_remote_port_btsync: 18888

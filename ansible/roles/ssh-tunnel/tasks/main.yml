@@ -1,0 +1,56 @@
+- name: ssh tunnel cron entry
+  cron:
+      name: "ssh tunnel cron entry"
+      minute: "*"
+      hour: "*"
+      job: "~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh {{ssh_tunnel_remote_user}}@{{ssh_tunnel_remote_host}} {{ssh_tunnel_remote_port_ssh}} 22"
+  notify:
+      - print tunnel instructions
+- name: https tunnel cron entry
+  cron:
+      name: "https tunnel cron entry"
+      minute: "*"
+      hour: "*"
+      job: "~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh {{ssh_tunnel_remote_user}}@{{ssh_tunnel_remote_host}} {{ssh_tunnel_remote_port_https}} 4443"
+  notify:
+      - print tunnel instructions
+- name: instructions text
+  set_fact:
+        ssh_tunnel_instructions: |
+          # login to remote server
+          ssh {{ssh_tunnel_remote_host}}
+          # Maybe add a new user - i.e. "{{ssh_tunnel_remote_user}}" on your remote server (but you can use an existing one):
+          if !getent passwd {{ssh_tunnel_remote_user}} >/dev/null
+          then
+              sudo adduser --gecos Timelapse {{ssh_tunnel_remote_user}}
+              sudo chmod go-rwx /home/{{ssh_tunnel_remote_user}}
+          fi
+          sudo -i -u {{ssh_tunnel_remote_user}}
+
+          # Add the raspberry's key (.ssh/id_rsa.pub from above) on your remote server
+          # to the user and just allow port-forwarding (no login):
+          mkdir -p .ssh
+          # only port-forwarding
+          echo "command=\"echo 'This account can only be used for port-forwarding'\",no-agent-forwarding,no-pty,no-X11-forwarding" \
+              "{raspberry-public-key-from-above}" >> .ssh/authorized_keys
+          ### with rsync sync enabled
+          # echo "command=\"/home/{{ssh_tunnel_remote_user}}/.ssh/timelapse-allowedcommands.sh\",no-agent-forwarding,no-pty,no-X11-forwarding,permitopen=\"*:4443\"" \
+              "{raspberry-public-key-from-above}" >> .ssh/authorized_keys
+          # copy ssh-reverse-tunnel/timelapse-allowedcommands.sh to /home/{{ssh_tunnel_remote_user}}/.ssh/timelapse-allowedcommands.sh
+          # chmod +x /home/{{ssh_tunnel_remote_user}}/.ssh/timelapse-allowedcommands.sh
+          ###
+          chmod -R go-rwx .ssh
+
+          # Some global settings:
+          sudo editor /etc/ssh/sshd_config
+
+          # Enable listening on all interfaces for port-forwarding on your remote server
+          # (otherwise port-forwarding will listen only on localhost):
+          GatewayPorts yes
+
+          # Detect and close dead connections faster and close forwarded ports to reuse them:
+          ClientAliveInterval 30
+          ClientAliveCountMax 3
+
+          # Restart SSH server:
+          sudo service sshd restart

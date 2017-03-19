@@ -31,22 +31,22 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
       - done: certificate setup
       - done: setup directories
       - done: startup node (systemd or cronjob)
+      - done: ssh-keygen
   - [Reverse SSH-Tunnel (optional)](#reverse-ssh-tunnel-optional)
     - Ansible status: TODO
-      - done: ssh-keygen
-      - TODO: setup remote server
-        - TODO: setup authorized_keys
-        - TODO: setup ssh server
+      - instruction output done: setup remote server
+        - instruction output done: setup authorized_keys
+        - instruction output done: setup ssh server
         - TODO: setup sync target
-      - TODO: setup tunnel script
-      - TODO: setup tunnel script cronjob
+      - obsolete (cronjob for each forwarding): setup tunnel script
+      - done: setup tunnel script cronjob
   - [Dynamic-DNS-Client (optional)](#dynamic-dns-client-optional)
     - Ansible status: TODO
       - TODO: setup dhcpcd hook
       - TODO: setup config
   - [Wi-Fi autoconnect (optional)](#wi-fi-autoconnect-optional)
-    - Ansible status: partly done
-      - TODO: make configurable
+    - Ansible status: done
+      - done: make configurable
   - [Activate Network-Watchdog (optional)](#activate-network-watchdog-optional)
     - Ansible status: TODO
       - TODO: setup config
