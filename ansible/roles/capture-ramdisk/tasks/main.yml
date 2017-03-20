@@ -1,0 +1,20 @@
+- name: fstab
+  mount:
+    name: /home/pi/capture_ramdisk
+    src: capture_ramdisk
+    fstype: tmpfs
+    opts: "size=30M,uid=1000,gid=1000,mode=755"
+    state: mounted
+  become: yes
+
+- name: sync cronjob
+  cron:
+    name: ramdisk sync
+    minute: "*"
+    job: "~/raspicam-timelapse/sync/sync.sh ~/capture_ramdisk"
+
+- name: move to sdcard cronjob
+  cron:
+    name: move to sdcard
+    minute: "*"
+    job: "~/raspicam-timelapse/sync/ramdisk2sd-move.sh ~/capture_ramdisk ~/capture"

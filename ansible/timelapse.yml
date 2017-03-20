@@ -16,3 +16,4 @@
   - jdauphant.ssl-certs
   - ssh-tunnel
   - sync
+  - capture-ramdisk
