@@ -10,7 +10,7 @@ LimitNOFILE=65535
 LimitCORE=infinity
 Environment=NODE_ENV=production
 WorkingDirectory=/home/pi/raspicam-timelapse
-ExecStart=/home/pi/.nvm/versions/node/v6.9.5/bin/node server.js
+ExecStart={{node_path}}/node server.js
 Restart=always
 
 [Install]
