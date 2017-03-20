@@ -1,0 +1,25 @@
+# rsync
+SYNC_COMMAND="{{sync_command}}"
+{% if sync_dest_dir is defined %}
+# rsync over ssh
+SYNC_DEST_HOST={{sync_dest_host}}
+SYNC_DEST_USER={{sync_dest_user}}
+SYNC_DEST_DIR={{sync_dest_dir}}
+
+SYNC_DEST=$SYNC_DEST_USER@$SYNC_DEST_HOST:$SYNC_DEST_DIR
+# rsync over ssh -- END
+{% elif sync_dest_dir is defined %}
+# rsyncd server
+SYNC_DEST_HOST={{sync_dest_host}}
+SYNC_DEST_MODULE={{sync_dest_module}}
+
+SYNC_DEST=$SYNC_DEST_USER@$SYNC_DEST_HOST::$SYNC_DEST_MODULE
+# rsyncd server -- END
+{% endif %}
+
+# options when syncing a directory
+OPTS_DIR="{{sync_opts_dir}}"
+# options when syncing a file
+OPTS_FILE="{{sync_opts_file}}"
+# common options for all sync types
+OPTS="{{sync_opts}}"

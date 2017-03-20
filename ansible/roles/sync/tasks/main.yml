@@ -1,0 +1,8 @@
+- name: write sync config
+  template: src=sync.conf.j2 dest={{repo_path}}/sync/sync.conf
+
+- name: sync cronjob
+  cron:
+    name: sync
+    minute: "*/5"
+    job: "~/raspicam-timelapse/sync/sync.sh ~/capture"

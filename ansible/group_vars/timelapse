@@ -54,3 +54,12 @@ ssh_tunnel_remote_user: "timelapse"
 # ssh_tunnel_remote_port_ssh_mobile: 11022
 # ssh_tunnel_remote_port_https: 4443
 # ssh_tunnel_remote_port_btsync: 18888
+
+# sync
+sync_command: "rsync"
+sync_dest_host: "your-server.tld"
+sync_dest_user: "timelapse"
+sync_dest_dir: "/home/timelapse/capture/{{ansible_hostname}}"
+sync_opts_dir: "--recursive"
+sync_opts_file: "--relative"
+sync_opts: "--times --remove-source-files --partial --prune-empty-dirs --exclude=latest.jpg --exclude=.* --include=*/ --include=*.jpg --exclude=*"
