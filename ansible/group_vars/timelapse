@@ -5,7 +5,7 @@ locale: de_DE.UTF-8
 timezone: Europe/Berlin
 sshKey: "~/.ssh/id_rsa.pub"
 # nvm
-nvm_version: "v0.32.0"
+nvm_version: "v0.33.1"
 node_version: "6"
 # wlan
 country: DE
