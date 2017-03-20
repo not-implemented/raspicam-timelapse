@@ -12,8 +12,8 @@
   - enable-raspicam
   - wlan
   - network
+  - raspicam-timelapse
   - jdauphant.ssl-certs
   - ssh-tunnel
   - sync
   - capture-ramdisk
-  - raspicam-timelapse
