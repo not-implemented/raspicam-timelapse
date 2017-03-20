@@ -12,12 +12,13 @@ LOCAL_IP=${4}
 
 (
     flock --exclusive --nonblock 200 || exit 0
-
+    cnt=0
     while true; do
         ssh -o ConnectTimeout=10 -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes $SSH_SRC_OPTS -N -R \*:$REMOTE_PORT:localhost:$LOCAL_PORT $REMOTE_LOGIN
-        if [ $? -eq 130 ]; then
+        if [ $? -eq 130 ] || [ $cnt -ge 10 ]; then
             break  # Ctrl + C
         fi
+        let cnt++
         sleep 5
     done
 ) 200>$TIMELAPSE_BASE/config/ssh-tunnel-$REMOTE_PORT.lock
