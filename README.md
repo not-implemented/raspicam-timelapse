@@ -65,17 +65,17 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
       - TODO: setup IgnoreList
   - [Install Sync-Script (optional)](#install-sync-script-optional)
     - Ansible status: TODO
-      - TODO: setup config
-      - TODO: setup cronjob
+      - done: setup config
+      - done: setup cronjob
       - TODO: modify target server ssh config
     - [Setup config file](#setup-config-file)
     - [Crontab](#crontab)
     - [less strict ssh restrictions needed on your remote server](#less-strict-ssh-restrictions-needed-on-your-remote-server)
   - [Use Ramdisk as primary capture folder (optional)](#use-ramdisk-as-primary-capture-folder-optional)
     - Ansible status: TODO (merge with default timelapse setup)
-      - TODO: fstab
-      - TODO: directory
-      - TODO: cronjobs
+      - done: fstab
+      - done: directory
+      - done: cronjobs
     - [Additional crontab entries](#additional-crontab-entries)
   - [3G/4G backup connection (optional)](#3g4g-backup-connection-optional)
     - Ansible status: TODO

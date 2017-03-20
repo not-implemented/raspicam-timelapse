@@ -50,6 +50,7 @@ ssl_certs_mode: "0700"
 # ssh-tunnel
 ssh_tunnel_remote_host: "your-server.tld"
 ssh_tunnel_remote_user: "timelapse"
+## set for each host in host_vars/__hostname__
 # ssh_tunnel_remote_port_ssh: 10022
 # ssh_tunnel_remote_port_ssh_mobile: 11022
 # ssh_tunnel_remote_port_https: 4443
