@@ -8,6 +8,8 @@ sshKey: "~/.ssh/id_rsa.pub"
 nvm_version: "v0.33.1"
 node_version: "6"
 # raspicam-timelapse
+webinterface_username: "timelapse"
+webinterface_password: "timelapse"
 capture_path: "/home/pi/capture"
 # wlan
 country: DE

@@ -28,7 +28,7 @@
 
 # TODO: don't change if it will be changed by ramdisk role later 
 - name: write modified timelapse.json config
-  copy: content="{{ timelapse_json | default({}) | combine({ 'capturePath':capture_path }) }}" dest="{{repo_path}}/config/timelapse.json"
+  copy: content="{{ timelapse_json | default({}) | combine({ 'capturePath':capture_path, 'username':webinterface_username, 'password':webinterface_password }) }}" dest="{{repo_path}}/config/timelapse.json"
   notify: 
   - restart raspicam-timelapse
 
