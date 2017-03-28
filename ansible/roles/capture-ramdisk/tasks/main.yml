@@ -1,6 +1,6 @@
 - name: fstab
   mount:
-    name: /home/pi/capture_ramdisk
+    name: "{{ capture_ramdisk_path }}"
     src: capture_ramdisk
     fstype: tmpfs
     opts: "size=30M,uid=1000,gid=1000,mode=755"
@@ -11,10 +11,25 @@
   cron:
     name: ramdisk sync
     minute: "*"
-    job: "~/raspicam-timelapse/sync/sync.sh ~/capture_ramdisk"
+    job: "~/raspicam-timelapse/sync/sync.sh {{ capture_ramdisk_path }}"
 
 - name: move to sdcard cronjob
   cron:
     name: move to sdcard
     minute: "*"
-    job: "~/raspicam-timelapse/sync/ramdisk2sd-move.sh ~/capture_ramdisk ~/capture"
+    job: "~/raspicam-timelapse/sync/ramdisk2sd-move.sh {{ capture_ramdisk_path }} {{ capture_path }}"
+
+- name: read timelapse.json config
+  slurp:
+    src: "{{ repo_path + '/config/timelapse.json' }}"
+  register: timelapse_json_raw
+  ignore_errors: true
+
+- name: set timelapse.json config fact
+  set_fact: timelapse_json="{{ timelapse_json_raw['content'] | b64decode | from_json }}"
+  when: timelapse_json_raw | succeeded
+
+- name: write modified timelapse.json config
+  copy: content="{{ timelapse_json | default({}) | combine({ 'capturePath':capture_ramdisk_path }) }}" dest="{{repo_path}}/config/timelapse.json"
+  notify: 
+  - restart raspicam-timelapse

@@ -5,7 +5,7 @@
   npm: path={{repo_path}}
 
 - name: create capture directory
-  file: path=/home/pi/capture state=directory
+  file: path="{{ capture_path }}" state=directory
 
 - name: install systemd service
   become: true
@@ -15,6 +15,22 @@
     owner: pi
     group: pi
     mode: 0644
+
+- name: read timelapse.json config
+  slurp:
+    src: "{{ repo_path + '/config/timelapse.json' }}"
+  register: timelapse_json_raw
+  ignore_errors: true
+
+- name: set timelapse.json config fact
+  set_fact: timelapse_json="{{ timelapse_json_raw['content'] | b64decode | from_json }}"
+  when: timelapse_json_raw | succeeded
+
+# TODO: don't change if it will be changed by ramdisk role later 
+- name: write modified timelapse.json config
+  copy: content="{{ timelapse_json | default({}) | combine({ 'capturePath':capture_path }) }}" dest="{{repo_path}}/config/timelapse.json"
+  notify: 
+  - restart raspicam-timelapse
 
 - name: enable/start systemd service
   become: true

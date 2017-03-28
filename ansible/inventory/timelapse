@@ -1,3 +1,3 @@
 [timelapse]
-timelapse123 ansible_connection=local
-
+#timelapse1 ansible_host=192.168.3.118 ansible_user=pi
+timelapse20 ansible_host=192.168.99.142 ansible_user=pi

@@ -7,6 +7,8 @@ sshKey: "~/.ssh/id_rsa.pub"
 # nvm
 nvm_version: "v0.33.1"
 node_version: "6"
+# raspicam-timelapse
+capture_path: "/home/pi/capture"
 # wlan
 country: DE
 wpa_supplicant_entries:
@@ -64,3 +66,6 @@ sync_dest_dir: "/home/timelapse/capture/{{ansible_hostname}}"
 sync_opts_dir: "--recursive"
 sync_opts_file: "--relative"
 sync_opts: "--times --remove-source-files --partial --prune-empty-dirs --exclude=latest.jpg --exclude=.* --include=*/ --include=*.jpg --exclude=*"
+
+# capture-ramdisk
+capture_ramdisk_path: "/home/pi/capture_ramdisk"
