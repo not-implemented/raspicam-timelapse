@@ -67,7 +67,7 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
     - Ansible status: TODO
       - done: setup config
       - done: setup cronjob
-      - TODO: modify target server ssh config
+      - instruction output done: modify target server ssh config
     - [Setup config file](#setup-config-file)
     - [Crontab](#crontab)
     - [less strict ssh restrictions needed on your remote server](#less-strict-ssh-restrictions-needed-on-your-remote-server)
