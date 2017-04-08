@@ -1,0 +1,11 @@
+- name: network watchdog cron entry
+  cron:
+      name: "network watchdog cron entry"
+      minute: "*"
+      hour: "*"
+      job: "sudo timeout -k 120 100 ~/raspicam-timelapse/network-watchdog/check-network.sh"
+- name: network watchdog config
+  template:
+    src: check-network.conf
+    dest: ~/raspicam-timelapse/config/check-network.conf
+    mode: 0644

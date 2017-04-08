@@ -71,3 +71,11 @@ sync_opts: "--times --remove-source-files --partial --prune-empty-dirs --exclude
 
 # capture-ramdisk
 capture_ramdisk_path: "/home/pi/capture_ramdisk"
+
+# network-watchdog:
+network_watchdog_ipv4: 0
+network_watchdog_ipv6: 0
+network_watchdog_ping_limit_net_restart: 5
+network_watchdog_ping_limit_reboot: 60
+network_watchdog_ping_limit_watchdog_fail: 70
+network_watchdog_interfaces: wlan0
