@@ -1,0 +1,31 @@
+- name: write udev rules file
+  become: true
+  template:
+    src: usb-modeswitch.rules.j2
+    dest: /etc/udev/rules.d/70-usb-modeswitch.rules
+  notify: udev reload
+
+- name: network watchdog config
+  template:
+    src: interfaces-post-up.conf.j2
+    dest: ~/raspicam-timelapse/config/interfaces-post-up.conf
+
+- name: network interfaces settings
+  set_fact: interfaces="{{ interfaces | combine({ umts_interface:{'iface':{'post-up':'/home/pi/raspicam-timelapse/backup-connection/interfaces-post-up.sh', 'metric':500}, 'iface_inet':'dhcp', 'configure_type':'allow-hotplug'} }, recursive=True) }}"
+
+- name: modify dhcpcd.conf
+  blockinfile:
+    block: |
+        interface eth1
+        nogateway
+    marker: "# {mark} ANSIBLE MANAGED BLOCK umts-backdoor"
+    dest: /etc/dhcpcd.conf
+  become: yes
+  notify: restart dhcpcd
+
+- name: umts ssh tunnel cron entry
+  cron:
+      name: "umts ssh tunnel cron entry"
+      minute: "*"
+      hour: "*"
+      job: "~/raspicam-timelapse/ssh-reverse-tunnel/open-tunnel.sh {{ssh_tunnel_remote_user}}@{{ssh_tunnel_remote_host}} {{ssh_tunnel_remote_port_ssh_mobile}} 22 {{umts_local_ip}}"

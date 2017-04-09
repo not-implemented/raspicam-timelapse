@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="{{umts_vendor_id}}", ATTRS{idProduct}=="{{umts_product_id}}", RUN+="/usr/sbin/usb_modeswitch -v {{umts_vendor_id}} -p {{umts_product_id}} -M {{umts_switch_message}}"

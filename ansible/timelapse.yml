@@ -11,6 +11,7 @@
   roles:
   - enable-raspicam
   - wlan
+  - { role: umts-backdoor, when: umts_enabled|default(False) }
   - network
   - raspicam-timelapse
   - jdauphant.ssl-certs

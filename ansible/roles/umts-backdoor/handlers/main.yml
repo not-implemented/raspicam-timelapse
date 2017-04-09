@@ -1,0 +1,8 @@
+- name: udev reload
+  command: udevadm control --reload
+  become: yes
+
+- name: restart dhcpcd
+  systemd:
+    name: dhcpcd
+    state: restarted
