@@ -6,3 +6,4 @@
   systemd:
     name: dhcpcd
     state: restarted
+  become: true
