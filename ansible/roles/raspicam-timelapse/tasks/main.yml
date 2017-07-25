@@ -39,3 +39,36 @@
     enabled: yes
     state: started
     daemon_reload: yes
+
+- name: start capture cron entry
+  cron:
+      name: "start capture cron entry"
+      minute: "{{start_capture_cron_minute}}"
+      hour: "{{start_capture_cron_hour}}"
+      month: "{{start_capture_cron_month}}"
+      day: "{{start_capture_cron_day}}"
+      weekday: "{{start_capture_cron_weekday}}"
+      job: "curl -u {{webinterface_username}}:{{webinterface_password}} -k 'https://localhost:4443/api?action=startCapture'"
+  when: setup_start_stop_capture_cron
+
+- name: stop capture cron entry
+  cron:
+      name: "stop capture cron entry"
+      minute: "{{stop_capture_cron_minute}}"
+      hour: "{{stop_capture_cron_hour}}"
+      month: "{{stop_capture_cron_month}}"
+      day: "{{stop_capture_cron_day}}"
+      weekday: "{{stop_capture_cron_weekday}}"
+      job: "curl -u {{webinterface_username}}:{{webinterface_password}} -k 'https://localhost:4443/api?action=stopCapture'"
+  when: setup_start_stop_capture_cron
+
+- name: stop capture fs full cron entry
+  cron:
+      name: "stop capture fs full cron entry"
+      minute: "*/15"
+      hour: "*"
+      month: "{{start_capture_cron_month}}"
+      day: "{{start_capture_cron_day}}"
+      weekday: "{{start_capture_cron_weekday}}"
+      job: "df --output=pcent /home/pi/capture | tail -n 1 | grep -qE '^( 9[7-9]|100)' && curl -u {{webinterface_username}}:{{webinterface_password}} -k 'https://localhost:4443/api?action=stopCapture'"
+  when: setup_start_stop_capture_cron

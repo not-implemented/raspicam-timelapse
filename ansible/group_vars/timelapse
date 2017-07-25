@@ -11,6 +11,17 @@ node_version: "6"
 webinterface_username: "timelapse"
 webinterface_password: "timelapse"
 capture_path: "/home/pi/capture"
+setup_start_stop_capture_cron: False
+start_capture_cron_minute: "0"
+start_capture_cron_hour: "6"
+start_capture_cron_day: "*"
+start_capture_cron_month: "*"
+start_capture_cron_weekday: "1-5"
+stop_capture_cron_minute: "0"
+stop_capture_cron_hour: "19"
+stop_capture_cron_day: "*"
+stop_capture_cron_month: "*"
+stop_capture_cron_weekday: "1-5"
 # wlan
 country: DE
 wpa_supplicant_entries:
