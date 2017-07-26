@@ -50,6 +50,7 @@ HowTo
 
 - Download current [Raspbian](https://www.raspberrypi.org/downloads/raspbian/) ("Jessie" or newer - "Lite" is enough)
 - Write extracted ".img"-file to SD-Card - [see OS specific instructions](https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
+- Create an empty file named "ssh" in the root folder of the SD-Card to enable automatic startup of OpenSSH
 - Attach the camera to the Raspberry Pi - [see instructions](https://www.raspberrypi.org/documentation/configuration/camera.md)
 - Put the SD-Card into your Raspberry Pi, Connect to your LAN (DHCP server needed), Power on
 - Login via SSH (maybe use local IP): `ssh raspberrypi` (Login: pi / Password: raspberry)
