@@ -13,31 +13,28 @@ jQuery(function($) {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    setBusy(true);
-    updateStatus(function () {
-        setBusy(false);
-    });
-    setInterval(updateStatus, 1000);
+    updateStatus();
     loadConfig();
 
     startCaptureButton.on('click', function () {
-        api('startCapture', {}, function (response) {
-            isCapturing = response.isCapturing;
-            updateStatus();
+        api('startCapture', {}, function (err, status, info) {
+            if (err) return;
+            handleStatus(status, info);
         });
     });
 
     stopCaptureButton.on('click', function () {
-        api('stopCapture', {}, function (response) {
-            isCapturing = response.isCapturing;
-            updateStatus();
+        api('stopCapture', {}, function (err, status, info) {
+            if (err) return;
+            handleStatus(status, info);
         });
     });
 
     saveConfigButton.on('click', function () {
         var config = getConfig();
 
-        api('saveConfig', config, function (config) {
+        api('saveConfig', config, function (err, config) {
+            if (err) return;
             setConfig(config);
         });
     });
@@ -46,50 +43,56 @@ jQuery(function($) {
         loadConfig();
     });
 
-    function updateStatus(callback) {
-        api('loadStatus', function (status, info) {
-            if (info && info.responseTime) {
-                status.responseTime = {
-                    title: 'Response Time',
-                    value: 'network ' + info.responseTime + ' ms' + (info.duration ? ' (+ server ' + info.duration + ' ms)' : ''),
-                    type: info.responseTime > 500 ? (info.responseTime > 2000 ? 'danger' : 'warning') : 'success'
-                }
-            }
+    function updateStatus() {
+        api('loadStatus', function (err, status, info) {
+            setTimeout(updateStatus, 1000);
+            if (err) return;
 
-            isCapturing = status.isCapturing;
-
-            if (status.latestPictureHash) {
-                previewImage.attr('src', '/preview?_=' + status.latestPictureHash);
-            } else {
-                previewImage.removeAttr('src');
-            }
-
-            for (var name in status) {
-                var statusId = 'status-' + name;
-                var statusItem = status[name];
-                if (statusItem === null || typeof statusItem !== 'object') continue;
-
-                var statusNode = $('#' + statusId);
-
-                if (statusNode.length === 0) {
-                    statusTable.find('.status-init').remove();
-                    statusTable.append('<tr><td>' + statusItem.title + '</td><td><span id="' + statusId + '"></span></td></tr>');
-                    statusNode = $('#' + statusId);
-                }
-
-                statusNode.text(statusItem.value);
-                statusNode.removeClass();
-                statusNode.addClass('label label-' + statusItem.type);
-            }
-
-            if (callback) callback();
-
-            setBusy(isBusy); // for updated isCapturing
+            handleStatus(status, info);
         });
     }
 
+    function handleStatus(status, info) {
+        if (info && info.responseTime) {
+            status.responseTime = {
+                title: 'Response Time',
+                value: 'network ' + info.responseTime + ' ms' + (info.duration ? ' (+ server ' + info.duration + ' ms)' : ''),
+                type: info.responseTime > 500 ? (info.responseTime > 2000 ? 'danger' : 'warning') : 'success'
+            }
+        }
+
+        isCapturing = status.isCapturing;
+
+        if (status.latestPictureHash) {
+            previewImage.attr('src', '/preview?_=' + status.latestPictureHash);
+        } else {
+            previewImage.removeAttr('src');
+        }
+
+        for (var name in status) {
+            var statusId = 'status-' + name;
+            var statusItem = status[name];
+            if (statusItem === null || typeof statusItem !== 'object') continue;
+
+            var statusNode = $('#' + statusId);
+
+            if (statusNode.length === 0) {
+                statusTable.find('.status-init').remove();
+                statusTable.append('<tr><td>' + statusItem.title + '</td><td><span id="' + statusId + '"></span></td></tr>');
+                statusNode = $('#' + statusId);
+            }
+
+            statusNode.text(statusItem.value);
+            statusNode.removeClass();
+            statusNode.addClass('label label-' + statusItem.type);
+        }
+
+        setBusy(isBusy); // for updated isCapturing
+    }
+
     function loadConfig() {
-        api('loadConfig', function (config) {
+        api('loadConfig', function (err, config) {
+            if (err) return;
             setConfig(config);
         });
     }
@@ -136,7 +139,7 @@ jQuery(function($) {
             method: data ? 'POST' : 'GET',
             data: data ? JSON.stringify(data) : null,
             contentType: data ? 'application/json' : null,
-            timeout: 10000,
+            timeout: 20000,
             success: function (response, textStatus, jqXHR) {
                 var perf = window.performance && window.performance.getEntriesByName &&
                     window.performance.getEntriesByName(location.origin + '/api?action=' + action).pop();
@@ -153,7 +156,7 @@ jQuery(function($) {
                     alertBox.html('<strong>Error:</strong> ' + response.error);
                     alertBox.show();
                 } else {
-                    callback(response, info);
+                    callback(null, response, info);
                     alertBox.hide();
                 }
                 if (data) setBusy(false);
@@ -162,6 +165,7 @@ jQuery(function($) {
                 alertBox.html('<strong>' + textStatus + ':</strong> ' + errorThrown);
                 alertBox.show();
                 if (data) setBusy(false);
+                callback(new Error(textStatus + ': ' + errorThrown));
             }
         });
     }

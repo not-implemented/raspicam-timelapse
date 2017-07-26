@@ -353,6 +353,7 @@ var apiActions = {
 
             saveConfig(function (err) {
                 if (err) return callback('Error saving config');
+                updateStatus(true);
                 callback(status, 200);
             });
         });
@@ -370,6 +371,7 @@ var apiActions = {
 
         saveConfig(function (err) {
             if (err) return callback('Error saving config');
+            updateStatus(true);
             callback(status, 200);
         });
     },
