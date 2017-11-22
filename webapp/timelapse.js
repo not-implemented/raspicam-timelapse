@@ -55,7 +55,7 @@ jQuery(function($) {
     function handleStatus(status, info) {
         if (info && info.responseTime) {
             status.responseTime = {
-                title: 'Response Time',
+                title: 'Response time',
                 value: 'network ' + info.responseTime + ' ms' + (info.duration ? ' (+ server ' + info.duration + ' ms)' : ''),
                 type: info.responseTime > 500 ? (info.responseTime > 2000 ? 'danger' : 'warning') : 'success'
             }
@@ -84,7 +84,7 @@ jQuery(function($) {
 
             statusNode.text(statusItem.value);
             statusNode.removeClass();
-            statusNode.addClass('label label-' + statusItem.type);
+            statusNode.addClass('badge badge-' + statusItem.type);
         }
 
         setBusy(isBusy); // for updated isCapturing
@@ -162,7 +162,7 @@ jQuery(function($) {
                 if (data) setBusy(false);
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                alertBox.html('<strong>' + textStatus + ':</strong> ' + errorThrown);
+                alertBox.html('<strong>Cannot connect to backend</strong> ' + errorThrown);
                 alertBox.show();
                 if (data) setBusy(false);
                 callback(new Error(textStatus + ': ' + errorThrown));
