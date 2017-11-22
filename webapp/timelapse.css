@@ -1,21 +1,31 @@
-.vspace {
-    margin-bottom: 20px;
+body {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+#status-table {
+    font-size: 90%;
+}
+
+#status-table .badge {
+    white-space: normal !important;
+    text-align: left !important;
+    line-height: 1.5 !important;
+    padding: 0 .4em !important;
 }
 
 #preview-image {
     /* setting width/height means the image without borders: */
     box-sizing: content-box;
-    width: 480px;
-    height: 270px;
-
-    /* default image: */
-    background: url('default.jpg') no-repeat center;
+    min-height: 270px;
+    background: #eee;
 
     /* format alt-text: */
     display: table-cell;
     text-align: center;
     vertical-align: middle;
-    font-size: 48px;
+    font-size: 2rem;
+    line-height: 1.5;
     color: #999;
 }
 

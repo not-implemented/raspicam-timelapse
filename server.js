@@ -77,6 +77,9 @@ var mounts = [st({
     path: __dirname + '/node_modules/jquery/dist',
     url: '/jquery'
 }), st({
+    path: __dirname + '/node_modules/popper.js/dist',
+    url: '/popper'
+}), st({
     path: __dirname + '/webapp',
     index: 'index.html'
 })];
@@ -142,11 +145,11 @@ updatePreviewImage();
 var status = {
     isCapturing: false,
     latestPictureHash: null,
-    captureMode: {title: 'Capture Mode', value: 'unknown', type: 'default'},
-    latestPicture: {title: 'Latest Picture', value: 'unknown', type: 'default'},
-    freeDiskSpace: {title: 'Free Disk Space', value: 'unknown', type: 'default'},
-    cpuTemp: {title: 'CPU Temperature', value: 'unknown', type: 'default'},
-    systemLoad: {title: 'System Load', value: 'unknown', type: 'default'},
+    captureMode: {title: 'Capture mode', value: 'unknown', type: 'default'},
+    latestPicture: {title: 'Latest picture', value: 'unknown', type: 'default'},
+    freeDiskSpace: {title: 'Free disk space', value: 'unknown', type: 'default'},
+    cpuTemp: {title: 'CPU temperature', value: 'unknown', type: 'default'},
+    systemLoad: {title: 'System load', value: 'unknown', type: 'default'},
     uptime: {title: 'Uptime', value: 'unknown', type: 'default'},
     visitors: {title: 'Visitors', value: 'unknown', type: 'default'}
 };
@@ -196,12 +199,12 @@ function updateStatus(partial) {
         });
 
         var cpuTemp = vcgencmd.measureTemp();
-        status.cpuTemp.value = '' + cpuTemp + '°C';
+        status.cpuTemp.value = '' + cpuTemp + ' °C';
         status.cpuTemp.type = cpuTemp >= 65 ? (cpuTemp >= 75 ? 'danger' : 'warning') : 'success';
     }
 
     var systemLoad = os.loadavg();
-    status.systemLoad.value = systemLoad.map(function (load) {return load.toFixed(2);}).join(' - ');
+    status.systemLoad.value = systemLoad.map(function (load) {return load.toFixed(2);}).join(', ');
     status.systemLoad.type = systemLoad[0] >= 2 ? (systemLoad[0] >= 5 ? 'danger' : 'warning') : 'success';
 
     var uptime = os.uptime();
@@ -232,7 +235,7 @@ function updateStatus(partial) {
 
             status['interface_' + interfaceName] = {
                 title: 'Interface ' + interfaceName,
-                value: interfaceInfo.essid ? (interfaceInfo.essid + ' (' + interfaceInfo.accessPoint + '): ' + interfaceInfo.signalLevel + '%') : 'link detected',
+                value: interfaceInfo.essid ? (interfaceInfo.essid + ': ' + (interfaceInfo.signalLevel - 256) + ' dBm') : 'link detected',
                 type: interfaceInfo.essid && interfaceInfo.signalLevel < 50 ? (interfaceInfo.signalLevel < 20 ? 'danger' : 'warning') : 'success'
             };
         }

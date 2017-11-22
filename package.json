@@ -19,14 +19,15 @@
     "node": ">=0.10.28"
   },
   "dependencies": {
-    "st": "^0.5.5",
-    "basic-auth": "^1.0.3",
-    "exif": "^0.4.0",
-    "http-shutdown": "^1.0.3",
-    "nan": "^2.3.3",
+    "st": "^1.2.2",
+    "basic-auth": "^2.0.0",
+    "exif": "^0.6.0",
+    "http-shutdown": "^1.2.0",
+    "nan": "^2.8.0",
     "vcgencmd": "^0.3.0",
-    "diskusage": "^0.1.4",
-    "bootstrap": "^3.3.5",
-    "jquery": "^2.1.4"
+    "diskusage": "^0.2.4",
+    "bootstrap": "^4.0.0-beta.2",
+    "jquery": "^3.2.1",
+    "popper.js": "^1.12.3"
   }
 }

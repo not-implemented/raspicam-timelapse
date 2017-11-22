@@ -8,262 +8,247 @@
     <title>RaspiCam-Timelapse</title>
 
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">-->
-    <link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">-->
     <link rel="stylesheet" href="spinner.css" type="text/css">
-    <!--<link rel="stylesheet" href="http://css-spinners.com/css/spinner/spinner.css" type="text/css">-->
-
     <link rel="stylesheet" href="timelapse.css">
 </head>
 <body>
     <div class="container">
-        <div class="page-header">
-            <h1><span class="glyphicon glyphicon-camera"></span> RaspiCam-Timelapse</h1>
+        <div class="page-header mb-4">
+            <h2>RaspiCam-Timelapse</h2>
         </div>
 
         <div id="alert-box" class="alert alert-danger" role="alert" style="display: none"></div>
 
-        <div class="row vspace">
-            <div class="col-md-7">
-                <div class="vspace">
-                    <a href="/full-preview" id="full-preview" target="_blank">
-                        <img id="preview-image" class="img-thumbnail" alt="Start Capture for Preview">
-                    </a>
-                </div>
-
-                <div class="vspace">
+        <div class="card-deck mb-3">
+            <div class="card">
+                <a href="/full-preview" target="_blank"><img id="preview-image" class="card-img" id="full-preview" alt="Start Capture for Preview"></a>
+                <div class="card-body">
                     <button id="start-capture" class="btn btn-success" type="button">
-                        <span class="glyphicon glyphicon-play"></span>
                         Start Capture
                     </button>
-
-                    <button id="stop-capture" class="btn btn-danger" type="button">
-                        <span class="glyphicon glyphicon-stop"></span>
+                    <button id="stop-capture" class="btn btn-danger mr-2" type="button">
                         Stop Capture
                     </button>
-
                     <div id="busy-indicator" class="spinner-loader">Busy…</div>
                 </div>
             </div>
-
-            <div class="col-md-5">
-                <h3>Status</h3>
-                <table id="status-table" class="table table-condensed">
-                    <tr class="status-init">
-                        <td>Application</td>
-                        <td><span class="label label-default">Initializing ...</span></td>
-                    </tr>
-                </table>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Status</h5>
+                    <table id="status-table" class="table table-sm">
+                        <tr class="status-init">
+                            <td>Application</td>
+                            <td><span class="label label-default">Initializing …</span></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <div class="vspace">
-            <h3>Options</h3>
-            <div class="panel-group" id="options-container" role="tablist">
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab"><h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#options-container" href="#options-timelapse">Timelapse</a>
-                    </h4></div>
-                    <div id="options-timelapse" class="panel-collapse collapse in" role="tabpanel"><div class="panel-body">
-                        <table class="table">
-                            <tr><td>Timelapse Interval</td><td>
-                                <div class="form-inline">
-                                    <div class="input-group">
-                                        <input id="option-timelapseInterval" type="text" class="form-control" placeholder="Take picture every ...">
-                                        <span class="input-group-addon">seconds</span>
-                                    </div>
-                                </div>
-                            </td></tr>
-                        </table>
-                    </div></div>
-                </div>
+        <h4>Settings</h4>
 
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab"><h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#options-container" href="#options-camera">Camera</a>
-                    </h4></div>
-                    <div id="options-camera" class="panel-collapse collapse" role="tabpanel"><div class="panel-body">
-                        <table class="table">
-                            <tr><td>Exposure</td><td>
-                                <div class="form-inline">
-                                    <select id="option-exposure" class="form-control">
-                                        <option value=""></option>
-                                        <option value="auto">auto</option>
-                                        <option value="night">night</option>
-                                        <option value="nightpreview">nightpreview</option>
-                                        <option value="backlight">backlight</option>
-                                        <option value="spotlight">spotlight</option>
-                                        <option value="sports">sports (fast shutter, etc.)</option>
-                                        <option value="snow">snow</option>
-                                        <option value="beach">beach</option>
-                                        <option value="verylong">verylong</option>
-                                        <option value="antishake">antishake</option>
-                                        <option value="fireworks">fireworks</option>
-                                    </select>
-                                </div>
-                            </td></tr>
-                            <tr><td>EV Compensation</td><td>
-                                <div class="form-inline">
-                                    <input id="option-ev" type="text" class="form-control" placeholder="-10 ... +10">
-                                </div>
-                            </td></tr>
-                            <tr><td>ISO</td><td>
-                                <div class="form-inline">
-                                    <select id="option-iso" class="form-control">
-                                        <option value=""></option>
-                                        <option value="100">100</option>
-                                        <option value="200">200</option>
-                                        <option value="400">400</option>
-                                        <option value="800">800</option>
-                                    </select>
-                                </div>
-                            </td></tr>
-                            <tr><td>Shutter Speed (sec)</td><td>
-                                <div class="form-inline">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">1 / </span>
-                                        <input id="option-shutterSpeed" type="text" class="form-control">
-                                    </div>
-                                </div>
-                            </td></tr>
-                            <tr><td>Automatic White Balance</td><td>
-                                <div class="form-inline">
-                                    <select id="option-awb" class="form-control">
-                                        <option value=""></option>
-                                        <option value="off">off</option>
-                                        <option value="auto">auto (default)</option>
-                                        <option value="sun">sun</option>
-                                        <option value="cloud">cloud</option>
-                                        <option value="shade">shade</option>
-                                        <option value="tungsten">tungsten</option>
-                                        <option value="fluorescent">fluorescent</option>
-                                        <option value="incandescent">incandescent</option>
-                                        <option value="flash">flash</option>
-                                        <option value="horizon">horizon</option>
-                                    </select>
-                                </div>
-                            </td></tr>
-                            <tr><td>Manual AWB (when AWB=off)</td><td>
-                                <div class="form-inline">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">Red</span>
-                                        <input id="option-awbRedGain" type="text" class="form-control" placeholder="i.e. 1.5">
-                                    </div>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">Blue</span>
-                                        <input id="option-awbBlueGain" type="text" class="form-control" placeholder="i.e. 1.2">
-                                    </div>
-                                </div>
-                            </td></tr>
-                            <tr><td>Flip image</td><td>
-                                <div class="form-inline">
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" id="option-hflip"> Horizontal</label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" id="option-vflip"> Vertical</label>
-                                    </div>
-                                    <div>
-                                         (use both for 180° rotate - if camera is upside-down)
-                                    </div>
-                                </div>
-                            </td></tr>
-                        </table>
-                    </div></div>
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab"><h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#options-container" href="#options-image-format">Image Format</a>
-                    </h4></div>
-                    <div id="options-image-format" class="panel-collapse collapse" role="tabpanel"><div class="panel-body">
-                        <table class="table">
-                            <tr><td>Resolution</td><td>
-                                <div class="form-inline">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">width</span>
-                                        <input id="option-width" type="text" class="form-control" placeholder="x ...">
-                                    </div>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">height</span>
-                                        <input id="option-height" type="text" class="form-control" placeholder="y ...">
-                                    </div>
-                                </div>
-                            </td></tr>
-                            <tr><td>Thumbnail resolution</td><td>
-                                <div class="form-inline">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">width</span>
-                                        <input id="option-thumbnailWidth" type="text" class="form-control" placeholder="x ...">
-                                    </div>
-                                    <div class="input-group">
-                                        <span class="input-group-addon">height</span>
-                                        <input id="option-thumbnailHeight" type="text" class="form-control" placeholder="y ...">
-                                    </div>
-                                </div>
-                            </td></tr>
-                            <!-- Currently, the "quality"-option does not work in raspistill (it's always 100)
-                            <tr><td>JPEG quality (0-100)</td><td>
-                                <div class="form-inline">
-                                    <input id="option-jpegQuality" type="text" class="form-control" placeholder="100 = best quality">
-                                </div>
-                            </td></tr>
-                            -->
-                            <tr><td>Capture path</td><td>
-                                <div class="form-inline">
-                                    <input id="option-capturePath" type="text" class="form-control" placeholder="absolute path - e.g. change to ramdisk or external storage">
-                                </div>
-                            </td></tr>
-                        </table>
-                    </div></div>
-                </div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading" role="tab"><h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#options-container" href="#options-server">Server</a>
-                    </h4></div>
-                    <div id="options-server" class="panel-collapse collapse" role="tabpanel"><div class="panel-body">
-                        <table class="table">
-                            <tr><td>Username</td><td>
-                                <div class="form-inline">
-                                    <input id="option-username" type="text" class="form-control" placeholder="username for HTTP authentication">
-                                </div>
-                            </td></tr>
-                            <tr><td>Password</td><td>
-                                <div class="form-inline">
-                                    <input id="option-password" type="text" class="form-control" placeholder="password for HTTP authentication">
-                                </div>
-                            </td></tr>
-                        </table>
-                    </div></div>
-                </div>
+        <div class="card mb-3">
+            <div class="card-header">
+                <nav class="nav nav-tabs card-header-tabs" role="tablist">
+                    <a class="nav-item nav-link active" id="options-timelapse-tab" data-toggle="tab" href="#options-timelapse" role="tab">Interval</a>
+                    <a class="nav-item nav-link" id="options-camera-tab" data-toggle="tab" href="#options-camera" role="tab">Camera</a>
+                    <a class="nav-item nav-link" id="options-image-format-tab" data-toggle="tab" href="#options-image-format" role="tab">Image</a>
+                    <a class="nav-item nav-link" id="options-server-tab" data-toggle="tab" href="#options-server" role="tab">Server</a>
+                </nav>
             </div>
+            <div class="card-body tab-content">
+                <div id="options-timelapse" class="tab-pane active" role="tabpanel">
+                    <div class="form-group row">
+                        <label for="option-timelapseInterval" class="col-sm-3 col-form-label">Interval</label>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                <input id="option-timelapseInterval" type="text" class="form-control" placeholder="Take picture every …">
+                                <span class="input-group-addon">seconds</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <div id="options-camera" class="tab-pane" role="tabpanel">
+                    <div class="form-group row">
+                        <label for="option-exposure" class="col-sm-3 col-form-label">Exposure mode</label>
+                        <div class="col-sm-9">
+                            <select id="option-exposure" class="form-control">
+                                <option value=""></option>
+                                <option value="auto">Auto exposure</option>
+                                <option value="night">Night shooting</option>
+                                <option value="nightpreview">Night preview</option>
+                                <option value="backlight">Backlit subject</option>
+                                <option value="spotlight">Spotlight</option>
+                                <option value="sports">Sports (fast shutter, etc.)</option>
+                                <option value="snow">Snowy scenery</option>
+                                <option value="beach">Beach</option>
+                                <option value="verylong">Long exposure</option>
+                                <option value="antishake">Antishake</option>
+                                <option value="fireworks">Fireworks</option>
+                            </select>
+                        </div>
+                    </div>
 
-            <div class="vspace">
-                <button id="save-config" class="btn btn-primary" type="button">
-                    <span class="glyphicon glyphicon-save"></span>
-                    Save
-                </button>
+                    <div class="form-group row">
+                        <label for="option-ev" class="col-sm-3 col-form-label">EV compensation</label>
+                        <div class="col-sm-9">
+                            <input id="option-ev" type="text" class="form-control" placeholder="-10 … +10">
+                        </div>
+                    </div>
 
-                <button id="reset-config" class="btn btn-default" type="button">
-                    <span class="glyphicon glyphicon-refresh"></span>
-                    Reset
-                </button>
+                    <div class="form-group row">
+                        <label for="option-iso" class="col-sm-3 col-form-label">ISO</label>
+                        <div class="col-sm-9">
+                            <select id="option-iso" class="form-control">
+                                <option value=""></option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                                <option value="400">400</option>
+                                <option value="800">800</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="option-shutterSpeed" class="col-sm-3 col-form-label">Shutter speed</label>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                <span class="input-group-addon">1 / </span>
+                                <input id="option-shutterSpeed" type="text" class="form-control">
+                                <span class="input-group-addon">seconds</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="option-awb" class="col-sm-3 col-form-label">White balance</label>
+                        <div class="col-sm-9">
+                            <select id="option-awb" class="form-control">
+                                <option value=""></option>
+                                <option value="off">Manual WB</option>
+                                <option value="auto">Auto (default)</option>
+                                <option value="sun">Sunny</option>
+                                <option value="cloud">Cloudy</option>
+                                <option value="shade">Shade</option>
+                                <option value="tungsten">Tungsten lighting</option>
+                                <option value="fluorescent">Fluorescent lighting</option>
+                                <option value="incandescent">Incandescent lighting</option>
+                                <option value="flash">Flash</option>
+                                <option value="horizon">Horizon</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="option-awbRedGain" class="col-sm-3 col-form-label">Manual WB</label>
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">Red</span>
+                                <input id="option-awbRedGain" type="text" class="form-control" placeholder="i.e. 1.5">
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="input-group">
+                                <span class="input-group-addon">Blue</span>
+                                <input id="option-awbBlueGain" type="text" class="form-control" placeholder="i.e. 1.2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="option-hflip" class="col-sm-3 col-form-label">Flip image</label>
+                        <div class="col-sm-9">
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" id="option-hflip">
+                                    Horizontal
+                                </label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" id="option-vflip">
+                                    Vertical
+                                </label>
+                            </div>
+
+                            <small class="text-muted">use both for 180° rotate</small>
+                        </div>
+                    </div>
+                </div>
+            
+                <div id="options-image-format" class="tab-pane" role="tabpanel">
+                    <div class="form-group row">
+                        <label for="option-width" class="col-sm-3 col-form-label">Resolution</label>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                <input id="option-width" type="text" class="form-control" placeholder="width">
+                                <span class="input-group-addon">×</span>
+                                <input id="option-height" type="text" class="form-control" placeholder="height">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="option-thumbnailWidth" class="col-sm-3 col-form-label">Thumbnail resolution</label>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+
+                                <input id="option-thumbnailWidth" type="text" class="form-control" placeholder="width">
+                                <span class="input-group-addon">×</span>
+                                <input id="option-thumbnailHeight" type="text" class="form-control" placeholder="height">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Currently, the "quality"-option does not work in raspistill (it's always 100)
+                    <div class="form-group row">
+                        <label for="option-width" class="col-sm-3 col-form-label">JPEG quality</label>
+                        <div class="col-sm-3">
+                            <input id="option-jpegQuality" type="text" class="form-control" placeholder="100 = best quality">
+                        </div>
+                    </div>
+                    -->
+
+                    <div class="form-group row">
+                        <label for="option-capturePath" class="col-sm-3 col-form-label">Capture path</label>
+                        <div class="col-sm-9">
+                            <input id="option-capturePath" type="text" class="form-control" placeholder="/home/pi/capture">
+                        </div>
+                    </div>                  
+                </div>
+
+                <div id="options-server" class="tab-pane" role="tabpanel">
+                    <div class="form-group row">
+                        <label for="option-username" class="col-sm-3 col-form-label">Username</label>
+                        <div class="col-sm-9">
+                            <input id="option-username" type="text" class="form-control" placeholder="username for HTTP authentication">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="option-password" class="col-sm-3 col-form-label">Password</label>
+                        <div class="col-sm-9">
+                            <input id="option-password" type="text" class="form-control" placeholder="password for HTTP authentication">
+                        </div>
+                    </div>
+                </div>            
             </div>
         </div>
 
-        <hr>
+        <button id="save-config" class="btn btn-primary" type="button">Save</button>
+        <button id="reset-config" class="btn btn-secondary" type="button">Reset</button>
 
-        <footer>
-            <p>&copy; 2015-2016 &ndash; <a href="https://github.com/not-implemented/raspicam-timelapse" target="_blank">View on GitHub</a></p>
+        <footer class="text-muted">
+            <div class="pt-4">
+                <small>&copy; 2017. <a href="https://github.com/not-implemented/raspicam-timelapse" target="_blank">View on GitHub</a></small>
+            </div>
         </footer>
     </div>
 
     <script src="jquery/jquery.min.js"></script>
-    <!--<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>-->
+    <script src="popper/umd/popper.min.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>-->
 
     <script src="timelapse.js"></script>
 </body>
