@@ -21,9 +21,8 @@ body {
     background: #eee;
 
     /* format alt-text: */
-    display: table-cell;
+    display: block;
     text-align: center;
-    vertical-align: middle;
     font-size: 2rem;
     line-height: 1.5;
     color: #999;
