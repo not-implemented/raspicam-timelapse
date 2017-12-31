@@ -531,6 +531,10 @@ server.listen(4443);
 function shutdown() {
     clearInterval(updatePreviewImageInterval);
     clearInterval(updateStatusInterval);
+    clearTimeout(gpioStopTimer);
+    gpio.destroy(function() {
+        console.log('All pins unexported');
+    });
     server.shutdown();
 }
 
