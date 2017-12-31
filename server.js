@@ -14,6 +14,7 @@ var ExifImage = require('exif').ExifImage;
 var vcgencmd = require('vcgencmd');
 var diskusage = require('diskusage');
 var getInterfaceInfo = require('./build/Release/binding').getInterfaceInfo;
+var gpio = require('rpi-gpio');
 
 var configFilename = __dirname + '/config/timelapse.json';
 var config = {
@@ -83,6 +84,12 @@ var mounts = [st({
     path: __dirname + '/webapp',
     index: 'index.html'
 })];
+
+gpio.on('change', function(channel, value) {
+    console.log('Channel ' + channel + ' value is now ' + value);
+});
+// TODO: read from config
+gpio.setup(7, gpio.DIR_IN, gpio.EDGE_BOTH);
 
 var previewImage = null;
 var previewImageName = null;
