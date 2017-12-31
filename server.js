@@ -85,16 +85,32 @@ var mounts = [st({
     index: 'index.html'
 })];
 
-gpio.on('change', function(channel, value) {
-    console.log('Channel ' + channel + ' value is now ' + value);
-});
-// TODO: read from config
-gpio.setup(7, gpio.DIR_IN, gpio.EDGE_BOTH);
-
 var previewImage = null;
 var previewImageName = null;
 var previewImageHash = null;
 var previewImageInfo = null;
+
+var gpioStopTimer = null;
+
+gpio.on('change', function(channel, value) {
+    console.log('Channel ' + channel + ' value is now ' + value);
+    if (value == 1) {
+        if (gpioStopTimer) {
+            clearTimeout(gpioStopTimer);
+        }
+        if (!config.isCapturing){
+            console.log('Starting capture');
+            apiActions['startCapture']({}, function() {})
+        }
+    } else if (value == 0) {
+        if (config.isCapturing){
+            console.log('Stopping capture after timeout');
+            gpioStopTimer = setTimeout(apiActions['stopCapture']({}, function() {}), 5000);
+        }
+    }
+});
+// TODO: read from config
+gpio.setup(7, gpio.DIR_IN, gpio.EDGE_BOTH);
 
 function updatePreviewImage() {
     previewImageName = config.capturePath + '/latest.jpg';
