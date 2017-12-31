@@ -39,7 +39,7 @@ var config = {
     thumbnailWidth: 480,
     thumbnailHeight: 270,
     jpegQuality: 100,
-    captureMotionMin: 30000,
+    captureMotionMin: 30,
     captureMotionGpioPin: 7
 }
 
@@ -106,7 +106,7 @@ gpio.on('change', function(channel, value) {
             console.log('Starting capture');
             apiActions['startCapture']({}, function() {});
             // stop after x seconds automatically
-            gpioStopTimer = setTimeout(apiActions['stopCapture']({}, function() {}), config.captureMotionMin);
+            gpioStopTimer = setTimeout(apiActions['stopCapture']({}, function() {}), config.captureMotionMin*1000);
         }
     }
 });
