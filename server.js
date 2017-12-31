@@ -39,6 +39,8 @@ var config = {
     thumbnailWidth: 480,
     thumbnailHeight: 270,
     jpegQuality: 100,
+    captureMotionMin: 30000,
+    captureMotionGpioPin: 7
 }
 
 var cameraDetected = vcgencmd.getCamera().detected;
@@ -95,22 +97,21 @@ var gpioStopTimer = null;
 gpio.on('change', function(channel, value) {
     console.log('Channel ' + channel + ' value is now ' + value);
     if (value == 1) {
+        // reset timer to continue capturing 
+        // if motion is redetected before timer was triggered
         if (gpioStopTimer) {
             clearTimeout(gpioStopTimer);
         }
         if (!config.isCapturing){
             console.log('Starting capture');
-            apiActions['startCapture']({}, function() {})
-        }
-    } else if (value == 0) {
-        if (config.isCapturing){
-            console.log('Stopping capture after timeout');
-            gpioStopTimer = setTimeout(apiActions['stopCapture']({}, function() {}), 5000);
+            apiActions['startCapture']({}, function() {});
+            // stop after x seconds automatically
+            gpioStopTimer = setTimeout(apiActions['stopCapture']({}, function() {}), config.captureMotionMin);
         }
     }
 });
 // TODO: read from config
-gpio.setup(7, gpio.DIR_IN, gpio.EDGE_BOTH);
+gpio.setup(config.captureMotionGpioPin, gpio.DIR_IN, gpio.EDGE_BOTH);
 
 function updatePreviewImage() {
     previewImageName = config.capturePath + '/latest.jpg';
