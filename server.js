@@ -177,14 +177,14 @@ gpio.on('change', function(channel, value) {
             clearTimeout(gpioStopTimer);
             statusInternal.gpioTriggerCaptureEnd = new Date(Date.now() - 1000);
         }
-        if (!config.isCapturing){
+        if (!config.isCapturing) {
             console.log('Starting capture');
             apiActions['startCapture']({}, function() {});
             // stop after x seconds automatically
-            gpioStopTimer = setTimeout(apiActions['stopCapture'], config.gpioTriggerCaptureMin*1000, {}, function() {});
-            statusInternal.gpioTriggerCaptureEnd = new Date(Date.now() + config.gpioTriggerCaptureMin*1000);
-            status.gpioTriggerCaptureEnd.type = 'success';
         }
+        gpioStopTimer = setTimeout(apiActions['stopCapture'], config.gpioTriggerCaptureMin*1000, {}, function() {});
+        statusInternal.gpioTriggerCaptureEnd = new Date(Date.now() + config.gpioTriggerCaptureMin*1000);
+        status.gpioTriggerCaptureEnd.type = 'success';
     }
 });
 
