@@ -175,14 +175,14 @@ gpio.on('change', function(channel, value) {
         // if GPIO triggered again before timer was timed out
         if (gpioStopTimer) {
             clearTimeout(gpioStopTimer);
-            status.gpioTriggerCaptureEnd = new Date(Date.now() - 1000);
+            statusInternal.gpioTriggerCaptureEnd = new Date(Date.now() - 1000);
         }
         if (!config.isCapturing){
             console.log('Starting capture');
             apiActions['startCapture']({}, function() {});
             // stop after x seconds automatically
             gpioStopTimer = setTimeout(apiActions['stopCapture']({}, function() {}), config.gpioTriggerCaptureMin*1000);
-            status.gpioTriggerCaptureEnd = new Date(Date.now() + config.gpioTriggerCaptureMin*1000);
+            statusInternal.gpioTriggerCaptureEnd = new Date(Date.now() + config.gpioTriggerCaptureMin*1000);
         }
     }
 });
