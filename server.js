@@ -169,7 +169,6 @@ var visitors = {};
 var gpioStopTimer = null;
 
 gpio.on('change', function(channel, value) {
-    console.log('Channel ' + channel + ' value is now ' + value);
     if (value) {
         // reset timer to continue capturing 
         // if GPIO triggered again before timer was timed out
@@ -178,7 +177,6 @@ gpio.on('change', function(channel, value) {
             statusInternal.gpioTriggerCaptureEnd = new Date(Date.now() - 1000);
         }
         if (!config.isCapturing) {
-            console.log('Starting capture');
             apiActions['startCapture']({}, function() {});
             // stop after x seconds automatically
         }
@@ -208,11 +206,8 @@ function updateStatus(partial) {
 
     if (config.gpioTriggerPin != null) {
         if (statusInternal.gpioTriggerPin != config.gpioTriggerPin) {
-            console.log('setting up GPIO pin');
             if (statusInternal.gpioTriggerPin != null) {
-                gpio.destroy(function() {
-                    console.log('All pins unexported');
-                });
+                gpio.destroy(function() {});
             }
             gpio.setup(config.gpioTriggerPin, gpio.DIR_IN, gpio.EDGE_BOTH);
             statusInternal.gpioTriggerPin = config.gpioTriggerPin;
@@ -223,8 +218,6 @@ function updateStatus(partial) {
             status.gpioTriggerCaptureEnd.value = (statusInternal.gpioTriggerCaptureEnd - Date.now())/1000 + " seconds (" + formatDate(statusInternal.gpioTriggerCaptureEnd) + ")";
             status.gpioTriggerCaptureEnd.type = 'success';
         } else {
-            console.log('timed out');
-            console.log(formatDate(statusInternal.gpioTriggerCaptureEnd));
             status.gpioTriggerCaptureEnd.value = "timed out";
             status.gpioTriggerCaptureEnd.type = 'info';
         }
@@ -565,9 +558,7 @@ function shutdown() {
     clearInterval(updatePreviewImageInterval);
     clearInterval(updateStatusInterval);
     clearTimeout(gpioStopTimer);
-    gpio.destroy(function() {
-        console.log('All pins unexported');
-    });
+    gpio.destroy(function() {});
     server.shutdown();
 }
 
