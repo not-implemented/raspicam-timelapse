@@ -39,8 +39,8 @@ var config = {
     thumbnailWidth: 480,
     thumbnailHeight: 270,
     jpegQuality: 100,
-    captureMotionMin: 30,
-    captureMotionGpioPin: 7
+    gpioTriggerCaptureMin: 30,
+    gpioTriggerPin: null
 }
 
 var cameraDetected = vcgencmd.getCamera().detected;
@@ -91,27 +91,6 @@ var previewImage = null;
 var previewImageName = null;
 var previewImageHash = null;
 var previewImageInfo = null;
-
-var gpioStopTimer = null;
-
-gpio.on('change', function(channel, value) {
-    console.log('Channel ' + channel + ' value is now ' + value);
-    if (value == 1) {
-        // reset timer to continue capturing 
-        // if motion is redetected before timer was triggered
-        if (gpioStopTimer) {
-            clearTimeout(gpioStopTimer);
-        }
-        if (!config.isCapturing){
-            console.log('Starting capture');
-            apiActions['startCapture']({}, function() {});
-            // stop after x seconds automatically
-            gpioStopTimer = setTimeout(apiActions['stopCapture']({}, function() {}), config.captureMotionMin*1000);
-        }
-    }
-});
-// TODO: read from config
-gpio.setup(config.captureMotionGpioPin, gpio.DIR_IN, gpio.EDGE_BOTH);
 
 function updatePreviewImage() {
     previewImageName = config.capturePath + '/latest.jpg';
@@ -175,10 +154,38 @@ var status = {
     cpuTemp: {title: 'CPU temperature', value: 'unknown', type: 'default'},
     systemLoad: {title: 'System load', value: 'unknown', type: 'default'},
     uptime: {title: 'Uptime', value: 'unknown', type: 'default'},
-    visitors: {title: 'Visitors', value: 'unknown', type: 'default'}
+    visitors: {title: 'Visitors', value: 'unknown', type: 'default'},
+    gpioTriggerPin: {title: 'GPIO Trigger Pin', value: 'unset', type: 'default'},
+    gpioTriggerCaptureEnd: {title: 'GPIO Trigger Stop Timeout', value: 'unset', type: 'default'}
 };
 
+var statusInternal = {
+    gpioTriggerPin: config.gpioTriggerPin,
+    gpioTriggerCaptureEnd: new Date(Date.now() - 1000)
+}
+
 var visitors = {};
+
+var gpioStopTimer = null;
+
+gpio.on('change', function(channel, value) {
+    console.log('Channel ' + channel + ' value is now ' + value);
+    if (value == 1) {
+        // reset timer to continue capturing 
+        // if GPIO triggered again before timer was timed out
+        if (gpioStopTimer) {
+            clearTimeout(gpioStopTimer);
+            status.gpioTriggerCaptureEnd = new Date(Date.now() - 1000);
+        }
+        if (!config.isCapturing){
+            console.log('Starting capture');
+            apiActions['startCapture']({}, function() {});
+            // stop after x seconds automatically
+            gpioStopTimer = setTimeout(apiActions['stopCapture']({}, function() {}), config.gpioTriggerCaptureMin*1000);
+            status.gpioTriggerCaptureEnd = new Date(Date.now() + config.gpioTriggerCaptureMin*1000);
+        }
+    }
+});
 
 function updateStatus(partial) {
     status.isCapturing = config.isCapturing;
@@ -196,6 +203,21 @@ function updateStatus(partial) {
     } else {
         status.captureMode.value = 'Capturing (' + (config.captureDaemonPid !== null ? 'PID ' + config.captureDaemonPid : 'No active process!') + ')';
         status.captureMode.type = config.captureDaemonPid !== null ? 'success' : 'warning';
+    }
+    if (config.gpioTriggerPin != null) {
+        if (statusInternal.gpioTriggerPin == null || statusInternal.gpioTriggerPin != config.gpioTriggerPin) {
+            if (statusInternal.gpioTriggerPin != null) gpio.unexportPin(config.gpioTriggerPin, function () {});
+            gpio.setup(config.gpioTriggerPin, gpio.DIR_IN, gpio.EDGE_BOTH);
+            statusInternal.gpioTriggerPin = config.gpioTriggerPin;
+            status.gpioTriggerPin.value = config.gpioTriggerPin;
+        }
+        if (status.gpioTriggerCaptureEnd.getTime() > Date.now && status.isCapturing) {
+            status.gpioTriggerCaptureEnd.value = formatDate(statusInternal.gpioTriggerCaptureEnd);
+            status.gpioTriggerPin.type = 'success';
+        } else {
+            status.gpioTriggerCaptureEnd.value = "timed out";
+            status.gpioTriggerPin.type = 'info';
+        }
     }
 
     if (!partial) {
