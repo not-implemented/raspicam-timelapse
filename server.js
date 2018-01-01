@@ -155,7 +155,7 @@ var status = {
     systemLoad: {title: 'System load', value: 'unknown', type: 'default'},
     uptime: {title: 'Uptime', value: 'unknown', type: 'default'},
     visitors: {title: 'Visitors', value: 'unknown', type: 'default'},
-    gpioTriggerPin: {title: 'GPIO Trigger Pin', value: 'unset', type: 'default'},
+    gpioTriggerPin: {title: 'GPIO Trigger pin', value: 'unset', type: 'default'},
     gpioTriggerCaptureEnd: {title: 'GPIO Trigger Stop Timeout', value: 'unset', type: 'default'}
 };
 
