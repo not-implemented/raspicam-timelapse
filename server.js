@@ -181,7 +181,7 @@ gpio.on('change', function(channel, value) {
             console.log('Starting capture');
             apiActions['startCapture']({}, function() {});
             // stop after x seconds automatically
-            gpioStopTimer = setTimeout(apiActions['stopCapture']({}, function() {}), config.gpioTriggerCaptureMin*1000);
+            gpioStopTimer = setTimeout(apiActions['stopCapture'], config.gpioTriggerCaptureMin*1000, {}, function() {});
             statusInternal.gpioTriggerCaptureEnd = new Date(Date.now() + config.gpioTriggerCaptureMin*1000);
             status.gpioTriggerCaptureEnd.type = 'success';
         }
@@ -205,6 +205,7 @@ function updateStatus(partial) {
         status.captureMode.value = 'Capturing (' + (config.captureDaemonPid !== null ? 'PID ' + config.captureDaemonPid : 'No active process!') + ')';
         status.captureMode.type = config.captureDaemonPid !== null ? 'success' : 'warning';
     }
+
     if (config.gpioTriggerPin != null) {
         if (statusInternal.gpioTriggerPin != config.gpioTriggerPin) {
             console.log('setting up GPIO pin');
