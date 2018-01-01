@@ -220,7 +220,7 @@ function updateStatus(partial) {
             status.gpioTriggerPin.type = 'success';
         }
         if (statusInternal.gpioTriggerCaptureEnd.getTime() > Date.now() && statusInternal.gpioTriggerCaptureEnd) {
-            status.gpioTriggerCaptureEnd.value = statusInternal.gpioTriggerCaptureEnd - Date.now() + " seconds (" + formatDate(statusInternal.gpioTriggerCaptureEnd) + ")";
+            status.gpioTriggerCaptureEnd.value = (statusInternal.gpioTriggerCaptureEnd - Date.now())/1000 + " seconds (" + formatDate(statusInternal.gpioTriggerCaptureEnd) + ")";
             status.gpioTriggerCaptureEnd.type = 'success';
         } else {
             console.log('timed out');
