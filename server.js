@@ -170,7 +170,7 @@ var gpioStopTimer = null;
 
 gpio.on('change', function(channel, value) {
     console.log('Channel ' + channel + ' value is now ' + value);
-    if (value == 1 || value == true) {
+    if (value) {
         // reset timer to continue capturing 
         // if GPIO triggered again before timer was timed out
         if (gpioStopTimer) {
