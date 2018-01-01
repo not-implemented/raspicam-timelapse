@@ -160,7 +160,7 @@ var status = {
 };
 
 var statusInternal = {
-    gpioTriggerPin: config.gpioTriggerPin,
+    gpioTriggerPin: null,
     gpioTriggerCaptureEnd: new Date(Date.now() - 1000)
 }
 
@@ -205,7 +205,8 @@ function updateStatus(partial) {
         status.captureMode.type = config.captureDaemonPid !== null ? 'success' : 'warning';
     }
     if (config.gpioTriggerPin != null) {
-        if (statusInternal.gpioTriggerPin == null || statusInternal.gpioTriggerPin != config.gpioTriggerPin) {
+        if (statusInternal.gpioTriggerPin != config.gpioTriggerPin) {
+            console.log('setting up GPIO pin');
             if (statusInternal.gpioTriggerPin != null) gpio.unexportPin(config.gpioTriggerPin, function () {});
             gpio.setup(config.gpioTriggerPin, gpio.DIR_IN, gpio.EDGE_BOTH);
             statusInternal.gpioTriggerPin = config.gpioTriggerPin;
