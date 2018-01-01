@@ -183,6 +183,7 @@ gpio.on('change', function(channel, value) {
             // stop after x seconds automatically
             gpioStopTimer = setTimeout(apiActions['stopCapture']({}, function() {}), config.gpioTriggerCaptureMin*1000);
             statusInternal.gpioTriggerCaptureEnd = new Date(Date.now() + config.gpioTriggerCaptureMin*1000);
+            status.gpioTriggerCaptureEnd.type = 'success';
         }
     }
 });
@@ -211,13 +212,16 @@ function updateStatus(partial) {
             gpio.setup(config.gpioTriggerPin, gpio.DIR_IN, gpio.EDGE_BOTH);
             statusInternal.gpioTriggerPin = config.gpioTriggerPin;
             status.gpioTriggerPin.value = config.gpioTriggerPin;
+            status.gpioTriggerPin.type = 'success';
         }
         if (statusInternal.gpioTriggerCaptureEnd.getTime() > Date.now && status.isCapturing) {
             status.gpioTriggerCaptureEnd.value = formatDate(statusInternal.gpioTriggerCaptureEnd);
-            status.gpioTriggerPin.type = 'success';
+            status.gpioTriggerCaptureEnd.type = 'success';
         } else {
+            console.log('timed out');
+            console.log(formatDate(statusInternal.gpioTriggerCaptureEnd));
             status.gpioTriggerCaptureEnd.value = "timed out";
-            status.gpioTriggerPin.type = 'info';
+            status.gpioTriggerCaptureEnd.type = 'info';
         }
     }
 
