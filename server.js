@@ -208,7 +208,11 @@ function updateStatus(partial) {
     if (config.gpioTriggerPin != null) {
         if (statusInternal.gpioTriggerPin != config.gpioTriggerPin) {
             console.log('setting up GPIO pin');
-            if (statusInternal.gpioTriggerPin != null) gpio.unexportPin(config.gpioTriggerPin, function () {});
+            if (statusInternal.gpioTriggerPin != null) {
+                gpio.destroy(function() {
+                    console.log('All pins unexported');
+                });
+            }
             gpio.setup(config.gpioTriggerPin, gpio.DIR_IN, gpio.EDGE_BOTH);
             statusInternal.gpioTriggerPin = config.gpioTriggerPin;
             status.gpioTriggerPin.value = config.gpioTriggerPin;
