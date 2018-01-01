@@ -218,7 +218,7 @@ function updateStatus(partial) {
             status.gpioTriggerPin.value = config.gpioTriggerPin;
             status.gpioTriggerPin.type = 'success';
         }
-        if (statusInternal.gpioTriggerCaptureEnd.getTime() > Date.now && statusInternal.gpioTriggerCaptureEnd) {
+        if (statusInternal.gpioTriggerCaptureEnd.getTime() > Date.now() && statusInternal.gpioTriggerCaptureEnd) {
             status.gpioTriggerCaptureEnd.value = formatDate(statusInternal.gpioTriggerCaptureEnd);
             status.gpioTriggerCaptureEnd.type = 'success';
         } else {
