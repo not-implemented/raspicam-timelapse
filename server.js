@@ -212,7 +212,7 @@ function updateStatus(partial) {
             statusInternal.gpioTriggerPin = config.gpioTriggerPin;
             status.gpioTriggerPin.value = config.gpioTriggerPin;
         }
-        if (status.gpioTriggerCaptureEnd.getTime() > Date.now && status.isCapturing) {
+        if (statusInternal.gpioTriggerCaptureEnd.getTime() > Date.now && status.isCapturing) {
             status.gpioTriggerCaptureEnd.value = formatDate(statusInternal.gpioTriggerCaptureEnd);
             status.gpioTriggerPin.type = 'success';
         } else {
