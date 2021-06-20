@@ -77,6 +77,16 @@ RaspberryPi 1: armv6l, latest available Node.js version see https://nodejs.org/d
 RaspberryPi 2, 3: armv7l, see https://nodejs.org/dist/latest/ (currently v14)
 RaspberryPi 4: ?
 
+Retrieve the CPU of your Pi to select the proper latest Node.js version available:
+
+```bash
+uname -m
+```
+
+RaspberryPi 1: armv6l, latest available Node.js version see https://nodejs.org/dist/latest-v11.x/
+RaspberryPi 2, 3: armv7l, see https://nodejs.org/dist/latest/ (currently v14)
+RaspberryPi 4: ?
+
 Install Node.js (for Node.js >=4.x you need Raspbian "Jessie" or newer - otherwise the native modules won't compile):
 
 ```bash
