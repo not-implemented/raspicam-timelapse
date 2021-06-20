@@ -20,7 +20,11 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
 
 -   [HowTo](#howto)
     -   [Setup SD-Card](#setup-sd-card)
+<<<<<<< HEAD
     -   [Setup RaspberryPi OS + Raspberry Pi Camera](#setup-raspberrypi-os--raspberry-pi-camera)
+=======
+    -   [Setup Raspbian + Raspberry Pi Camera](#setup-raspbian--raspberry-pi-camera)
+>>>>>>> 043431ad47688b7c76466c2775758e7de41dbce7
     -   [Setup RaspiCam-Timelapse](#setup-raspicam-timelapse)
     -   [Reverse SSH-Tunnel (optional)](#reverse-ssh-tunnel-optional)
     -   [Dynamic-DNS-Client (optional)](#dynamic-dns-client-optional)
@@ -54,8 +58,11 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
 -   Put the SD-Card into your Raspberry Pi, Connect to your LAN (DHCP server needed), Power on
 -   Login via SSH (maybe use local IP): `ssh raspberrypi` (Default Login: pi / Password: raspberry)
 -   Make complete SD-Card usable: `sudo raspi-config` - 7 Advanced Options - A1 Expand Filesystem - Finish - Reboot
+<<<<<<< HEAD
 
 ### Setup RaspberryPi OS + Raspberry Pi Camera
+=======
+>>>>>>> 043431ad47688b7c76466c2775758e7de41dbce7
 
 -   Install updates: `sudo apt update`, `sudo apt dist-upgrade` and `sudo apt clean`
 -   For some helpful optional customizations of your Raspberry Pi - [see here](Raspberry-Customizing.md)
@@ -65,7 +72,27 @@ Simple Web-App and complete HowTo for setting up a Raspberry Pi with Camera for 
     `sudo sh -c 'echo "disable_camera_led=1" >> /boot/config.txt'`
 -   Reboot for the camera settings to take effect: `sudo reboot`
 
+<<<<<<< HEAD
 ### Setup RaspiCam-Timelapse
+
+Retrieve the CPU of your Pi to select the proper latest Node.js version available:
+=======
+-   Install updates: `sudo apt update`, `sudo apt dist-upgrade` and `sudo apt clean`
+-   For some helpful optional customizations of your Raspberry Pi - [see here](Raspberry-Customizing.md)
+-   Enable camera: `sudo raspi-config` - 5 Interfacing Options - A1 Camera - Enable Camera - Finish
+    (this also sets Memory Split to 128 MB)
+-   Disable camera LED when taking pictures (optional):
+    `sudo sh -c 'echo "disable_camera_led=1" >> /boot/config.txt'`
+-   Reboot for the camera settings to take effect: `sudo reboot`
+>>>>>>> 043431ad47688b7c76466c2775758e7de41dbce7
+
+```bash
+uname -m
+```
+
+RaspberryPi 1: armv6l, latest available Node.js version see https://nodejs.org/dist/latest-v11.x/
+RaspberryPi 2, 3: armv7l, see https://nodejs.org/dist/latest/ (currently v14)
+RaspberryPi 4: ?
 
 Retrieve the CPU of your Pi to select the proper latest Node.js version available:
 
