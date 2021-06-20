@@ -78,7 +78,7 @@ jQuery(function($) {
 
             if (statusNode.length === 0) {
                 statusTable.find('.status-init').remove();
-                statusTable.append('<tr><td>' + statusItem.title + '</td><td><span id="' + statusId + '"></span></td></tr>');
+                statusTable.append('<tr><td class="col-5">' + statusItem.title + '</td><td><span id="' + statusId + '"></span></td></tr>');
                 statusNode = $('#' + statusId);
             }
 
