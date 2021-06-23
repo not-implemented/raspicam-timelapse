@@ -6,35 +6,13 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>RaspiCam-Timelapse</title>
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
-    <style>
-        #status-table .badge {
-            font-size: 90%;
-            line-height: 1.5;
-            white-space: normal;
-        }
-
-        #preview-image {
-            /* setting width/height means the image without borders: */
-            aspect-ratio: 16/9;
-            object-fit: fill;
-            background: #eee;
-
-            /* format alt-text: */
-            display: grid;
-            place-items: center;
-            font-size: 2rem;
-            line-height: 1.5;
-            color: #999;
-            text-align: center;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <header class="mt-3 mb-3 row justify-content-between">
-            <h2 class="col-auto">RaspiCam-Timelapse</h2>
-            <div class="spinner-border align-middle" role="status" id="busy-indicator">
-                <span class="sr-only">Loading…</span>
+    <div class="container-xxl py-3">
+        <header class="mb-2 row justify-content-between align-items-center">
+            <h1 class="col-auto">RaspiCam-Timelapse</h1>
+            <div class="spinner-border m-2" role="status" id="busy-indicator">
+                <span class="visually-hidden">Loading...</span>
             </div>
             <div class="col-auto button-group">
                 <button id="start-capture" class="btn btn-success" type="button">
@@ -49,35 +27,48 @@
         <div id="alert-box" class="alert alert-danger" role="alert" style="display: none"></div>
 
         <main class="card mb-4">
-            <div class="row no-gutters">
+            <div class="row g-0">
                 <div class="col-md col-lg-7 col-xl-8">
-                    <a href="/full-preview" target="_blank"><img id="preview-image" class="card-img" alt="Start Capture for Preview"></a>
+                    <!-- TODO: change ratio to custom property in JS based on the custom settings: style="--bs-aspect-ratio: 50%;", see https://getbootstrap.com/docs/5.0/helpers/ratio/#custom-ratios -->
+                    <a href="/full-preview" target="_blank" class="d-block ratio bg-light" style="--bs-aspect-ratio: calc(9 / 16 * 100%);">
+                        <img id="preview-image" class="card-img text-muted text-center fs-3 lh-sm d-flex justify-content-center align-items-center" alt="Start Capture for Preview">
+                    </a>
                 </div>
                 <div class="col-md col-lg-5 col-xl-4">
                     <div class="card-body">
                         <h5 class="card-title">Status</h5>
                         <table id="status-table" class="table table-sm small">
-                            <tr class="status-init">
-                                <td class="col-5">Application</td>
-                                <td><span class="label label-default">Initializing…</span></td>
-                            </tr>
+                            <tbody>
+                                <tr class="status-init">
+                                    <td class="col-5">Application</td>
+                                    <td>Initializing…</td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </main>
 
-        <aside>
+        <aside class="mb-4">
             <h4>Settings</h4>
-            <div class="card mb-3">
-                <div class="card-header">
-                    <nav class="nav nav-tabs card-header-tabs" role="tablist">
-                        <a class="nav-item nav-link active" id="options-timelapse-tab" data-toggle="tab" href="#options-timelapse" role="tab">Interval</a>
-                        <a class="nav-item nav-link" id="options-camera-tab" data-toggle="tab" href="#options-camera" role="tab">Camera</a>
-                        <a class="nav-item nav-link" id="options-image-format-tab" data-toggle="tab" href="#options-image-format" role="tab">Image</a>
-                        <a class="nav-item nav-link" id="options-server-tab" data-toggle="tab" href="#options-server" role="tab">Server</a>
-                    </nav>
-                </div>
+            <div class="card mb-2">
+                <nav class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="options-timelapse-tab" data-toggle="tab" href="#options-timelapse" role="tab">Interval</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="options-camera-tab" data-toggle="tab" href="#options-camera" role="tab">Camera</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="options-image-format-tab" data-toggle="tab" href="#options-image-format" role="tab">Image</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="options-server-tab" data-toggle="tab" href="#options-server" role="tab">Server</a>
+                        </li>
+                    </ul>
+                </nav>
                 <div class="card-body tab-content">
                     <div id="options-timelapse" class="tab-pane active" role="tabpanel">
                         <div class="form-group row">
@@ -85,9 +76,7 @@
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <div class="input-group">
                                     <input id="option-timelapseInterval" type="text" class="form-control" placeholder="Take picture every …">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">seconds</span>
-                                    </div>
+                                    <span class="input-group-text">seconds</span>
                                 </div>
                             </div>
                         </div>
@@ -97,7 +86,7 @@
                         <div class="form-group row">
                             <label for="option-exposure" class="col-sm-4 col-md-3 col-form-label">Exposure mode</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
-                                <select id="option-exposure" class="form-control">
+                                <select id="option-exposure" class="form-select">
                                     <option value=""></option>
                                     <option value="auto">Auto exposure</option>
                                     <option value="night">Night shooting</option>
@@ -124,7 +113,7 @@
                         <div class="form-group row">
                             <label for="option-iso" class="col-sm-4 col-md-3 col-form-label">ISO</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
-                                <select id="option-iso" class="form-control">
+                                <select id="option-iso" class="form-select">
                                     <option value=""></option>
                                     <option value="100">100</option>
                                     <option value="200">200</option>
@@ -138,13 +127,9 @@
                             <label for="option-shutterSpeed" class="col-sm-4 col-md-3 col-form-label">Shutter speed</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">1 /</span>
-                                    </div>
+                                    <span class="input-group-text">1 /</span>
                                     <input id="option-shutterSpeed" type="text" class="form-control">
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">seconds</span>
-                                    </div>
+                                    <span class="input-group-text">seconds</span>
                                 </div>
                             </div>
                         </div>
@@ -152,7 +137,7 @@
                         <div class="form-group row">
                             <label for="option-awb" class="col-sm-4 col-md-3 col-form-label">White balance</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
-                                <select id="option-awb" class="form-control">
+                                <select id="option-awb" class="form-select">
                                     <option value=""></option>
                                     <option value="off">Manual WB</option>
                                     <option value="auto">Auto (default)</option>
@@ -172,17 +157,13 @@
                             <label for="option-awbRedGain" class="col-sm-4 col-md-3 col-form-label">Manual WB</label>
                             <div class="col-sm-3">
                                 <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">Red</span>
-                                    </div>
+                                    <span class="input-group-text">Red</span>
                                     <input id="option-awbRedGain" type="text" class="form-control" placeholder="i.e. 1.5">
                                 </div>
                             </div>
                             <div class="col-sm-3">
                                 <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">Blue</span>
-                                    </div>
+                                    <span class="input-group-text">Blue</span>
                                     <input id="option-awbBlueGain" type="text" class="form-control" placeholder="i.e. 1.2">
                                 </div>
                             </div>
@@ -205,7 +186,7 @@
                                     </label>
                                 </div>
 
-                                <small class="text-muted">use both for 180° rotate</small>
+                                <small class="form-text">use both for 180° rotate</small>
                             </div>
                         </div>
                     </div>
@@ -216,11 +197,10 @@
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <div class="input-group">
                                     <input id="option-width" type="text" class="form-control" placeholder="width">
-                                    <div class="input-group-prepend input-group-append">
-                                        <span class="input-group-text">×</span>
-                                    </div>
+                                    <span class="input-group-text">×</span>
                                     <input id="option-height" type="text" class="form-control" placeholder="height">
                                 </div>
+                                <small class="form-text">Width × Height</small>
                             </div>
                         </div>
 
@@ -229,11 +209,10 @@
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <div class="input-group">
                                     <input id="option-thumbnailWidth" type="text" class="form-control" placeholder="width">
-                                    <div class="input-group-prepend input-group-append">
-                                        <span class="input-group-text">×</span>
-                                    </div>
+                                    <span class="input-group-text">×</span>
                                     <input id="option-thumbnailHeight" type="text" class="form-control" placeholder="height">
                                 </div>
+                                <small class="form-text">Width × Height</small>
                             </div>
                         </div>
 
@@ -271,19 +250,22 @@
                 </div>
             </div>
 
-            <button id="save-config" class="btn btn-primary" type="button">Save</button>
-            <button id="reset-config" class="btn btn-outline-secondary" type="button">Reset</button>
+            <button id="save-config" class="btn btn-primary btn-sm" type="button">Save</button>
+            <button id="reset-config" class="btn btn-outline-secondary btn-sm" type="button">Reset</button>
         </aside>
 
+        <hr>
+
         <footer class="text-muted">
-            <div class="pt-4">
-                <small>&copy; 2021. <a href="https://github.com/not-implemented/raspicam-timelapse" target="_blank">View on GitHub</a></small>
-            </div>
+            <small>&copy; 2021. <a href="https://github.com/not-implemented/raspicam-timelapse" target="_blank" class="text-reset">View on GitHub</a></small>
         </footer>
     </div>
 
+    <!-- TODO: refactor to remove jquery -->
     <script src="jquery/jquery.min.js"></script>
+    <!-- TODO: deprecated? where is popper used? -->
     <script src="popper/umd/popper.min.js"></script>
+    <!-- TODO: deprecated? where is the bootstrap js used? -->
     <script src="bootstrap/js/bootstrap.min.js"></script>
 
     <script src="timelapse.js"></script>

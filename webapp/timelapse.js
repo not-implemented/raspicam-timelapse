@@ -84,7 +84,7 @@ jQuery(function($) {
 
             statusNode.text(statusItem.value);
             statusNode.removeClass();
-            statusNode.addClass('badge badge-' + statusItem.type);
+            statusNode.addClass('badge bg-' + statusItem.type + ' text-wrap lh-sm fw-normal');
         }
 
         setBusy(isBusy); // for updated isCapturing
