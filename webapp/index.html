@@ -7,6 +7,7 @@
     <title>RaspiCam-Timelapse</title>
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
 </head>
+
 <body>
     <div class="container-xxl py-3">
         <header class="mb-2 row justify-content-between align-items-center">
@@ -30,14 +31,17 @@
             <div class="row g-0">
                 <div class="col-md col-lg-7 col-xl-8">
                     <!-- TODO: change ratio to custom property in JS based on the custom settings: style="--bs-aspect-ratio: 50%;", see https://getbootstrap.com/docs/5.0/helpers/ratio/#custom-ratios -->
-                    <a href="/full-preview" target="_blank" class="d-block ratio bg-light" style="--bs-aspect-ratio: calc(9 / 16 * 100%);">
-                        <img id="preview-image" class="card-img text-muted text-center fs-3 lh-sm d-flex justify-content-center align-items-center" alt="Start Capture for Preview">
+                    <a href="/full-preview" target="_blank" id="preview-imagelink" class="d-block ratio bg-light"
+                        style="--bs-aspect-ratio: calc(9 / 16 * 100%);">
+                        <img id="preview-image"
+                            class="card-img text-muted text-center fs-3 lh-sm d-flex justify-content-center align-items-center"
+                            alt="Start Capture for Preview">
                     </a>
                 </div>
                 <div class="col-md col-lg-5 col-xl-4">
                     <div class="card-body">
                         <h5 class="card-title">Status</h5>
-                        <table id="status-table" class="table table-sm small">
+                        <table id="status-table" class="table table-sm small mb-0">
                             <tbody>
                                 <tr class="status-init">
                                     <td class="col-5">Application</td>
@@ -52,30 +56,36 @@
 
         <aside class="mb-4">
             <h4>Settings</h4>
-            <div class="card mb-2">
+            <div class="card">
                 <nav class="card-header">
-                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist" id="options">
                         <li class="nav-item">
-                            <a class="nav-link active" id="options-timelapse-tab" data-toggle="tab" href="#options-timelapse" role="tab">Interval</a>
+                            <a class="nav-link active" id="options-timelapse-tab" data-bs-toggle="tab"
+                                data-bs-target="#options-timelapse" href="#options-timelapse" role="tab">Interval</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="options-camera-tab" data-toggle="tab" href="#options-camera" role="tab">Camera</a>
+                            <a class="nav-link" id="options-camera-tab" data-bs-toggle="tab"
+                                data-bs-target="#options-camera" href="#options-camera" role="tab">Camera</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="options-image-format-tab" data-toggle="tab" href="#options-image-format" role="tab">Image</a>
+                            <a class="nav-link" id="options-image-format-tab" data-bs-toggle="tab"
+                                data-bs-target="#options-image-format" href="#options-image-format" role="tab">Image</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="options-server-tab" data-toggle="tab" href="#options-server" role="tab">Server</a>
+                            <a class="nav-link" id="options-server-tab" data-bs-toggle="tab"
+                                data-bs-target="#options-server" href="#options-server" role="tab">Server</a>
                         </li>
                     </ul>
                 </nav>
-                <div class="card-body tab-content">
+                <div class="card-body tab-content pb-0" id="optionsContent">
                     <div id="options-timelapse" class="tab-pane active" role="tabpanel">
-                        <div class="form-group row">
-                            <label for="option-timelapseInterval" class="col-sm-4 col-md-3 col-form-label">Interval</label>
+                        <div class="form-group row mb-3">
+                            <label for="option-timelapseInterval"
+                                class="col-sm-4 col-md-3 col-form-label">Interval</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <div class="input-group">
-                                    <input id="option-timelapseInterval" type="text" class="form-control" placeholder="Take picture every …">
+                                    <input id="option-timelapseInterval" type="text" class="form-control"
+                                        placeholder="Take picture every …">
                                     <span class="input-group-text">seconds</span>
                                 </div>
                             </div>
@@ -83,7 +93,7 @@
                     </div>
 
                     <div id="options-camera" class="tab-pane" role="tabpanel">
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="option-exposure" class="col-sm-4 col-md-3 col-form-label">Exposure mode</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <select id="option-exposure" class="form-select">
@@ -103,14 +113,14 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="option-ev" class="col-sm-4 col-md-3 col-form-label">EV compensation</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <input id="option-ev" type="text" class="form-control" placeholder="-10 … +10">
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="option-iso" class="col-sm-4 col-md-3 col-form-label">ISO</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <select id="option-iso" class="form-select">
@@ -123,8 +133,9 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="option-shutterSpeed" class="col-sm-4 col-md-3 col-form-label">Shutter speed</label>
+                        <div class="form-group row mb-3">
+                            <label for="option-shutterSpeed" class="col-sm-4 col-md-3 col-form-label">Shutter
+                                speed</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <div class="input-group">
                                     <span class="input-group-text">1 /</span>
@@ -134,7 +145,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="option-awb" class="col-sm-4 col-md-3 col-form-label">White balance</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <select id="option-awb" class="form-select">
@@ -153,23 +164,25 @@
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="option-awbRedGain" class="col-sm-4 col-md-3 col-form-label">Manual WB</label>
                             <div class="col-sm-3">
                                 <div class="input-group">
                                     <span class="input-group-text">Red</span>
-                                    <input id="option-awbRedGain" type="text" class="form-control" placeholder="i.e. 1.5">
+                                    <input id="option-awbRedGain" type="text" class="form-control"
+                                        placeholder="i.e. 1.5">
                                 </div>
                             </div>
                             <div class="col-sm-3">
                                 <div class="input-group">
                                     <span class="input-group-text">Blue</span>
-                                    <input id="option-awbBlueGain" type="text" class="form-control" placeholder="i.e. 1.2">
+                                    <input id="option-awbBlueGain" type="text" class="form-control"
+                                        placeholder="i.e. 1.2">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="option-hflip" class="col-sm-4 col-md-3 col-form-label">Flip image</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <div class="form-check form-check-inline">
@@ -186,13 +199,13 @@
                                     </label>
                                 </div>
 
-                                <small class="form-text">use both for 180° rotate</small>
+                                <small class="form-text d-block">use both for 180° rotate</small>
                             </div>
                         </div>
                     </div>
 
                     <div id="options-image-format" class="tab-pane" role="tabpanel">
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="option-width" class="col-sm-4 col-md-3 col-form-label">Resolution</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <div class="input-group">
@@ -200,24 +213,27 @@
                                     <span class="input-group-text">×</span>
                                     <input id="option-height" type="text" class="form-control" placeholder="height">
                                 </div>
-                                <small class="form-text">Width × Height</small>
+                                <small class="form-text d-block">Width × Height</small>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label for="option-thumbnailWidth" class="col-sm-4 col-md-3 col-form-label">Thumbnail resolution</label>
+                        <div class="form-group row mb-3">
+                            <label for="option-thumbnailWidth" class="col-sm-4 col-md-3 col-form-label">Thumbnail
+                                resolution</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
                                 <div class="input-group">
-                                    <input id="option-thumbnailWidth" type="text" class="form-control" placeholder="width">
+                                    <input id="option-thumbnailWidth" type="text" class="form-control"
+                                        placeholder="width">
                                     <span class="input-group-text">×</span>
-                                    <input id="option-thumbnailHeight" type="text" class="form-control" placeholder="height">
+                                    <input id="option-thumbnailHeight" type="text" class="form-control"
+                                        placeholder="height">
                                 </div>
-                                <small class="form-text">Width × Height</small>
+                                <small class="form-text d-block">Width × Height</small>
                             </div>
                         </div>
 
                         <!-- Currently, the "quality"-option does not work in raspistill (it's always 100)
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="option-width" class="col-sm-4 col-md-3 col-form-label">JPEG quality</label>
                             <div class="col-sm-3">
                                 <input id="option-jpegQuality" type="text" class="form-control" placeholder="100 = best quality">
@@ -225,49 +241,51 @@
                         </div>
                         -->
 
-                        <div class="form-group row">
-                            <label for="option-capturePath" class="col-sm-4 col-md-3 col-form-label">Capture path</label>
+                        <div class="form-group row mb-3">
+                            <label for="option-capturePath" class="col-sm-4 col-md-3 col-form-label">Capture
+                                path</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
-                                <input id="option-capturePath" type="text" class="form-control" placeholder="/home/pi/capture">
+                                <input id="option-capturePath" type="text" class="form-control"
+                                    placeholder="/home/pi/capture">
                             </div>
                         </div>
                     </div>
 
                     <div id="options-server" class="tab-pane" role="tabpanel">
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="option-username" class="col-sm-4 col-md-3 col-form-label">Username</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
-                                <input id="option-username" type="text" class="form-control" placeholder="username for HTTP authentication">
+                                <input id="option-username" type="text" class="form-control"
+                                    placeholder="username for HTTP authentication">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <label for="option-password" class="col-sm-4 col-md-3 col-form-label">Password</label>
                             <div class="col-sm-8 col-md-9 col-lg-6">
-                                <input id="option-password" type="text" class="form-control" placeholder="password for HTTP authentication">
+                                <input id="option-password" type="text" class="form-control"
+                                    placeholder="password for HTTP authentication">
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="card-footer">
+                    <button id="save-config" class="btn btn-primary btn-sm" type="button">Save</button>
+                    <button id="reset-config" class="btn btn-outline-secondary btn-sm" type="button">Reset</button>
+                </div>
             </div>
-
-            <button id="save-config" class="btn btn-primary btn-sm" type="button">Save</button>
-            <button id="reset-config" class="btn btn-outline-secondary btn-sm" type="button">Reset</button>
         </aside>
 
-        <hr>
-
         <footer class="text-muted">
-            <small>&copy; 2021. <a href="https://github.com/not-implemented/raspicam-timelapse" target="_blank" class="text-reset">View on GitHub</a></small>
+            <small>&copy; 2021. <a href="https://github.com/not-implemented/raspicam-timelapse" target="_blank"
+                    class="text-reset">View on GitHub</a></small>
         </footer>
     </div>
 
     <!-- TODO: refactor to remove jquery -->
     <script src="jquery/jquery.min.js"></script>
-    <!-- TODO: deprecated? where is popper used? -->
-    <script src="popper/umd/popper.min.js"></script>
-    <!-- TODO: deprecated? where is the bootstrap js used? -->
-    <script src="bootstrap/js/bootstrap.min.js"></script>
 
+    <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="timelapse.js"></script>
 </body>
+
 </html>
