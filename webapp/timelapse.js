@@ -5,6 +5,7 @@ jQuery(function($) {
     var busyIndicator = $('#busy-indicator');
     var alertBox = $('#alert-box');
     var previewImage = $('#preview-image');
+    var previewImageLink = $('#preview-imagelink');
     var startCaptureButton = $('#start-capture');
     var stopCaptureButton = $('#stop-capture');
     var statusTable = $('#status-table');
@@ -123,6 +124,8 @@ jQuery(function($) {
                 node.val(config[name]);
             }
         }
+
+        previewImageLink.css('--bs-aspect-ratio', 'calc(' + config.thumbnailHeight + ' / ' + config.thumbnailWidth + ' * 100%)');
     }
 
     function api(action, data, callback) {
